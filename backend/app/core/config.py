@@ -1,6 +1,22 @@
+from typing import Annotated, Any
+
+from pydantic import (
+    AnyUrl,
+    BeforeValidator,
+    computed_field,
+)
 from pydantic_settings import BaseSettings
 
 from app.mysql_config import *
+
+
+def parse_cors(v: Any) -> list[str] | str:
+    if isinstance(v, str) and not v.startswith("["):
+        return [i.strip() for i in v.split(",")]
+    elif isinstance(v, list | str):
+        return v
+    raise ValueError(v)
+
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "2024_BUAA_DB_Project"
@@ -12,13 +28,17 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     BACKEND_HOST: str = "http://localhost:8000"
-    FRONTEND_HOST: str | None = None # FIXME
+    FRONTEND_HOST: str = "http://localhost:3000"
+    
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
     
     # API versions
     API_V1_STR: str = "/api/v1"
     
-    # Allow CORS for all origins
-    ALL_COR_ORIGINS: list[str] = ["localhost:3000"]
+    @computed_field
+    @property
+    def all_cors_origins(self) -> list[str]:
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
     
     @property
     def MYSQL_DATABASE_URI(self) -> str:
