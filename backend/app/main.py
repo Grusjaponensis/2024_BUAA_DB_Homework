@@ -20,7 +20,6 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Set all CORS enabled origins
 if settings.ALL_COR_ORIGINS:
@@ -43,4 +42,6 @@ async def startup_event():
     import os
     if not os.path.exists(settings.UPLOAD_AVATAR_FOLDER):
         os.makedirs(settings.UPLOAD_AVATAR_FOLDER)
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    
 
