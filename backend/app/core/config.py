@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     @property
     def MYSQL_DATABASE_URI(self) -> str:
         """Create a database connection address string."""
-        if mysql_user or mysql_password or mysql_host or mysql_db_schema is None:
+        if any(var is None for var in [mysql_user, mysql_password, mysql_host, mysql_db_schema]):
             raise ValueError("Please set your own mysql_user and other variables in ../mysql_config.py")
         return f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db_schema}"
     
