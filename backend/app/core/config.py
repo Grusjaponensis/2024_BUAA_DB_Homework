@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Allow CORS for all origins
-    ALL_COR_ORIGINS: list[str] = ["*"]
+    ALL_COR_ORIGINS: list[str] = ["localhost:3000"]
     
     @property
     def MYSQL_DATABASE_URI(self) -> str:
