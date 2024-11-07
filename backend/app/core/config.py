@@ -1,21 +1,7 @@
-from typing import Annotated, Any
-
-from pydantic import (
-    AnyUrl,
-    BeforeValidator,
-    computed_field,
-)
+from pydantic import computed_field
 from pydantic_settings import BaseSettings
 
 from app.mysql_config import *
-
-
-def parse_cors(v: Any) -> list[str] | str:
-    if isinstance(v, str) and not v.startswith("["):
-        return [i.strip() for i in v.split(",")]
-    elif isinstance(v, list | str):
-        return v
-    raise ValueError(v)
 
 
 class Settings(BaseSettings):
@@ -25,12 +11,10 @@ class Settings(BaseSettings):
     # openssl rand -hex 32
     SECRET_KEY: str = "b3683501dec4f58e6b06befb551793a2471e37af857240fc8800dff9f3a3693a"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     BACKEND_HOST: str = "http://localhost:8000"
     FRONTEND_HOST: str = "http://localhost:3000"
-    
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
     
     # API versions
     API_V1_STR: str = "/api/v1"
@@ -38,7 +22,7 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def all_cors_origins(self) -> list[str]:
-        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
+        return [self.FRONTEND_HOST]
     
     @property
     def MYSQL_DATABASE_URI(self) -> str:
