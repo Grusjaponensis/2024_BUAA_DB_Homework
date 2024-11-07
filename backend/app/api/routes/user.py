@@ -1,8 +1,9 @@
-import uuid
 from typing import Any
-import logging
+import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter, Depends, HTTPException, status, 
+)
 from sqlmodel import func, select
 
 import app.crud as crud
@@ -20,6 +21,7 @@ from app.core.security import get_password_hash, verify_password, create_access_
 
 
 router = APIRouter()
+
 
 # - MARK: get user profile -
 @router.get("/profile", response_model=UserPublic)
@@ -46,7 +48,6 @@ async def update_user_profile(
                 detail="Email already registered",
             )
     user_data = user_in.model_dump(exclude_unset=True)
-    logging.info(f"user_data: {user_data}")
     current_user.sqlmodel_update(user_data)
     session.add(current_user)
     session.commit()

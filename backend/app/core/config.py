@@ -17,14 +17,20 @@ class Settings(BaseSettings):
     # API versions
     API_V1_STR: str = "/api/v1"
     
+    # Allow CORS for all origins
+    ALL_COR_ORIGINS: list[str] = ["*"]
+    
     @property
     def MYSQL_DATABASE_URI(self) -> str:
         """Create a database connection address string."""
-        if mysql_user is None:
+        if mysql_user or mysql_password or mysql_host or mysql_db_schema is None:
             raise ValueError("Please set your own mysql_user and other variables in ../mysql_config.py")
         return f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db_schema}"
     
     FIRST_SUPERUSER: str = "admin@admin.com"
     FIRST_SUPERUSER_PASSWORD: str = "admin123"
+    
+    DEFAULT_USER_AVATAR_URL: str = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+    UPLOAD_AVATAR_FOLDER: str = "app/static/avatars"
     
 settings = Settings()

@@ -1,13 +1,19 @@
 import uuid, random, string
 
+from fastapi import Form
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field
+
+from app.core.config import settings
+
 
 USER_EMAIL_MAX_LENGTH = 100
 USER_PASSWORD_MIN_LENGTH = 8
 USER_PASSWORD_MAX_LENGTH = 100
 USER_NICKNAME_MAX_LENGTH = 50
 
+
+# - MARK: User models
 # User model for database
 class UserBase(SQLModel):
     """
@@ -16,6 +22,8 @@ class UserBase(SQLModel):
     email: EmailStr = Field(max_length=100)
     nickname: str | None
     is_superuser: bool = False
+    is_volunteer: bool = False  
+    avatar_url: str = DEFAULT
     ```
     """
     email: EmailStr = Field(unique=True, index=True, max_length=USER_EMAIL_MAX_LENGTH)
@@ -24,6 +32,8 @@ class UserBase(SQLModel):
         max_length=USER_NICKNAME_MAX_LENGTH
     )
     is_superuser: bool = False
+    is_volunteer: bool = False
+    avatar_url: str = Field(default=settings.DEFAULT_USER_AVATAR_URL)
 
 
 # Properties to receive via API on creation
@@ -35,6 +45,8 @@ class UserCreate(UserBase):
     email: EmailStr = Field(max_length=100)
     nickname: str | None
     is_superuser: bool = False
+    is_volunteer: bool = False
+    avatar_url: str = DEFAULT
     
     password: str
     ```
@@ -84,11 +96,13 @@ class UserRegister(SQLModel):
     email: str
     password: str
     nickname: str | None = None
+    avatar_url: str = DEFAULT
     ```
     """
-    email: EmailStr = Field(max_length=USER_EMAIL_MAX_LENGTH)
-    password: str = Field(min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
-    nickname: str | None = Field(default=None, max_length=USER_NICKNAME_MAX_LENGTH)
+    email: EmailStr = Field(default=Form(...), max_length=USER_EMAIL_MAX_LENGTH)
+    password: str = Field(default=Form(...), min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
+    nickname: str | None = Field(default=Form(None), max_length=USER_NICKNAME_MAX_LENGTH)
+    # avatar_url: str = Field(default=Form(None))
 
     
 class UserUpdateProfile(SQLModel):
@@ -97,10 +111,12 @@ class UserUpdateProfile(SQLModel):
     ```
     email: str | None
     nickname: str | None
+    new_avatar_url: str = DEFAULT
     ```
     """
     email: EmailStr | None = Field(default=None, max_length=USER_EMAIL_MAX_LENGTH)
     nickname: str | None = Field(default=None, max_length=USER_NICKNAME_MAX_LENGTH)
+    new_avatar_url: str = Field(default=settings.DEFAULT_USER_AVATAR_URL)
 
 
 class UpdatePassword(SQLModel):
@@ -119,7 +135,8 @@ class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
     
-    
+
+# - MARK: Token models
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
@@ -128,7 +145,8 @@ class Token(SQLModel):
 class TokenPayload(SQLModel):
     sub: str | None = None
     
-    
+
+# - MARK: Message models
 class Message(SQLModel):
     """Model to return a single message for display"""
     message: str

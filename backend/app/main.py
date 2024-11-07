@@ -2,6 +2,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
@@ -19,15 +20,17 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 # Set all CORS enabled origins
-# if settings.all_cors_origins:
-#     app.add_middleware(
-#         CORSMiddleware,
-#         allow_origins=settings.all_cors_origins,
-#         allow_credentials=True,
-#         allow_methods=["*"],
-#         allow_headers=["*"],
-#     )
+if settings.ALL_COR_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.ALL_COR_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
@@ -36,4 +39,8 @@ async def startup_event():
     logging.info("Creating initial data")
     init()
     logging.info("Initial data created")
+    
+    import os
+    if not os.path.exists(settings.UPLOAD_AVATAR_FOLDER):
+        os.makedirs(settings.UPLOAD_AVATAR_FOLDER)
 
