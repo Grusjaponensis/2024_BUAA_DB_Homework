@@ -16,3 +16,14 @@ def save_file(path: str, file: UploadFile, user_email: str) -> str:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"File save failed: {str(e)}")
     return file_path
+
+
+def remove_file(path: str, file_name: str):
+    """
+    Remove the specified file from the specified path.
+    """
+    file_path = os.path.join(path, file_name)
+    try:
+        os.remove(file_path)
+    except Exception:
+        pass

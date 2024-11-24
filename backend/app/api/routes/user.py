@@ -1,5 +1,5 @@
 from typing import Any
-import uuid
+import uuid, os
 
 from fastapi import (
     APIRouter, Depends, HTTPException, status, UploadFile, File
@@ -19,7 +19,7 @@ from app.models import (
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password, create_access_token
-from app.util.utils import save_file
+from app.util.utils import save_file, remove_file
 
 
 router = APIRouter()
@@ -69,10 +69,16 @@ async def update_user_avatar(
     Update user avatar.
     """
     new_avatar_path = save_file(settings.UPLOAD_AVATAR_FOLDER, upload_avatar, current_user.email)
+    old_avatar_path = current_user.avatar_url
     current_user.avatar_url = new_avatar_path
     session.add(current_user)
     session.commit()
     session.refresh(current_user)
+    # make sure new avatar file is saved before removing old avatar file
+    if old_avatar_path != settings.DEFAULT_USER_AVATAR_URL:
+        # remove old avatar file
+        remove_file(settings.UPLOAD_AVATAR_FOLDER, old_avatar_path.split("/")[-1])
+
     return current_user
 
 
