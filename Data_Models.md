@@ -10,7 +10,7 @@
 | 字段名      | 类型           | 描述 |
 |------------|----------------|------|
 | `email`    | `EmailStr`     | 用户邮箱，最大长度 100，唯一且索引 |
-| `nickname` | `str | None`    | 用户昵称，可选，默认值为生成的随机字符串 |
+| `nickname` | `str or None`  | 用户昵称，可选，默认值为生成的随机字符串 |
 | `is_superuser` | `bool`     | 是否为超级管理员，默认为 `False` |
 | `is_volunteer` | `bool`     | 是否为志愿者，默认为 `False` |
 | `avatar_url`  | `str`        | 头像 URL，默认为配置中的默认头像 URL |
@@ -26,7 +26,7 @@
 | 字段名      | 类型           | 描述 |
 |------------|----------------|------|
 | `email`    | `EmailStr`     | 用户邮箱，最大长度 100 |
-| `nickname` | `str | None`    | 用户昵称，可选 |
+| `nickname` | `str or None`  | 用户昵称，可选 |
 | `is_superuser` | `bool`     | 是否为超级管理员，默认为 `False` |
 | `is_volunteer` | `bool`     | 是否为志愿者，默认为 `False` |
 | `avatar_url`  | `str`        | 头像 URL，默认为默认值 |
@@ -42,12 +42,12 @@
 
 | 字段名      | 类型           | 描述 |
 |------------|----------------|------|
-| `email`    | `EmailStr | None` | 用户邮箱，可选，最大长度 100 |
-| `nickname` | `str | None`    | 用户昵称，可选 |
-| `is_superuser` | `bool | None` | 是否为超级管理员，可选 |
-| `is_volunteer` | `bool | None` | 是否为志愿者，可选 |
-| `avatar_url`  | `str | None`   | 头像 URL，可选 |
-| `password`    | `str | None`   | 密码，可选，长度限制为 8 到 100 |
+| `email`    | `EmailStr or None` | 用户邮箱，可选，最大长度 100 |
+| `nickname` | `str or None`    | 用户昵称，可选 |
+| `is_superuser` | `bool or None` | 是否为超级管理员，可选 |
+| `is_volunteer` | `bool or None` | 是否为志愿者，可选 |
+| `avatar_url`  | `str or None`   | 头像 URL，可选 |
+| `password`    | `str or None`   | 密码，可选，长度限制为 8 到 100 |
 
 ---
 
@@ -74,7 +74,7 @@
 |------------|----------------|------|
 | `id`       | `uuid.UUID`    | 用户 ID |
 | `email`    | `EmailStr`     | 用户邮箱 |
-| `nickname` | `str | None`    | 用户昵称 |
+| `nickname` | `str or None`    | 用户昵称 |
 | `is_superuser` | `bool`     | 是否为超级管理员 |
 | `is_volunteer` | `bool`     | 是否为志愿者 |
 | `avatar_url`  | `str`        | 头像 URL |
@@ -91,7 +91,7 @@
 |------------|----------------|------|
 | `email`    | `EmailStr`     | 用户邮箱，最大长度 100 |
 | `password` | `str`          | 密码，长度限制为 8 到 100 |
-| `nickname` | `str | None`    | 用户昵称，可选 |
+| `nickname` | `str or None`    | 用户昵称，可选 |
 | `avatar_url` | `str`        | 头像 URL，默认为默认值 |
 
 ---
@@ -105,7 +105,7 @@
 | 字段名      | 类型           | 描述 |
 |------------|----------------|------|
 | `email`    | `EmailStr | None` | 用户邮箱，可选，最大长度 100 |
-| `nickname` | `str | None`    | 用户昵称，可选 |
+| `nickname` | `str or None`    | 用户昵称，可选 |
 | `new_avatar_url` | `str`    | 新的头像 URL，默认为默认值 |
 
 ---
@@ -201,10 +201,10 @@
 | -------------------- | ---------------------------- | ------------------------------------------------------------ |
 | `name`               | `str`                        | 猫的名字，<strong style="color: red"> 不可为空</strong>，创建时必须标明 |
 | `is_male`            | `bool`                       | 性别，**不可为空**，默认为雄性                               |
-| `age`                | `int | None`                 | 年龄，**可选**，为空时表示未知年龄                           |
-| `latest_location_id` | `int | None`, **ForeignKey** | **外键**，链接到***地理位置表***，记录最近一次被记录的位置   |
+| `age`                | `int or None`                 | 年龄，**可选**，为空时表示未知年龄                           |
+| `latest_location_id` | `int or None`, **ForeignKey** | **外键**，链接到***地理位置表***，记录最近一次被记录的位置   |
 | `health_condition`   | `int`                        | 健康状况（健康、疾病、喵星）                                 |
-| `description`        | `str | None`                 | 额外的描述（外貌、习惯等）                                   |
+| `description`        | `str or None`                 | 额外的描述（外貌、习惯等）                                   |
 
 
 
@@ -213,10 +213,10 @@
 | 字段名             | 类型          | 描述                             |
 | ------------------ | ------------- | -------------------------------- |
 | `name`             | `str`         | **非空**，猫名                   |
-| `is_male`          | `bool | None` | **可空**，性别，默认使用父类属性 |
-| `age`              | `int | None`  | **可选**，年龄                   |
+| `is_male`          | `bool or None` | **可空**，性别，默认使用父类属性 |
+| `age`              | `int or None`  | **可选**，年龄                   |
 | `health_condition` | `int`, enum   | **必填**，健康状况               |
-| `description`      | `str | None`  | **可选**，简单描述一下猫猫的情况 |
+| `description`      | `str or None`  | **可选**，简单描述一下猫猫的情况 |
 
 
 
@@ -228,11 +228,11 @@
 
 | 字段名             | 类型          | 描述                       |
 | ------------------ | ------------- | -------------------------- |
-| `name`             | `str | None`  | **可选**，更新猫猫名字     |
-| `is_male`          | `bool | None` | **可选**， 更新猫猫性别    |
-| `age`              | `int | None`  | **可选**， 更新猫猫年龄    |
-| `health_condition` | `int | None`  | **可选**，更新猫猫健康状况 |
-| `description`      | `str | None`  | **可选**，更新猫猫的描述   |
+| `name`             | `str or None`  | **可选**，更新猫猫名字     |
+| `is_male`          | `bool or None` | **可选**， 更新猫猫性别    |
+| `age`              | `int or None`  | **可选**， 更新猫猫年龄    |
+| `health_condition` | `int or None`  | **可选**，更新猫猫健康状况 |
+| `description`      | `str or None`  | **可选**，更新猫猫的描述   |
 
 
 
@@ -250,10 +250,10 @@
 | -------------------- | ----------------------- | ---------------------------------- |
 | `id`                 | `uuid` ***PrimaryKey*** | **主键**，uuid                     |
 | `is_male`            | `bool = true`           | **可选**，性别，默认为雄性         |
-| `age`                | `int | None`            | **可选**，年龄                     |
-| `latest_location_id` | `int | None`            | **外键**，可选，最新一次记录的位置 |
+| `age`                | `int or None`            | **可选**，年龄                     |
+| `latest_location_id` | `int or None`            | **外键**，可选，最新一次记录的位置 |
 | `health_condition`   | `int`                   | **必填**，健康状况                 |
-| `description`        | `str | None`            | **可选**，描述猫猫                 |
+| `description`        | `str or None`            | **可选**，描述猫猫                 |
 
 
 
@@ -301,7 +301,7 @@
 | ----------- | ------------------------------- | -------------- |
 | `id`        | `uuid`, ***PrimaryKey***        | 主键           |
 | `user_id`   | `uuid`, ***ForeignKey, index*** | 外键           |
-| `cat_id`    | `uuid | None`, ***ForeignKey*** | 外键，**可选** |
+| `cat_id`    | `uuid or None`, ***ForeignKey*** | 外键，**可选** |
 | `content`   | `str`                           | 内容           |
 | `created_at` | `datetime`                      | 发布时间       |
 
