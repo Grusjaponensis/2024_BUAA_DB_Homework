@@ -249,9 +249,10 @@
 | 字段名               | 类型                    | 描述                               |
 | -------------------- | ----------------------- | ---------------------------------- |
 | `id`                 | `uuid` ***PrimaryKey*** | **主键**，uuid                     |
+|  `name`  | `str` | **必填**，名字 |
 | `is_male`            | `bool = true`           | **可选**，性别，默认为雄性         |
 | `age`                | `int or None`            | **可选**，年龄                     |
-| `latest_location_id` | `int or None`            | **外键**，可选，最新一次记录的位置 |
+| `latest_location_id` | `uuid or None`            | **外键**，可选，最新一次记录的位置 |
 | `health_condition`   | `int`                   | **必填**，健康状况                 |
 | `description`        | `str or None`            | **可选**，描述猫猫                 |
 
