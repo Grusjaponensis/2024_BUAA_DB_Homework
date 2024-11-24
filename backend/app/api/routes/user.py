@@ -2,7 +2,7 @@ from typing import Any
 import uuid
 
 from fastapi import (
-    APIRouter, Depends, HTTPException, status, 
+    APIRouter, Depends, HTTPException, status, UploadFile, File
 )
 from sqlmodel import func, select
 
@@ -15,16 +15,18 @@ from app.api.deps import (
 from app.models import (
     User, UserCreate, UserPublic, 
     UserUpdate, UsersPublic, UserUpdateProfile,
-    UpdatePassword, Message, UserRegister
+    UserUpdatePassword, Message, UserRegister
 )
+from app.core.config import settings
 from app.core.security import get_password_hash, verify_password, create_access_token
+from app.util.utils import save_file
 
 
 router = APIRouter()
 
 
 # - MARK: get user profile -
-@router.get("/profile", response_model=UserPublic)
+@router.get("/profile", response_model=UserPublic, tags=["profile"])
 async def read_user_profile(current_user: CurrentUser) -> Any:
     """
     Get current user profile.
@@ -33,7 +35,7 @@ async def read_user_profile(current_user: CurrentUser) -> Any:
 
 
 # - MARK: update user profile -
-@router.patch("/profile", response_model=UserPublic)
+@router.patch("/profile", response_model=UserPublic, tags=["profile"])
 async def update_user_profile(
     *, session: SessionDep, user_in: UserUpdateProfile, current_user: CurrentUser
 ) -> Any:
@@ -55,10 +57,29 @@ async def update_user_profile(
     return current_user
 
 
+# - MARK: update user avatar -
+@router.patch("/profile/avatar", response_model=UserPublic, tags=["profile"])
+async def update_user_avatar(
+    *, 
+    session: SessionDep, 
+    current_user: CurrentUser, 
+    upload_avatar: UploadFile = File(...)
+):
+    """
+    Update user avatar.
+    """
+    new_avatar_path = save_file(settings.UPLOAD_AVATAR_FOLDER, upload_avatar, current_user.email)
+    current_user.avatar_url = new_avatar_path
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user
+
+
 # - MARK: update user password -
-@router.patch("/profile/password", response_model=Message)
+@router.patch("/profile/password", response_model=Message, tags=["profile"])
 async def update_user_password(
-    *, session: SessionDep, current_user: CurrentUser, body: UpdatePassword
+    *, session: SessionDep, current_user: CurrentUser, body: UserUpdatePassword
 ) -> Any:
     """
     Update user password.
@@ -84,7 +105,7 @@ async def update_user_password(
 
 
 # - MARK: user registration -
-@router.post("/register")
+@router.post("/register", tags=["register"])
 async def register_user(*, session: SessionDep, user_in: UserRegister) -> Any:
     """
     Register a new user and then log in.
@@ -104,7 +125,7 @@ async def register_user(*, session: SessionDep, user_in: UserRegister) -> Any:
 
 # - MARK: superuser routes -
 @router.get(
-    "/", dependencies=[Depends(get_current_superuser)], response_model=UsersPublic
+    "/", dependencies=[Depends(get_current_superuser)], response_model=UsersPublic, tags=["superuser"]
 )
 async def read_users_by_superuser(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """
@@ -120,7 +141,7 @@ async def read_users_by_superuser(session: SessionDep, skip: int = 0, limit: int
 
 
 @router.post(
-    "/", dependencies=[Depends(get_current_superuser)], response_model=UserPublic
+    "/", dependencies=[Depends(get_current_superuser)], response_model=UserPublic, tags=["superuser"]
 )
 async def create_user_by_superuser(*, session: SessionDep, user_in: UserCreate) -> Any:
     """
@@ -139,7 +160,7 @@ async def create_user_by_superuser(*, session: SessionDep, user_in: UserCreate) 
 
 
 @router.patch(
-    "/{user_id}", dependencies=[Depends(get_current_superuser)], response_model=UserPublic
+    "/{user_id}", dependencies=[Depends(get_current_superuser)], response_model=UserPublic, tags=["superuser"]
 )
 async def update_user_by_superuser(
     *, session: SessionDep, user_id: uuid.UUID, user_in: UserUpdate
@@ -169,7 +190,7 @@ async def update_user_by_superuser(
     return db_user
 
 
-@router.delete("/{user_id}", dependencies=[Depends(get_current_superuser)])
+@router.delete("/{user_id}", dependencies=[Depends(get_current_superuser)], tags=["superuser"])
 def delete_user_by_superuser(
     session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
 ) -> Message:
@@ -188,7 +209,7 @@ def delete_user_by_superuser(
     return Message(message="User deleted successfully")
 
 
-@router.get("/{user_id}", response_model=UserPublic)
+@router.get("/{user_id}", response_model=UserPublic, tags=["superuser"])
 def read_user_by_id(
     user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
 ) -> Any:
