@@ -24,8 +24,24 @@
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         </template>
-        <v-toolbar-title>校园流浪动物互动平台</v-toolbar-title>
+        <v-toolbar-title>论坛中心</v-toolbar-title>
         <v-spacer></v-spacer>
+        <!-- 搜索框 -->
+        <v-text-field
+          solo
+          flat
+          label="搜索"
+          prepend-inner-icon="mdi-magnify"
+          hide-details
+          clearable
+          @click:clear="clearSearch"
+          @keyup.enter="searchAnimals"
+        ></v-text-field>
+        <!-- 发帖按钮 -->
+        <v-btn text to="/create-post" color="primary">
+          <v-icon left>mdi-pencil</v-icon>
+          发帖
+        </v-btn>
       </v-app-bar>
   
       <!-- 主内容区域 -->
@@ -47,6 +63,14 @@
         { title: '领养计划', icon: 'mdi-hand-heart', route: '/adoption-plan' },
       ],
     }),
+    methods: {
+      clearSearch() {
+        // 清空搜索框逻辑
+      },
+      searchAnimals() {
+        // 搜索动物逻辑
+      },
+    },
   };
   </script>
   
