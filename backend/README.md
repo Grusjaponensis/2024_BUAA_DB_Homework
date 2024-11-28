@@ -49,6 +49,9 @@ mysql_db_schema = "your_db_schema_name"
 alembic upgrade head
 ```
 
+## 初始化数据库
+通过运行根目录下的`init.sql`文件来初始化数据库。你可以选择在任一种可以与MySQL数据库交互的工具中执行这些命令。
+
 
 ## 启动 FastAPI
 在启动 FastAPI 之前，请确保你已经完成了以上的环境准备和数据库配置、迁移步骤。请注意，**每一次 `git pull` 操作后，都需要重新运行上述数据库迁移步骤！**
