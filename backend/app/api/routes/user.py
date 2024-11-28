@@ -12,7 +12,7 @@ from app.api.deps import (
     SessionDep,
     get_current_superuser
 )
-from app.models import (
+from app.models.user import (
     User, UserCreate, UserPublic, 
     UserUpdate, UsersPublic, UserUpdateProfile,
     UserUpdatePassword, Message, UserRegister

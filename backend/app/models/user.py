@@ -13,7 +13,6 @@ USER_PASSWORD_MAX_LENGTH = 100
 USER_NICKNAME_MAX_LENGTH = 50
 
 
-# - MARK: User models
 # User model for database
 class UserBase(SQLModel):
     """
@@ -144,6 +143,12 @@ class UsersPublic(SQLModel):
     count: int
     
 
+# - MARK: Message models
+class Message(SQLModel):
+    """Model to return a single message for display"""
+    message: str
+
+
 # - MARK: Token models
 class Token(SQLModel):
     access_token: str
@@ -153,10 +158,3 @@ class Token(SQLModel):
 class TokenPayload(SQLModel):
     sub: str | None = None
     
-
-# - MARK: Message models
-class Message(SQLModel):
-    """Model to return a single message for display"""
-    message: str
-    
-

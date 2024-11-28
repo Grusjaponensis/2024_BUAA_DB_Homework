@@ -3,10 +3,10 @@ import logging
 from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
-from app.models import User, UserCreate
+from app.models.user import User, UserCreate
 import app.crud as crud
 
-engine = create_engine(settings.MYSQL_DATABASE_URI)
+engine = create_engine(settings.MYSQL_DATABASE_URL)
 
 def init_db(session: Session) -> None:
     from sqlmodel import SQLModel

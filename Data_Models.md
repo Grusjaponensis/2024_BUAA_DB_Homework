@@ -303,6 +303,7 @@
 | `id`        | `uuid`, ***PrimaryKey***        | 主键           |
 | `user_id`   | `uuid`, ***ForeignKey, index*** | 外键           |
 | `cat_id`    | `uuid or None`, ***ForeignKey*** | 外键，**可选** |
+| `title` | `str` | 必填，帖子标题 |
 | `content`   | `str`                           | 内容           |
 | `created_at` | `datetime`                      | 发布时间       |
 
@@ -318,3 +319,19 @@
 
 
 
+### `PostTag` - `SQLModel`, <strong style="color: red">数据库模型</strong>
+
+| 字段名    | 类型                     | 描述         |
+| --------- | ------------------------ | ------------ |
+| `id`      | `uuid`, ***PrimaryKey*** | 主键         |
+| `user_id` | `uuid`, ***ForeignKey*** | 外键，用户id |
+| `name`    | `str`                    | tag的标题    |
+
+
+
+### `PostTagRelation` - `SQLModel`, <strong style="color: red">数据库模型</strong>
+
+| 字段名    | 类型                     | 描述               |
+| --------- | ------------------------ | ------------------ |
+| `post_id` | `uuid`, ***PrimaryKey*** | 外键，指向帖子 ID  |
+| `tag_id`  | `uuid`, ***PrimaryKey*** | 外键，指向标签 ID  |

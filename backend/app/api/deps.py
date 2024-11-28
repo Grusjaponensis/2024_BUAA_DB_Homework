@@ -11,7 +11,7 @@ from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.db import engine
-from app.models import User, TokenPayload
+from app.models.user import User, TokenPayload
 
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -50,6 +50,8 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+LoginRequired = Depends(get_current_user)
 
 
 def get_current_superuser(current_user: CurrentUser) -> User:

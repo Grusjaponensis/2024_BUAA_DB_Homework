@@ -40,8 +40,12 @@ async def startup_event():
     logging.info("Initial data created")
     
     import os
-    if not os.path.exists(settings.UPLOAD_AVATAR_FOLDER):
-        os.makedirs(settings.UPLOAD_AVATAR_FOLDER)
+    paths_to_create = [
+        settings.UPLOAD_AVATAR_FOLDER,
+        settings.UPLOAD_POST_IMAGE_FOLDER
+    ]
+    for path in paths_to_create:
+        os.makedirs(path, exist_ok=True) # set exist_ok to True to avoid error when folder already exists
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     
 
