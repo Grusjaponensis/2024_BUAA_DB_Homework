@@ -9,7 +9,7 @@ from app.models.user import User
 UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 
 
-# - MARK: SQLModel models
+# - MARK: PostTagRelation
 class PostTagRelation(SQLModel, table=True):
     """
     Link Table: Represents the many-to-many relationship between posts and tags.
@@ -20,6 +20,7 @@ class PostTagRelation(SQLModel, table=True):
     tag_id: uuid.UUID = Field(foreign_key="posttag.id", primary_key=True, index=True, ondelete="CASCADE")
 
 
+# - MARK: Post
 class Post(SQLModel, table=True):
     """
     Post Table: Stores basic information about posts.
@@ -42,6 +43,7 @@ class Post(SQLModel, table=True):
     images: list["PostMedia"] = Relationship(back_populates="post", cascade_delete=True)
 
 
+# - MARK: PostMedia
 class PostMedia(SQLModel, table=True):
     """
     Media Table: Stores media files related to posts.
@@ -56,7 +58,8 @@ class PostMedia(SQLModel, table=True):
     # relationships
     post: Post = Relationship(back_populates="images")
 
-    
+
+# - MARK: PostTag    
 class PostTag(SQLModel, table=True):
     """
     Tag Table: Stores information about tags.
@@ -72,6 +75,7 @@ class PostTag(SQLModel, table=True):
     posts: list["Post"] = Relationship(back_populates="tags", link_model=PostTagRelation)
 
 
+# - MARK: Like
 class Like(SQLModel, table=True):
     """
     Like Table: Records user likes for posts.
@@ -91,6 +95,7 @@ class PostPublic(BaseModel):
     - content: Content/body of the post.
     - created_at: Timestamp indicating when the post was created.
     - likes_number: Number of likes for the post.
+    - like_status: A boolean indicating whether the current user has liked the post (optional).
     - tags: A list of tag names associated with the post (optional).
     - images: A list of image URLs associated with the post (optional).
     """
@@ -99,6 +104,7 @@ class PostPublic(BaseModel):
     content: str
     created_at: datetime.datetime
     likes_number: int = 0
+    like_status: bool | None = None
     tags: list[str] | None = None
     images: list[str] | None = None
 
@@ -119,6 +125,18 @@ class PostCreate(BaseModel):
     """
     title: str
     content: str
+
+
+class PostUpdate(BaseModel):
+    """
+    Represents the data required to update an existing post. All fields are optional.
+    - cat_id: ID of the new cat for the post (optional).
+    - title: New title for the post (optional).
+    - content: New content/body for the post (optional).
+    """
+    title: str | None = None
+    content: str | None = None
+    cat_id: uuid.UUID | None = None
 
 
 class PostTagCreate(BaseModel):

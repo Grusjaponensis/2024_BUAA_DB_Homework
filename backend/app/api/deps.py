@@ -1,5 +1,4 @@
 from typing import Annotated
-import logging
 import uuid
 
 import jwt

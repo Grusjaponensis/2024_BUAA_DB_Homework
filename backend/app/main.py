@@ -10,6 +10,9 @@ from app.core.config import settings
 from app.init_data import init
 
 
+logger = logging.getLogger(__name__)
+
+
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
@@ -35,9 +38,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 async def startup_event():
-    logging.info("Creating initial data")
     init()
-    logging.info("Initial data created")
     
     import os
     paths_to_create = [

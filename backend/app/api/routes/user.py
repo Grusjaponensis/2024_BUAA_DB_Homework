@@ -77,7 +77,7 @@ async def update_user_avatar(
     # make sure new avatar file is saved before removing old avatar file
     if old_avatar_path != settings.DEFAULT_USER_AVATAR_URL:
         # remove old avatar file
-        remove_file(settings.UPLOAD_AVATAR_FOLDER, old_avatar_path.split("/")[-1])
+        remove_file(old_avatar_path)
 
     return current_user
 
@@ -178,8 +178,6 @@ async def update_user_by_superuser(
     if not db_user:
         raise HTTPException(status_code=404, detail=f"User of id {user_id} not found")
 
-    is_superuser = db_user.is_superuser
-    
     if user_in.email:
         existing_user = crud.get_user_by_email(session=session, email=user_in.email)
         # Check if email already registered and not the same user

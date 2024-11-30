@@ -38,4 +38,35 @@ class Settings(BaseSettings):
     UPLOAD_AVATAR_FOLDER: str = "app/static/avatars"
     UPLOAD_POST_IMAGE_FOLDER: str = "app/static/post_images"
     
+    LOGGING_CONFIG: dict = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {
+                "format": "%(levelname)s - %(message)s"
+            },
+            "detailed": {
+                "format": "%(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "simple",
+            },
+            "file": {
+                "class": "logging.FileHandler",
+                "level": "INFO",
+                "formatter": "detailed",
+                "filename": "app.log",
+            },
+        },
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["console", "file"],
+        },
+    }
+
+    
 settings = Settings()

@@ -18,11 +18,14 @@ def save_file(path: str, file: UploadFile, user_email: str) -> str:
     return file_path
 
 
-def remove_file(path: str, file_name: str):
+def remove_file(path: str, file_name: str | None = None):
     """
-    Remove the specified file from the specified path.
+    Remove the specified file from the specified path or simple the file path, if file_name is None.
     """
-    file_path = os.path.join(path, file_name)
+    if file_name:
+        file_path = os.path.join(path, file_name)
+    else:
+        file_path = path
     try:
         os.remove(file_path)
     except Exception:

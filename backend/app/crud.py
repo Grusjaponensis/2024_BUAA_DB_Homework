@@ -7,9 +7,10 @@ from sqlmodel import Session, select, func
 from app.core.security import get_password_hash, verify_password
 
 from app.models.user import User, UserCreate, UserUpdate
-from app.models.post import Post, PostCreate, Like
+from app.models.post import Post, Like, PostTag
 
-logging.basicConfig(filename="app.log", level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 
 # - MARK: User CRUD
@@ -55,16 +56,6 @@ def authenticate(*, session: Session, email: str, password: str) -> User | None:
 
 
 # - MARK: Post CRUD
-def get_post_by_id(*, session: Session, post_id: uuid.UUID) -> Post | None:
-    """
-    find the post by id in database, return `None` if not found
-    """
-    post = session.exec(
-        select(Post).where(Post.id == post_id)
-    ).first()
-    return post
-    
-
 def get_post_likes_count(*, session: Session, post_id: uuid.UUID) -> int:
     """
     Get the number of likes for a post
@@ -74,4 +65,21 @@ def get_post_likes_count(*, session: Session, post_id: uuid.UUID) -> int:
     if session.exec(select(Post).where(Post.id == post_id)).first() is None:
         raise HTTPException(status_code=404, detail="Post not found")
     return session.exec(select(func.count(Like.post_id)).where(Like.post_id == post_id)).one()
-     
+
+
+def get_all_tags(*, session: Session) -> list[str]:
+    """
+    Get all tags in the database
+    """
+    tags = session.exec(select(PostTag)).all()
+    return [tag.name for tag in tags]
+
+
+def get_like_status(*, session: Session, user_id: uuid.UUID, post_id: uuid.UUID) -> bool:
+    """
+    Check if a user has liked a post
+    """
+    if not user_id or not post_id:
+        return False
+    like = session.get(Like, (user_id, post_id))
+    return like is not None
