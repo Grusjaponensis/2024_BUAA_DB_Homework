@@ -13,7 +13,6 @@ USER_PASSWORD_MAX_LENGTH = 100
 USER_NICKNAME_MAX_LENGTH = 50
 
 
-# - MARK: User models
 # User model for database
 class UserBase(SQLModel):
     """
@@ -102,7 +101,6 @@ class UserRegister(SQLModel):
     email: EmailStr = Field(default=Form(...), max_length=USER_EMAIL_MAX_LENGTH)
     password: str = Field(default=Form(...), min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
     nickname: str | None = Field(default=Form(None), max_length=USER_NICKNAME_MAX_LENGTH)
-    # avatar_url: str = Field(default=Form(None))
 
     
 class UserUpdateProfile(SQLModel):
@@ -116,10 +114,9 @@ class UserUpdateProfile(SQLModel):
     """
     email: EmailStr | None = Field(default=None, max_length=USER_EMAIL_MAX_LENGTH)
     nickname: str | None = Field(default=None, max_length=USER_NICKNAME_MAX_LENGTH)
-    new_avatar_url: str = Field(default=settings.DEFAULT_USER_AVATAR_URL)
 
 
-class UpdatePassword(SQLModel):
+class UserUpdatePassword(SQLModel):
     """
     Model to update password.
     ```
@@ -129,12 +126,28 @@ class UpdatePassword(SQLModel):
     """
     old_password: str = Field(min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
     new_password: str = Field(min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
+    
+
+class UserUpdateAvatar(SQLModel):
+    """
+    Model to update avatar.
+    ```
+    new_avatar_url: str
+    ```
+    """
+    new_avatar_url: str = Field(default=settings.DEFAULT_USER_AVATAR_URL)
 
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
     
+
+# - MARK: Message models
+class Message(SQLModel):
+    """Model to return a single message for display"""
+    message: str
+
 
 # - MARK: Token models
 class Token(SQLModel):
@@ -145,10 +158,3 @@ class Token(SQLModel):
 class TokenPayload(SQLModel):
     sub: str | None = None
     
-
-# - MARK: Message models
-class Message(SQLModel):
-    """Model to return a single message for display"""
-    message: str
-    
-

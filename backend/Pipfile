@@ -13,6 +13,7 @@ python-multipart = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "*"
 email-validator = "*"
+alembic = "*"
 
 [dev-packages]
 

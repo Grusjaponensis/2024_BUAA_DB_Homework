@@ -58,6 +58,10 @@ coverage.xml
 # db files
 *.db
 
+# static files
+static/
+media/
+
 # Django stuff:
 *.log
 local_settings.py

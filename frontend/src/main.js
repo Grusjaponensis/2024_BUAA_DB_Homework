@@ -15,10 +15,9 @@ axios.defaults.withCredentials = true
 axios.defaults.baseURL = "http://127.0.0.1:8000"
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
 const app = createApp(App)
 
 registerPlugins(app)
-
 app.mount('#app')

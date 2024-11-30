@@ -25,7 +25,7 @@ class Settings(BaseSettings):
         return [self.FRONTEND_HOST]
     
     @property
-    def MYSQL_DATABASE_URI(self) -> str:
+    def MYSQL_DATABASE_URL(self) -> str:
         """Create a database connection address string."""
         if any(var is None for var in [mysql_user, mysql_password, mysql_host, mysql_db_schema]):
             raise ValueError("Please set your own mysql_user and other variables in ../mysql_config.py")
@@ -36,5 +36,37 @@ class Settings(BaseSettings):
     
     DEFAULT_USER_AVATAR_URL: str = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
     UPLOAD_AVATAR_FOLDER: str = "app/static/avatars"
+    UPLOAD_POST_IMAGE_FOLDER: str = "app/static/post_images"
+    
+    LOGGING_CONFIG: dict = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {
+                "format": "%(levelname)s - %(message)s"
+            },
+            "detailed": {
+                "format": "%(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "simple",
+            },
+            "file": {
+                "class": "logging.FileHandler",
+                "level": "INFO",
+                "formatter": "detailed",
+                "filename": "app.log",
+            },
+        },
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["console", "file"],
+        },
+    }
+
     
 settings = Settings()

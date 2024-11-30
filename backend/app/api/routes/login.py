@@ -8,7 +8,7 @@ import app.crud as crud
 from app.api.deps import CurrentUser, SessionDep
 from app.core import security
 from app.core.config import settings
-from app.models import Token, UserPublic
+from app.models.user import Token, UserPublic
 
 
 router = APIRouter()
