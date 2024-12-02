@@ -24,7 +24,9 @@ const submitLogin = async () => {
             password: password.value,
         }, { headers: { 'Content-Type': 'multipart/form-data' } })
         console.log(res);
-
+        // set cookie access_token
+        const access_token = res.data.access_token
+        document.cookie = `access_token=${access_token};path=/`
     } catch (error) {
         console.error("NIMASILE" , error)
     }
