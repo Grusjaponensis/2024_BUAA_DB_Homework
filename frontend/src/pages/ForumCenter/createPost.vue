@@ -18,15 +18,19 @@
             required
           ></v-textarea>
 
-          <!-- 其他基本字段 -->
+          <input type="file" multiple @change="handleFileUpload" />
+
+          <v-btn text @click="showTags = !showTags">添加标签</v-btn>
+
           <v-select
-            v-model="post.label"
-            :items="labels"
-            label="标签"
-            required
+            v-if="showTags"
+            v-model="post.tags"
+            :items="allTags"
+            multiple
+            chips
+            label="Tags"
           ></v-select>
 
-          <!-- 提交按钮 -->
           <v-btn
             color="primary"
             :disabled="!isFormValid"
@@ -40,48 +44,63 @@
   </v-container>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      post: {
-        title: '',
-        content: '',
-         label: null,
-      },
-       labels: ['求助', '分享', '讨论'], // 标签类别
-    };
-  },
-  computed: {
-    isFormValid() {
-      // 表单验证逻辑
-      return this.post.title.trim() !== '' && this.post.content.trim() !== '';
-    },
-  },
-  methods: {
-    submitPost() {
-      if (this.$refs.form.validate()) {
-        // 提交逻辑
-        console.log('提交', this.post);
-        
-        axios.post('/api/posts', {
-          title: this.post.title,
-          content: this.post.content,
-          label: this.post.label,
-        })
-        .then(response => {
-          // 处理响应
-          console.log('帖子提交成功:', response.data);
-          this.$router.push('/forum-center'); // 跳转回论坛中心
-        })
-        .catch(error => {
-          // 处理错误
-          console.error('发帖失败:', error);
+<script setup>
+import { ref, computed } from 'vue';
+import { createPost } from '@/api/post';
+import { getTags } from '@/api/tags';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const post = ref({
+  title: '',
+  content: '',
+  tags: [],
+  images: [], // 存储上传的图片文件
+});
+const isFormValid = computed(() => post.value.title.trim() !== '' && post.value.content.trim() !== '');
+
+const handleFileUpload = (event) => {
+  const files = event.target.files;
+  if (files) {
+    post.value.images = Array.from(files);
+  }
+};
+
+const submitPost = async () => {
+  if (isFormValid.value && post.value) { 
+    try {
+      const formData = new FormData();
+      formData.append('title', post.value.title);
+      formData.append('content', post.value.content);
+      formData.append('tags', JSON.stringify(post.value.tags));
+      if (post.value.images.length > 0) {
+        post.value.images.forEach((image, index) => {
+          formData.append(`upload_images`, image);
         });
       }
-    },
-  },
+
+      const response = await createPost(formData);
+      console.log('帖子提交成功', response.data.id);
+      router.push('/ForumCenter/forumCenter'); 
+    } catch (error) {
+      console.error('发帖失败:', error);
+    }
+  }
 };
+
+const allTags = ref([]);
+const showTags = ref(false);
+
+const fetchTags = async () => {
+  const data = await getTags();
+  allTags.value = data;
+};
+
+watchEffect(() => {
+  if (showTags.value) {
+    fetchTags();
+  }
+});
 </script>
 
 <style scoped>

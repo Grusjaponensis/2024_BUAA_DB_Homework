@@ -28,5 +28,15 @@
 </template>
 
 <script setup>
-  //
+import { ref, provide } from 'vue';
+
+const items = ref([
+  { title: '首页', icon: 'mdi-home', route: '/home' },
+  { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
+  { title: '救助行动', icon: 'mdi-ambulance', route: '/rescueAction' },
+  { title: '猫猫基地', icon: 'mdi-cat', route: '/catBase' },
+  { title: '领养计划', icon: 'mdi-hand-heart', route: '/adoptionPlan' },
+]);
+
+provide('items', items);
 </script>
