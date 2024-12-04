@@ -32,15 +32,18 @@
               @click="goToPostDetails(post.id)"
             >
               <v-list-item-content>
-                <v-list-item-title>{{ post.title }}</v-list-item-title>
-                <v-list-item-subtitle>{{ post.content }}</v-list-item-subtitle>
+                <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
+                <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
                 <v-list-item-subtitle class="grey--text">
-                  发布于 {{ new Date(post.createdAt).toLocaleString() }}
+                  post at {{ new Date(post.created_at).toLocaleString() }}
+                </v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  {{ post.likes_number }} likes
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
                 <v-btn icon @click="toggleFavorite(post)">
-                  <v-icon>{{ post.isFavorited ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                  <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="removePost(post)" v-if="isModerator">
                   <v-icon>mdi-delete</v-icon>
@@ -64,6 +67,33 @@
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-row>
+
+          <!-- 我的帖子按钮 -->
+          <v-btn
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="secondary"
+            class="mx-4"  
+            to="/ForumCenter/myPosts"
+          >
+            <v-icon>mdi-cat</v-icon>
+          </v-btn>
+
+          <!-- 我的点赞按钮 -->
+          <v-btn
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="light-blue"
+            to="/ForumCenter/myFavorites"
+          >
+            <v-icon>mdi-heart</v-icon>
+          </v-btn>
         </v-footer>
       </v-col>
     </v-row>
@@ -71,8 +101,10 @@
 </template>
 
 <script setup>
-import { getPosts, deletePost } from '@/api/post';
+import { getPosts, deletePost, likePost, unlikePost } from '@/api/post';
 import { ref, onMounted, inject } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 
 const drawer = ref(null);
@@ -102,9 +134,18 @@ const removePost = async (post) => {
 
 // 跳转到帖子详情页面的方法
 const goToPostDetails = (postId) => {
-  router.push({ name: 'PostDetails', params: { postId } });
+  router.push(`/ForumCenter/postDetails/${postId}`);
 };
 
+// 改变收藏状态
+const toggleFavorite = async (post) => {
+  if (post.like_status) {
+    await unlikePost(post.id);
+  } else {
+    await likePost(post.id);
+  }
+  post.like_status = !post.like_status;
+};
 
 // 组件挂载时获取帖子列表
 onMounted(() => {

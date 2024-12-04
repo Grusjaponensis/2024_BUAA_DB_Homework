@@ -1,6 +1,8 @@
 <template>
-    <v-app>
-      <!-- 左侧导航栏 -->
+  <v-container>
+  <v-row no-gutters>
+    <v-col cols="3" md="2" sm="1">
+      <!-- 导航栏 -->
       <v-navigation-drawer v-model="drawer" app>
         <v-list>
           <v-list-item
@@ -18,59 +20,67 @@
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
-  
-      <!-- 应用栏 -->
-      <v-app-bar app>
-        <template v-slot:prepend>
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        </template>
-        <v-toolbar-title>我的收藏</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <!-- 搜索框 -->
-        <v-text-field
-          solo
-          flat
-          label="搜索"
-          prepend-inner-icon="mdi-magnify"
-          hide-details
-          clearable
-          @click:clear="clearSearch"
-          @keyup.enter="searchPosts"
-        ></v-text-field>
-      </v-app-bar>
-  
+    </v-col>
+    <v-col cols="9" md="13" sm="12">
       <!-- 主内容区域 -->
-      <v-main>
-        <view-router-view></view-router-view>
-      </v-main>
-    </v-app>
-  </template>
+      <v-container>
+        <v-list>
+          <v-list-item
+            v-for="post in posts"
+            :key="post.id"
+            class="my-2"
+          >
+            <v-list-item-content>
+              <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
+              <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
+              <v-list-item-subtitle class="grey--text">
+                post at {{ new Date(post.created_at).toLocaleString() }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ post.likes_number }} likes
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn icon @click="toggleFavorite(post)">
+                <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-container>
+    </v-col>
+  </v-row>
+</v-container>
+</template>
   
-  <script>
-  export default {
-    data() {
-      return {
-        drawer: null,
-        items: [
-          { title: '首页', icon: 'mdi-home', route: '/home' },
-          { title: '论坛中心', icon: 'mdi-message-text', route: '/forum-center' },
-          { title: '我的帖子', icon: 'mdi-account-circle', route: '/forum-center/my-posts' },
-          { title: '我的收藏', icon: 'mdi-heart', route: '/forum-center/my-favorites' },
-          { title: '救助行动', icon: 'mdi-ambulance', route: '/rescue-action' },
-          { title: '猫猫基地', icon: 'mdi-cat', route: '/cat-base' },
-          { title: '领养计划', icon: 'mdi-hand-heart', route: '/adoption-plan' },
-        ],
-      };
-    },
-    methods: {
-      clearSearch() {
-        // 清空搜索框逻辑
-      },
-      searchPosts() {
-        // 搜索帖子逻辑
-      },
+  <script setup>
+  import { getPosts, likePost, unlikePost } from '@/api/post';
+  import { inject } from 'vue';
+  const items = inject('items');
+  const drawer = ref(null);
+  const posts = ref([]); 
+  // 获取帖子列表
+  const fetchPosts = async () => {
+    try {
+      const response = await getPosts();
+      posts.value = response.posts.filter(post => post.like_status);
+    } catch (error) {
+      console.error('获取帖子列表失败:', error);
     }
   };
+  // 改变收藏状态
+  const toggleFavorite = async (post) => {
+    if (post.like_status) {
+      await unlikePost(post.id);
+    } else {
+      await likePost(post.id);
+    }
+    post.like_status = !post.like_status;
+  };
+  // 组件挂载时获取帖子列表
+  onMounted(() => {
+    fetchPosts();
+  });
   </script>
   
   <style scoped>
