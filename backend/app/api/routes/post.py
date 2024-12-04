@@ -72,6 +72,16 @@ async def get_my_posts(*, session: SessionDep, current_user: CurrentUser, offset
     return PostsPublic(posts=response)
 
 
+# - MARK: return all tags
+@router.get("/tags", response_model=list[PostTagPublic], dependencies=[LoginRequired])
+async def get_tags(*, session: SessionDep) -> list[PostTagPublic]:
+    """
+    Get all tags for creating a new post.
+    """
+    tags = session.exec(select(PostTag)).all()
+    return [PostTagPublic(**tag.model_dump()) for tag in tags]
+
+
 # - MARK: get post by id
 @router.get("/{id}", response_model=PostPublic)
 async def get_post(*, session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> PostPublic:
@@ -92,23 +102,14 @@ async def get_post(*, session: SessionDep, current_user: CurrentUser, id: uuid.U
     return response
 
 
-# - MARK: return all tags
-@router.get("/tags", response_model=list[PostTagPublic], dependencies=[LoginRequired])
-async def get_tags(*, session: SessionDep) -> list[PostTagPublic]:
-    """
-    Get all tags for creating a new post.
-    """
-    tags = session.exec(select(PostTag)).all()
-    return [PostTagPublic(**tag.model_dump()) for tag in tags]
-
-
 # - MARK: create post
 @router.post("/", response_model=PostPublic)
 async def create_post(
     *, 
     session: SessionDep, 
     current_user: CurrentUser, 
-    post_in: PostCreate = Depends(), 
+    title: str = Form(...), 
+    content: str = Form(...), 
     tags: List[str] | None = Form(default=None),
     upload_images: list[UploadFile] | None = File(default=None)
 ) -> PostPublic:
@@ -117,8 +118,7 @@ async def create_post(
     # 重要:
     ### 如果选择的tag为空也**必须保留tag字段**，但是如果上传文件为空则不需要保留upload_images字段!
     """
-    post = Post(**post_in.model_dump())
-    post.user_id = current_user.id
+    post = Post(title=title, content=content, user_id=current_user.id)
     # TODO: link with cats
     if tags:
         logger.info(f"tags: {tags}")

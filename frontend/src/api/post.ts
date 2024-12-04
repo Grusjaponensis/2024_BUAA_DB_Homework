@@ -14,6 +14,6 @@ export const deletePost = async (id: string) => {
   }
 };
 
-export const createPost = async (data) => {
-  return await server.post('/posts/', data);
+export const createPost = async (data: any) => {
+  return await server.post('/posts/', data, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
