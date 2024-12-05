@@ -79,8 +79,9 @@ const _delete = async (url: string, data?: any) => {
 }
 
 export default {
-	get,
-	post,
-	put,
-	_delete,
+    get,
+    post,
+    put,
+    _delete,
+	patch: server.patch,
 };

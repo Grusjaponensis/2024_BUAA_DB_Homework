@@ -1,10 +1,21 @@
 <template>
   <v-container>
-    <v-card>
+    <v-card v-if="post">
       <v-card-title class="headline">{{ post.title }}</v-card-title>
       <v-card-subtitle>发布时间: {{ post.created_at }}</v-card-subtitle>
       <v-card-subtitle>标签: {{ post.tags.join(', ') }}</v-card-subtitle>
       <v-card-text style="margin: auto;">{{ post.content }}</v-card-text>
+      <!-- 展示图片 -->
+      <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">
+        <v-img
+          v-for="(image, index) in post.images"
+          :key="index"
+          :src="image"
+          class="mb-3"
+          max-width="100%"
+          max-height="300px"
+        ></v-img>
+      </v-card-text>
       <v-card-actions>
         <v-btn icon @click="toggleFavorite">
           <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
@@ -45,16 +56,19 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
 import { getPost, likePost, unlikePost } from '@/api/post';
+import { useRoute } from 'vue-router';
 
-const route = useRoute();
-const post = ref({});
+const route = useRoute()
+
+const post = ref(null);
+const { post_id } = route.params;
 
 const fetchPost = async () => {
   try {
-    const response = await getPost(route.params.postId);
-    post.value = response.data;
+    const response = await getPost(route.params.post_id);
+    console.log(response);
+    post.value = response;
   } catch (error) {
     console.error('获取帖子详情失败:', error);
   }
@@ -88,4 +102,9 @@ onMounted(() => {
 
 <style scoped>
 /* 针对postDetails页面的特定样式 */
+.v-img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: cover; /* 保持图片的比例 */
+}
 </style>
