@@ -1,13 +1,30 @@
 <template>
   <v-app>
+    <v-navigation-drawer
+        v-model="showDrawer"
+        temporary
+      >
+        <v-list-item title="猫猫">subtitle</v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list density="compact" nav>
+          <v-list-item v-for="item in items"
+            :prepend-icon="item.icon"
+            :to="item.route"
+            :title="item.title"
+          ></v-list-item>
+          <v-list-item prepend-icon="mdi-login" title="login" to="/login"></v-list-item>
+        </v-list>
+      </v-navigation-drawer>
     <v-app-bar 
-    elevation="20"
-    image = "https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
-    dark
-    prominent
+      elevation="20"
+      image = "https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
+      dark
+      prominent
     >
-      <template v-slot:prepend>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <template #prepend>
+        <v-btn icon="mdi-menu" @click="showDrawer = !showDrawer"></v-btn>
       </template>
 
       <v-app-bar-title>Beihang Cat Management System</v-app-bar-title>
@@ -30,6 +47,8 @@
 <script setup>
 import { ref, provide } from 'vue';
 
+const showDrawer = ref(false);
+
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/home' },
   { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
@@ -38,5 +57,4 @@ const items = ref([
   { title: '领养计划', icon: 'mdi-hand-heart', route: '/adoptionPlan' },
 ]);
 
-provide('items', items);
 </script>
