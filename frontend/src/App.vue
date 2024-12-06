@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app no-footer>
     <v-navigation-drawer
         v-model="showDrawer"
         temporary
@@ -9,17 +9,16 @@
         <v-divider></v-divider>
 
         <v-list density="compact" nav>
+          <v-list-item prepend-icon="mdi-login" title="登录" to="/login"></v-list-item>
           <v-list-item v-for="item in items"
             :prepend-icon="item.icon"
             :to="item.route"
             :title="item.title"
           ></v-list-item>
-          <v-list-item prepend-icon="mdi-login" title="login" to="/login"></v-list-item>
         </v-list>
       </v-navigation-drawer>
     <v-app-bar 
       elevation="20"
-      image = "https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
       dark
       prominent
     >
@@ -50,7 +49,7 @@ import { ref, provide } from 'vue';
 const showDrawer = ref(false);
 
 const items = ref([
-  { title: '首页', icon: 'mdi-home', route: '/home' },
+  { title: '首页', icon: 'mdi-home', route: '/' },
   { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
   { title: '救助行动', icon: 'mdi-ambulance', route: '/rescueAction' },
   { title: '猫猫基地', icon: 'mdi-cat', route: '/catBase' },
