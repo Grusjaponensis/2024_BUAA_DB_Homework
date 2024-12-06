@@ -28,6 +28,9 @@
                 <v-btn color="secondary" size="large" block @click="submitSignup">
                     注册
                 </v-btn>
+                <v-btn color="primary" size="large" block to="/login">
+                    返回登录
+                </v-btn>
                 <v-btn color="error" size="large" block to="/">
                     返回首页
                 </v-btn>

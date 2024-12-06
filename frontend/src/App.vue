@@ -7,7 +7,7 @@
         <v-list-item class="navigation-drawer-header">猫咪</v-list-item>
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-login" title="登录" to="/login"></v-list-item>
+          <!-- <v-list-item prepend-icon="mdi-login" title="登录" to="/login"></v-list-item> -->
           <v-list-item v-for="item in items"
             :prepend-icon="item.icon"
             :to="item.route"
@@ -48,6 +48,7 @@ const showDrawer = ref(false);
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
+  { title: '登录', icon: 'mdi-login', route: '/login' },
   { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
   { title: '救助行动', icon: 'mdi-ambulance', route: '/rescueAction' },
   { title: '猫猫基地', icon: 'mdi-cat', route: '/catBase' },
