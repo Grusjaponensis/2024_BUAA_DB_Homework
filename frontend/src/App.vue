@@ -4,9 +4,7 @@
         v-model="showDrawer"
         temporary
       >
-        <v-list-item title="猫猫">subtitle</v-list-item>
-
-        <v-divider></v-divider>
+        <v-list-item class="navigation-drawer-header">猫咪</v-list-item>
 
         <v-list density="compact" nav>
           <v-list-item prepend-icon="mdi-login" title="登录" to="/login"></v-list-item>
@@ -26,7 +24,7 @@
         <v-btn icon="mdi-menu" @click="showDrawer = !showDrawer"></v-btn>
       </template>
 
-      <v-app-bar-title>Beihang Cat Management System</v-app-bar-title>
+      <v-app-bar-title>北航猫咪管理系统</v-app-bar-title>
 
       <template v-slot:append>
         <v-btn icon="mdi-heart"></v-btn>
@@ -57,3 +55,13 @@ const items = ref([
 ]);
 
 </script>
+
+
+<style scoped>
+  .navigation-drawer-header{
+    padding: 16px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+  }
+</style>

@@ -10,5 +10,7 @@
 <style scoped>
 .title {
   text-align: center;
+  margin-top: 50px;
+  color: #ffffff;
 }
 </style>
