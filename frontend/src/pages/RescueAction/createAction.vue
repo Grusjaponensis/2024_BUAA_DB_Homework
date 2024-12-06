@@ -1,0 +1,142 @@
+<template>
+    <v-container>
+      <v-card class="mx-auto" max-width="600">
+        <v-card-title class="headline">创建新的志愿活动</v-card-title>
+        <v-card-text>
+          <v-form ref="form">
+            <v-text-field
+              v-model="activity.name"
+              label="活动名称"
+              required
+            ></v-text-field>
+  
+            <v-text-field
+              v-model="activity.location"
+              label="活动地点"
+              required
+            ></v-text-field>
+  
+            <v-text-field
+              v-model="activity.volunteerCount"
+              type="number"
+              label="活动所需志愿者人数"
+              required
+            ></v-text-field>
+            
+            <v-textarea
+              v-model="activity.description"
+              label="活动说明（详情）"
+              required
+            ></v-textarea>
+
+            <v-col>
+                <label for="activity-date">活动开始时间：</label>
+                <input
+                    type="datetime-local"
+                    id="activity-date"
+                    class="input-time-picker"
+                    v-model="activity.startTime"
+                    required
+                />
+                <label for="activity-date">活动结束时间：</label>
+                <input
+                    type="datetime-local"
+                    id="activity-date"
+                    class="input-time-picker"
+                    v-model="activity.endTime"
+                    required
+                />
+            </v-col>
+            <v-col>
+                <label for="activity-date">报名开始时间：</label>
+                <input
+                    type="datetime-local"
+                    id="activity-date"
+                    class="input-time-picker"
+                    v-model="activity.signupStartTime"
+                    required
+                />
+                <label for="activity-date">报名结束时间：</label>
+                <input
+                    type="datetime-local"
+                    id="activity-date"
+                    class="input-time-picker"
+                    v-model="activity.signupEndTime"
+                    required
+                />
+            </v-col>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-center" padding="4">
+          <v-btn color="primary" @click="submitactivity" :disabled="!isFormValid">创建活动</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-container>
+  </template>
+
+<script setup>
+import { ref } from 'vue';
+import { createActivity } from '@/api/activity';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const isFormValid = computed(() => {
+  return (
+    activity.value.name &&
+    activity.value.location &&
+    activity.value.volunteerCount &&
+    activity.value.startTime &&
+    activity.value.endTime &&
+    activity.value.signupStartTime &&
+    activity.value.signupEndTime &&
+    activity.value.description
+  );
+});
+
+const activity = ref({
+  name: '',
+  date: null,
+  location: '',
+  volunteerCount: null,
+  startTime: null,
+  endTime: null,
+  signupStartTime: null,
+  signupEndTime: null,
+  description: '',
+});
+
+const menu = ref(false); 
+
+const submitactivity = async () => {
+  if (isFormValid.value && activity.value) { 
+    try {
+      const formData = new FormData();
+      formData.append('name', activity.value.name);
+      formData.append('startTime', activity.value.startTime);
+      formData.append('endTime', activity.value.endTime);
+      formData.append('signupStartTime', activity.value.signupStartTime);
+      formData.append('signupEndTime', activity.value.signupEndTime);
+      formData.append('location', activity.value.location);
+      formData.append('volunteerCount', activity.value.volunteerCount);
+      formData.append('description', activity.value.description);
+
+
+      const response = await createActivity(formData);
+      console.log('活动提交成功', response.data.id);
+      router.push('/RescueAction'); 
+    } catch (error) {
+      console.error('活动提交失败:', error);
+    }
+  }
+};
+</script>
+
+<style scoped>
+.input-time-picker {
+  margin-top: 6px; 
+}
+label {
+  margin-top: 16px; 
+}
+</style>

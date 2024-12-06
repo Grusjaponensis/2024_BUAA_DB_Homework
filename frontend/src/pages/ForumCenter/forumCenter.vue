@@ -7,9 +7,8 @@
               v-for="post in posts"
               :key="post.id"
               class="my-2"
-              @click="goToPostDetails(post.id)"
             >
-              <v-list-item-content>
+              <v-list-item-content @click="goToPostDetails(post.id)">
                 <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
                 <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
                 <v-list-item-subtitle class="grey--text">
