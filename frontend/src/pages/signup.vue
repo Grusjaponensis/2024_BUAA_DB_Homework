@@ -1,4 +1,7 @@
 <template>
+    <v-snackbar v-model="snackbar" color="snackbarColor" timeout="3000">
+        {{ snackbarText }}
+    </v-snackbar>
     <div class="login-container">
         <v-card class="login-card" elevation="8">
             <v-card-title class="title">
@@ -43,18 +46,30 @@
 </template>
 
 <script setup>
-import { getPosts } from '@/api/post';
-import server from '@/api/server';
-import { login } from '@/api/user';
 import { ref } from 'vue';
+import { signup } from '../api/user';
 import { useRouter } from 'vue-router';
 
 const username = ref('')
 const password = ref('')
 const router = useRouter()
+const snackbar = ref('success')
+const snackbarText = ref('')
+const snackbarColor = ref('success')
 
 const submitSignup = async () => {
-    await signup(username.value, password.value);
+    try {
+        await signup(username.value, password.value);
+        snackbar.value = true;
+        snackbarText.value = '注册成功';
+        snackbarColor.value = 'success';
+        router.push({ path: '/login', query: { Signup: true } });
+    } catch (error) {
+        console.error('注册失败', error);
+        snackbarColor.value = 'error';
+        snackbarText.value = '注册失败，请检查用户名或密码是否正确';
+        snackbar.value = true;
+    }
 }
 
 </script>

@@ -1,10 +1,14 @@
 <template>
+    <v-snackbar v-model="snackbar" color="snackbarColor" timeout="3000">
+        {{ snackbarText }}
+    </v-snackbar>
+
     <div class="login-container">
         <v-card class="login-card" elevation="8">
             <v-card-title class="title">
                 登录
             </v-card-title>
-            <v-card-text>
+            <v-card-title>
                 <v-form>
                     <v-text-field
                         v-model="username"
@@ -23,7 +27,7 @@
                         prepend-inner-icon="mdi-lock">
                     </v-text-field>
                 </v-form>
-            </v-card-text>
+            </v-card-title>
             <v-card-actions class="actions">
                 <v-btn color="primary" size="large" block @click="submitLogin">
                     登录
@@ -46,16 +50,40 @@
 import { getPosts } from '@/api/post';
 import server from '@/api/server';
 import { login } from '@/api/user';
+import {useUserStore} from '@/stores/user';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const username = ref('')
 const password = ref('')
 const router = useRouter()
+const snackbar = ref(false)
+const snackbarText = ref('')
+const userStore = useUserStore()
+const snackbarColor = ref('success')
 
 const submitLogin = async () => {
-    await login(username.value, password.value);
+    try {
+        await login(username.value, password.value);
+        snackbar.value = true;
+        snackbarText.value = '登录成功';
+        snackbarColor.value = 'success';
+        userStore.login(username.value)
+        router.push({ path: '/home', query: { loggedIn: true } });
+    } catch (error) {
+        console.error('登录失败', error);
+        snackbarColor.value = 'error';
+        snackbarText.value = '登录失败，请检查用户名或密码';
+        snackbar.value = true;
+    }
 }
+
+// onMounted(() => {
+//     if (router.query.Signup) {
+//       snackbarText.value = '登录成功'
+//       snackbar.value = true
+//     }
+//   }) 
 
 const test = () => {
     // const res = server.get('/posts/');
