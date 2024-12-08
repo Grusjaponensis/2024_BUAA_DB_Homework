@@ -113,7 +113,7 @@
     if (isFormValid.value) {
         try {
         const formData = new FormData();
-        formData.append('tags', JSON.stringify(post.value.tags));
+        formData.append('tags', null);
         if (post.value.keep_images.length > 0) {
             post.value.keep_images.forEach((image, index) => {
             formData.append('keep_images', image);
@@ -130,7 +130,8 @@
             content: post.value.content,
             cat_id: "string",
         };
-
+        console.log('params', params);
+        console.log('formData', formData);
         const response = await updatePost(post.value.id, params, formData);
         console.log('帖子更新成功', response);
         router.push('/ForumCenter/myPosts');

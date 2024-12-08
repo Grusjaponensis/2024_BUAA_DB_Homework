@@ -52,3 +52,44 @@ export const getProfile = async () => {
         console.error(response.data);
     }
 }
+  
+// 更新用户个人资料
+export const updateProfile = async (profileData: any) => {
+try {
+    const response = await server.patch("/users/profile", profileData);
+    return response.data; 
+} catch (error) {
+    console.error('更新个人资料失败:', error);
+    throw error;
+}
+};
+
+// 更新用户头像
+export const updateAvatar = async (formData: FormData) => {
+try {
+    const response = await server.patch("/users/profile/avatar", formData, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+    });
+    return response.data; 
+} catch (error) {
+    console.error('更新头像失败:', error);
+    throw error; 
+}
+};
+
+// 更新用户密码
+export const updatePassword = async (formData: FormData) => {
+try {
+    const response = await server.patch("/users/profile/password", formData, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+    });
+    return response.data; 
+} catch (error) {
+    console.error('更新密码失败:', error);
+    throw error; 
+}
+};
