@@ -1,4 +1,3 @@
-import { h } from "vue";
 import server from "./server";
 
 export const getPosts = async () => {

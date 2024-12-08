@@ -56,9 +56,9 @@ import { snackbar } from './stores/app'
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/home' },
   { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
-  { title: '救助行动', icon: 'mdi-ambulance', route: '/rescueAction' },
+  { title: '救助行动', icon: 'mdi-ambulance', route: '/RescueAction/rescueAction' },
   { title: '猫猫基地', icon: 'mdi-cat', route: '/cats/catBase' },
-  { title: '领养计划', icon: 'mdi-hand-heart', route: '/adoptionPlan' }
+  { title: '个人资料', icon: 'mdi-account', route: '/profile' }
 ]);
 
 const showDrawer = ref(false);

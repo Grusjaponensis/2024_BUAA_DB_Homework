@@ -77,11 +77,25 @@ const _delete = async (url: string, data?: any) => {
 		console.error(error);
 	}
 }
-
+const patch = async (url: string, data?: any, headers = {}) => {
+	if (document.cookie.includes('access_token=')) {
+	  headers = {
+		...headers,
+		Authorization: 'Bearer ' + document.cookie.split('access_token=')[1].split(';')[0]
+	  };
+	}
+	try {
+	  const res = await server.patch(url, data, { headers: { ...headers } });
+	  return res;
+	} catch (error) {
+	  console.error(error);
+	}
+  };
+  
 export default {
     get,
     post,
     put,
     _delete,
-	patch: server.patch,
+	patch,
 };

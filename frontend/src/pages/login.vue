@@ -47,7 +47,8 @@ import { getPosts } from '@/api/post';
 import server from '@/api/server';
 import { login } from '@/api/user';
 import { ref } from 'vue';
-import { snackbar } from '../api/snackbar';
+// import { snackbar } from '../api/snackbar';
+import { snackbar } from '../stores/app'
 
 const username = ref('')
 const password = ref('')
