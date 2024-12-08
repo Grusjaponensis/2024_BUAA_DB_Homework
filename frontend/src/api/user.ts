@@ -1,5 +1,26 @@
 import server from "./server";
 import snackbar from "./snackbar";
+import {reactive} from "vue";
+
+interface User{
+    login: boolean;
+    email: string;
+    nickname: string;
+    is_superuser: boolean;
+    is_volunteer: boolean;
+    avatar_url: string;
+    password: string;
+}
+
+export const user = reactive<User>({
+    login: false,
+    email: '',
+    nickname: '',
+    is_superuser: false,
+    is_volunteer: false,
+    avatar_url: '',
+    password: ''
+})
 
 export const login = async (username: string, password: string) => {
     try {
@@ -46,22 +67,30 @@ export const signup = async (username: string, password: string) => {
 export const getProfile = async () => {
     const response = await server.get("/users/profile");
     if (response.status === 200) {
+        user.login = true;
+        user.email = response.data.email;
+        user.nickname = response.data.nickname;
+        user.is_superuser = response.data.is_superuser;
+        user.is_volunteer = response.data.is_volunteer;
+        user.avatar_url = response.data.avatar_url;
+        user.password = response.data.password;
         console.log(response.data);
-        return response.data;
     } else {
+        user.login = false;
         console.error(response.data);
     }
+    return response.data;
 }
   
 // 更新用户个人资料
 export const updateProfile = async (profileData: any) => {
-try {
-    const response = await server.patch("/users/profile", profileData);
-    return response.data; 
-} catch (error) {
-    console.error('更新个人资料失败:', error);
-    throw error;
-}
+    try {
+        const response = await server.patch("/users/profile", profileData);
+        return response.data; 
+    } catch (error) {
+        console.error('更新个人资料失败:', error);
+        throw error;
+    }
 };
 
 // 更新用户头像

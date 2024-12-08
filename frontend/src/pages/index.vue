@@ -5,9 +5,6 @@
         <!-- <img src="kitten-logo.png" alt="Kitten Logo" class="kitten-logo" /> -->
         <h1 class="display-2 font-weight-bold mb-4">猫猫欢迎你！</h1>
         <p class="headline font-weight-regular">北航所有的猫猫，都在这里！</p>
-
-        <v-btn class="login_btn" size="x-large" to="/login">登录</v-btn>
-        <v-btn class="signup_btn" size="x-large" to="/signup">注册</v-btn>
       </v-col>
     </v-row>
 
@@ -98,15 +95,5 @@ p.headline {
 .primary-btn:hover {
   background-color: #e6b800; /* Darker shade on hover */
   transition: background-color 0.3s ease-in-out;
-}
-
-.login_btn {
-  margin-top: 25px;
-};
-
-.signup_btn {
-  margin-top: 25px;
-  margin-left: 10px;
-
 }
 </style>

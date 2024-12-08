@@ -1,7 +1,4 @@
 <template>
-    <v-snackbar v-model="snackbar" color="snackbarColor" timeout="3000">
-        {{ snackbarText }}
-    </v-snackbar>
     <div class="login-container">
         <v-card class="login-card" elevation="8">
             <v-card-title class="title">
@@ -34,9 +31,6 @@
                 <v-btn color="primary" size="large" block to="/login">
                     返回登录
                 </v-btn>
-                <v-btn color="error" size="large" block to="/">
-                    返回首页
-                </v-btn>
             </v-card-actions>
         </v-card>
     </div>
@@ -53,25 +47,15 @@ import { useRouter } from 'vue-router';
 const username = ref('')
 const password = ref('')
 const router = useRouter()
-const snackbar = ref('success')
-const snackbarText = ref('')
-const snackbarColor = ref('success')
 
 const submitSignup = async () => {
     try {
         await signup(username.value, password.value);
-        snackbar.value = true;
-        snackbarText.value = '注册成功';
-        snackbarColor.value = 'success';
         router.push({ path: '/login', query: { Signup: true } });
     } catch (error) {
         console.error('注册失败', error);
-        snackbarColor.value = 'error';
-        snackbarText.value = '注册失败，请检查用户名或密码是否正确';
-        snackbar.value = true;
     }
 }
-
 </script>
 
 <style scoped>

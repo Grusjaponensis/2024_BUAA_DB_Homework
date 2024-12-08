@@ -31,9 +31,6 @@
                 <v-btn color="secondary" size="large" block to="/signup">
                     注册
                 </v-btn>
-                <v-btn color="error" size="large" block to="/">
-                    返回首页
-                </v-btn>
             </v-card-actions>
         </v-card>
     </div>

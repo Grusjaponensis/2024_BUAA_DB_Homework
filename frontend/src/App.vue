@@ -33,6 +33,21 @@
     <v-main>
       <router-view />
     </v-main>
+    <v-bottom-navigation>
+      <v-btn to="/">
+        <v-icon>mdi-home</v-icon>
+        <span>主页</span>
+      </v-btn>
+
+      <v-btn to="/login" v-if="!user.login">
+        <v-icon>mdi-login</v-icon>
+        <span>登录</span>
+      </v-btn>
+      <v-btn to="/profile" v-else>
+        <v-icon>mdi-account</v-icon>
+        <span>个人资料</span>
+      </v-btn>
+    </v-bottom-navigation>
   </v-app>
 
   <v-snackbar 
@@ -52,6 +67,10 @@
 <script setup>
 import { ref} from 'vue';
 import { snackbar } from './stores/app'
+import { user } from './api/user'
+import { getProfile } from './api/user'
+import router from './router'
+import { onMounted, watch } from 'vue';
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
@@ -62,6 +81,18 @@ const items = ref([
 ]);
 
 const showDrawer = ref(false);
+
+onMounted(async() => {
+  await getProfile();
+});
+
+watch(user, async(newVal) => {
+  if (newVal.login) {
+    router.replace('/profile');
+  } else {
+    router.replace('/login');
+  }
+})
 
 </script>
 
