@@ -30,13 +30,20 @@ export const login = async (username: string, password: string) => {
             { username, password },
             { "Content-Type": "multipart/form-data" }
         );
-        if (response.status === 200) {
+        if (response != null && response.status === 200) {
             document.cookie = `access_token=${response.data.access_token};path=/`;
             const res = await getProfile();
-            if (res.status === 200) {
+            if (res === null) {
+                snackbar.error("登录失败");
+            }
+            else if (res.status === 200) {
                 snackbar.success("登录成功");
+            } else {
+                console.log(res.status)
+                snackbar.error("fuck");
             }
         } else {
+            snackbar.error("登录失败");
             throw new Error(response.data.detail || '登录失败');
         }
     } catch (error) {
@@ -45,16 +52,16 @@ export const login = async (username: string, password: string) => {
     }
 };
 
-export const signup = async (username: string, password: string) => {
+export const signup = async (username: string, password: string, nickname: string) => {
     try {
-        document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        document.cookie = "register_user=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
         const response = await server.post(
             "users/register",
             { username, password },
             { "Content-Type": "multipart/form-data" }
         );
-        if (response.status === 200) {
-            document.cookie = `access_token=${response.data.access_token};path=/`;
+        if (response != null && response.status === 200) {
+            document.cookie = `register_user=${response.data.access_token};path=/`;
         } else {
             throw new Error(response.data.detail || '注册失败');
         } 
@@ -66,7 +73,7 @@ export const signup = async (username: string, password: string) => {
 
 export const getProfile = async () => {
     const response = await server.get("/users/profile");
-    if (response.status === 200) {
+    if (response != null && response.status === 200) {
         user.login = true;
         user.email = response.data.email;
         user.nickname = response.data.nickname;
@@ -74,10 +81,10 @@ export const getProfile = async () => {
         user.is_volunteer = response.data.is_volunteer;
         user.avatar_url = response.data.avatar_url;
         user.password = response.data.password;
-        console.log(response.data);
+        // console.log("User profile loaded: " + user.login);
     } else {
         user.login = false;
-        console.error(response.data);
+        console.error("Failed to load user profile: " + response.data);
     }
     return response.data;
 }

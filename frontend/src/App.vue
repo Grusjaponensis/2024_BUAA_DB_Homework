@@ -8,11 +8,10 @@
           :key="item.title"
           :prepend-icon="item.icon"
           :to="item.route"
-          :title="item.title"
-          @click="handleItemClick(item)">
+          :title="item.title">
         </v-list-item>
         <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if=user.login></v-list-item>
-        <v-list-item prepend-icon="mdi-logout" title="退出登录"  to="/" v-if=user.login @click="handleLogout"></v-list-item>
+        <v-list-item prepend-icon="mdi-logout" title="退出登录" v-if=user.login @click="handleLogout"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -33,44 +32,32 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-bottom-navigation v-if="!user.login">
+    <v-bottom-navigation v-if=!user.login>
       <v-btn to="/">
         <v-icon>mdi-home</v-icon>
         <span>主页</span>
       </v-btn>
 
-      <v-btn to="/login" v-if="!user.login">
+      <v-btn to="/login">
         <v-icon>mdi-login</v-icon>
         <span>登录</span>
       </v-btn>
-      <v-btn to="/profile" v-else>
-        <v-icon>mdi-account</v-icon>
-        <span>个人资料</span>
-      </v-btn>
     </v-bottom-navigation>
   </v-app>
-
   <v-snackbar 
-    v-model="snackbar.show"
-    :color = "snackbar.color"
-    :text = "snackbar.text"
-    :timeout = "snackbar.timeout">
-    <template #action>
-      <v-btn 
-       variant="text"
-       @click="snackbar.show = false">
-      </v-btn>
-    </template> 
-  </v-snackbar>
+    v-model="snackbar.show" 
+    :color="snackbar.color" 
+    :text="snackbar.text" 
+    :timeout="snackbar.timeout" 
+  ></v-snackbar>
 </template>
 
 <script setup>
 import { ref} from 'vue';
-import { snackbar } from './stores/app'
+import { snackbar } from './stores/app';
 import { user } from './api/user'
 import { getProfile } from './api/user'
-import router from './router'
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue'
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
@@ -81,12 +68,20 @@ const items = ref([
 
 const showDrawer = ref(false);
 
-onMounted(async() => {
-  await getProfile();
-});
-
 const handleLogout = () => {
   user.login = false;
+  user.email = '';
+  user.nickname = '';
+  user.is_superuser = false;
+  user.is_volunteer = false;
+  user.avatar_url = '';
+  user.password = '';
+  
+  document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
+
+  snackbar.success("成功退出登录！")
+
+  window.location.href = "/";
 }
 
 

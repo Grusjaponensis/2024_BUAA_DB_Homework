@@ -43,8 +43,11 @@
 import server from '@/api/server';
 import { login } from '@/api/user';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
+import { user } from '../api/user';
 import snackbar from '../api/snackbar';
 
+const router = useRouter();
 const username = ref('')
 const password = ref('')
 const submitLogin = async () => {
@@ -58,6 +61,8 @@ const submitLogin = async () => {
     }
     try {
         await login(username.value, password.value)
+        console.log("登录成功 " + user.login)
+        router.push('/')
     } catch (error) {
         console.error('登录失败', error);
     }
