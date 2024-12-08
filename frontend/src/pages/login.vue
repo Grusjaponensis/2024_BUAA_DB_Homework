@@ -1,8 +1,4 @@
 <template>
-    <v-snackbar v-model="snackbar" color="snackbarColor" timeout="3000">
-        {{ snackbarText }}
-    </v-snackbar>
-
     <div class="login-container">
         <v-card class="login-card" elevation="8">
             <v-card-title class="title">
@@ -50,31 +46,24 @@
 import { getPosts } from '@/api/post';
 import server from '@/api/server';
 import { login } from '@/api/user';
-import {useUserStore} from '@/stores/user';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { snackbar } from '../api/snackbar';
 
 const username = ref('')
 const password = ref('')
-const router = useRouter()
-const snackbar = ref(false)
-const snackbarText = ref('')
-const userStore = useUserStore()
-const snackbarColor = ref('success')
-
 const submitLogin = async () => {
+    if (username.value.trim() === '') {
+        snackbar.error('用户名不能为空')
+        return
+    }
+    if (password.value.trim() === '') {
+        snackbar.error('密码不能为空')
+        return
+    }
     try {
-        await login(username.value, password.value);
-        snackbar.value = true;
-        snackbarText.value = '登录成功';
-        snackbarColor.value = 'success';
-        userStore.login(username.value)
-        router.push({ path: '/home', query: { loggedIn: true } });
+        await login(username.value, password.value)
     } catch (error) {
         console.error('登录失败', error);
-        snackbarColor.value = 'error';
-        snackbarText.value = '登录失败，请检查用户名或密码';
-        snackbar.value = true;
     }
 }
 

@@ -34,15 +34,24 @@
       <router-view />
     </v-main>
   </v-app>
+
+  <v-snackbar 
+    v-model="snackbar.show"
+    :color = "snackbar.color"
+    :text = "snackbar.text"
+    :timeout = "snackbar.timeout">
+    <template #action>
+      <v-btn 
+       variant="text"
+       @click="snackbar.show = false">
+      </v-btn>
+    </template> 
+  </v-snackbar>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useUserStore } from './stores/user';
-import { useRouter } from 'vue-router';
-
-const userStore = useUserStore();
-const router = useRouter();
+import { ref} from 'vue';
+import { snackbar } from './stores/app'
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/home' },
@@ -53,21 +62,6 @@ const items = ref([
 ]);
 
 const showDrawer = ref(false);
-
-const isLoggedIn = computed(() => userStore.isLoggedIn);
-
-
-const handleItemClick = (item) => {
-  if (item.title === '退出登录') {
-    handleLogout();
-  }
-};
-
-const handleLogout = () => {
-  userStore.logout();
-  router.push('/');
-  showDrawer.value = false;
-};
 
 </script>
 
