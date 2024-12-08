@@ -30,6 +30,8 @@
 </template>
 
 <script setup>
+import { snackbar } from '@/stores/app';
+
   //
 </script>
 

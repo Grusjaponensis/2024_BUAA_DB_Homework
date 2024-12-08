@@ -22,6 +22,24 @@
                         dense
                         prepend-inner-icon="mdi-lock">
                     </v-text-field>
+
+                    <v-text-field
+                        v-model="passwordConfirm"
+                        label="确认密码"
+                        type="password"
+                        outlined
+                        dense
+                        prepend-inner-icon="mdi-lock-alert"
+                    >
+                    </v-text-field>
+
+                    <v-text-field
+                        v-model="nickname"
+                        label="昵称"
+                        outlined
+                        dense
+                        prepend-inner-icon="mdi-account-edit">
+                    </v-text-field>
                 </v-form>
             </v-card-text>
             <v-card-actions class="actions">
@@ -43,11 +61,26 @@ import { useRouter } from 'vue-router';
 
 const username = ref('')
 const password = ref('')
+const nickname = ref('')
+const passwordConfirm = ref('')
 const router = useRouter()
 
 const submitSignup = async () => {
+    if (username.value.trim() === '') {
+        snackbar.error('用户名不能为空')
+        return
+    }
+    if (password.value.trim() === '') {
+        snackbar.error('密码不能为空')
+        return
+    }
+    if (password.value !== passwordConfirm.value) {
+        snackbar.error('两次密码输入不一致')
+        return
+    }
     try {
-        await signup(username.value, password.value);
+        await signup(username.value, password.value , nickname.value);
+        router.push('/login');
     } catch (error) {
         console.error('注册失败', error);
     }
