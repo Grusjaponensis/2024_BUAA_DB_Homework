@@ -8,7 +8,7 @@
                 <v-form>
                     <v-text-field
                         v-model="username"
-                        label="用户名"
+                        label="邮箱"
                         outlined
                         dense
                         prepend-inner-icon="mdi-account">
@@ -34,9 +34,6 @@
             </v-card-actions>
         </v-card>
     </div>
-
-    <!-- <v-btn @click="test">test</v-btn> -->
-
 </template>
 
 <script setup>
@@ -51,7 +48,6 @@ const router = useRouter()
 const submitSignup = async () => {
     try {
         await signup(username.value, password.value);
-        router.push({ path: '/login', query: { Signup: true } });
     } catch (error) {
         console.error('注册失败', error);
     }

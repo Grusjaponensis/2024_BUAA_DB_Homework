@@ -11,8 +11,8 @@
           :title="item.title"
           @click="handleItemClick(item)">
         </v-list-item>
-
-        <v-list-item prepend-icon="mdi-logout" title="退出登录"  to="/" v-if="isLoggedIn" @click="handleLogout"></v-list-item>
+        <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if=user.login></v-list-item>
+        <v-list-item prepend-icon="mdi-logout" title="退出登录"  to="/" v-if=user.login @click="handleLogout"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -33,7 +33,7 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-bottom-navigation>
+    <v-bottom-navigation v-if="!user.login">
       <v-btn to="/">
         <v-icon>mdi-home</v-icon>
         <span>主页</span>
@@ -76,8 +76,7 @@ const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
   { title: '论坛中心', icon: 'mdi-message-text', route: '/ForumCenter/forumCenter' },
   { title: '救助行动', icon: 'mdi-ambulance', route: '/RescueAction/rescueAction' },
-  { title: '猫猫基地', icon: 'mdi-cat', route: '/cats/catBase' },
-  { title: '个人资料', icon: 'mdi-account', route: '/profile' }
+  { title: '猫猫基地', icon: 'mdi-cat', route: '/cats/catBase' }
 ]);
 
 const showDrawer = ref(false);
@@ -86,13 +85,10 @@ onMounted(async() => {
   await getProfile();
 });
 
-watch(user, async(newVal) => {
-  if (newVal.login) {
-    router.replace('/profile');
-  } else {
-    router.replace('/login');
-  }
-})
+const handleLogout = () => {
+  user.login = false;
+}
+
 
 </script>
 
