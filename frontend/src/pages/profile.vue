@@ -4,7 +4,7 @@
         <v-card-title class="headline font-weight-bold">个人资料</v-card-title>
         <v-card-text class="px-8 pt-6">
           <v-avatar size="128" class="mb-4">
-            <img :src="profile.avatar_url" alt="Profile Picture" @click="showAvatarUpload = true">
+            <v-img :src="`http://localhost:8000/${profile.avatar_url}`" @click="showAvatarUpload = true"></v-img>
           </v-avatar>
           <div><strong>昵称:{{ profile.nickname }}</strong></div>
           <div><strong>邮箱:{{ profile.email }}</strong></div>
