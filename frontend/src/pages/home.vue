@@ -1,4 +1,7 @@
 <template>
+  <v-snackbar v-model="snackbar" color="success" timeout="3000">
+    {{ snackbarText }}
+  </v-snackbar>
   <v-container fluid class="home-container">
     <v-row justify="center" class="mb-8">
       <v-col cols="12" md="6" class="text-center">
@@ -27,14 +30,22 @@
       </v-row>
     </v-col>
   </v-container>
-  <h1 class = "title">北航猫咪管理系统</h1>
-  <v-btn to="/login" v-if="!isLoggedIn">Login</v-btn>
 </template>
   
 <script setup>
-  import { useUserStore } from '../stores/user';
-  const userStore = useUserStore();
-  const isLoggedIn = computed(() => userStore.isLoggedIn);
+  import {ref , onMounted} from 'vue'
+  import { useRouter } from 'vue-router'
+
+  const snackbar = ref(false)
+  const snackbarText = ref('')
+  const router = useRouter()
+
+  onMounted(() => {
+    // if (router.query.loggedIn) {
+    //   snackbarText.value = '登录成功'
+    //   snackbar.value = true
+    // }
+  }) 
 </script>
 
 <style scoped>

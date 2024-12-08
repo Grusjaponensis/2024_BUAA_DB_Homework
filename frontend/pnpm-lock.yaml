@@ -26,6 +26,9 @@ importers:
       vuetify:
         specifier: ^3.6.11
         version: 3.7.3(vite-plugin-vuetify@2.0.4)(vue@3.5.12)
+      vuex:
+        specifier: ^4.1.0
+        version: 4.1.0(vue@3.5.12)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.5
@@ -1693,6 +1696,11 @@ packages:
         optional: true
       webpack-plugin-vuetify:
         optional: true
+
+  vuex@4.1.0:
+    resolution: {integrity: sha512-hmV6UerDrPcgbSy9ORAtNXDr9M4wlNP4pEFKye4ujJF8oqgFFuxDCdOLS3eNoRTtq5O3hoBDh9Doj1bQMYHRbQ==}
+    peerDependencies:
+      vue: ^3.2.0
 
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
@@ -3454,6 +3462,11 @@ snapshots:
       vue: 3.5.12
     optionalDependencies:
       vite-plugin-vuetify: 2.0.4(vite@5.4.10(sass@1.77.6))(vue@3.5.12)(vuetify@3.7.3)
+
+  vuex@4.1.0(vue@3.5.12):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.12
 
   webpack-virtual-modules@0.6.2: {}
 
