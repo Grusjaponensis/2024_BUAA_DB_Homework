@@ -43,11 +43,10 @@
 </template>
 
 <script setup>
-import { getPosts } from '@/api/post';
 import server from '@/api/server';
 import { login } from '@/api/user';
 import { ref } from 'vue';
-import { snackbar } from '../api/snackbar';
+import snackbar from '../api/snackbar';
 
 const username = ref('')
 const password = ref('')
@@ -67,15 +66,7 @@ const submitLogin = async () => {
     }
 }
 
-// onMounted(() => {
-//     if (router.query.Signup) {
-//       snackbarText.value = '登录成功'
-//       snackbar.value = true
-//     }
-//   }) 
-
 const test = () => {
-    // const res = server.get('/posts/');
     const res = server.get('/posts/my');
     console.log(res);
 }

@@ -1,4 +1,5 @@
 import server from "./server";
+import snackbar from "./snackbar";
 
 export const login = async (username: string, password: string) => {
     try {
@@ -10,7 +11,10 @@ export const login = async (username: string, password: string) => {
         );
         if (response.status === 200) {
             document.cookie = `access_token=${response.data.access_token};path=/`;
-            await getProfile();
+            const res = await getProfile();
+            if (res.status === 200) {
+                snackbar.success("登录成功");
+            }
         } else {
             throw new Error(response.data.detail || '登录失败');
         }
