@@ -21,7 +21,7 @@ const error = (message : string) => {
 const warning = (message : string) => {
     snackbar.show = true
     snackbar.text = message
-    snackbar.color = "yellow"
+    snackbar.color = "orange"
 }
 
 export default {

@@ -36,7 +36,7 @@
     <v-bottom-navigation v-if="finishLoadingProfile && !user.login">
       <v-btn to="/">
         <v-icon>mdi-home</v-icon>
-        <span>主页</span>
+        <span>首页</span>
       </v-btn>
 
       <v-btn to="/login">
