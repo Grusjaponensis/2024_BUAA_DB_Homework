@@ -10,8 +10,8 @@
           :to="item.route"
           :title="item.title">
         </v-list-item>
-        <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if=user.login></v-list-item>
-        <v-list-item prepend-icon="mdi-logout" title="退出登录" v-if=user.login @click="handleLogout"></v-list-item>
+        <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if="finishLoadingProfile && user.login"></v-list-item>
+        <v-list-item prepend-icon="mdi-logout" title="退出登录" v-if="finishLoadingProfile && user.login" @click="handleLogout"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -32,7 +32,7 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-bottom-navigation v-if=!user.login>
+    <v-bottom-navigation v-if="finishLoadingProfile && !user.login">
       <v-btn to="/">
         <v-icon>mdi-home</v-icon>
         <span>主页</span>
@@ -58,6 +58,14 @@ import { snackbar } from './stores/app';
 import snackbar_ from './api/snackbar'
 import { user } from './api/user'
 import { useRouter } from 'vue-router';
+import { getProfile } from './api/user'
+
+const finishLoadingProfile = ref(false)
+
+onMounted(async() => {
+  await getProfile();
+  finishLoadingProfile.value = true;
+})
 
 const router = useRouter()
 
@@ -82,7 +90,7 @@ const handleLogout = () => {
   document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
   // window.location.href = "/";
   router.push("/")
-  console.log("成功推出登录")
+  console.log("成功推出登录！")
   snackbar_.success("成功退出登录！")
 }
 </script>

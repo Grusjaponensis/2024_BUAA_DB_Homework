@@ -85,6 +85,7 @@ export const getProfile = async () => {
         user.is_volunteer = response.data.is_volunteer;
         user.avatar_url = response.data.avatar_url;
         user.password = response.data.password;
+        console.log("登录成功！");
     } else {
         user.login = false;
         console.error("Failed to load user profile: " + response.data);
