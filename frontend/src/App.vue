@@ -55,7 +55,11 @@
 <script setup>
 import { ref} from 'vue';
 import { snackbar } from './stores/app';
+import snackbar_ from './api/snackbar'
 import { user } from './api/user'
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
@@ -76,9 +80,10 @@ const handleLogout = () => {
   user.password = '';
   
   document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
-  window.location.href = "/";
+  // window.location.href = "/";
+  router.push("/")
   console.log("成功推出登录")
-  snackbar.success("成功退出登录！")
+  snackbar_.success("成功退出登录！")
 }
 </script>
 
