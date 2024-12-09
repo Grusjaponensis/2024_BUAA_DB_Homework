@@ -4,7 +4,7 @@
         <v-card-title class="headline">{{ cat.name }}</v-card-title>
         <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
         <v-card-subtitle>性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
-        <v-card-subtitle>健康状况: {{ cat.health_condition }}/4</v-card-subtitle>
+        <v-card-subtitle>健康状况: {{ cat.health_condition  == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
         <v-card-subtitle>最近一次出没地点: {{ cat.latest_longitude }}, {{ cat.latest_latitude }}</v-card-subtitle>
         <v-card-text>
           描述： {{ cat.description }}

@@ -19,7 +19,7 @@
           <v-card-subtitle @click="goToCatDetails(cat.id)">年龄: {{ cat.age }}</v-card-subtitle>
           <v-card-subtitle @click="goToCatDetails(cat.id)">性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
           <v-card-subtitle @click="goToCatDetails(cat.id)">描述: {{ cat.description }}</v-card-subtitle>
-          <v-card-subtitle @click="goToCatDetails(cat.id)">健康状况: {{ cat.health_condition }}/4</v-card-subtitle>
+          <v-card-subtitle @click="goToCatDetails(cat.id)">健康状况: {{ cat.health_condition  == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
           <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
           <v-card-text>
             <v-btn

@@ -10,8 +10,9 @@
           
             <p class="text-h6 font-weight-bold mb-1">{{ profile.nickname }}</p>
             <p class="text-h6 mb-1">{{ profile.email }}</p>
-            <p v-if="!profile.is_superuser"><strong>是否为志愿者:{{ profile.is_volunteer ? '是' : '否' }}</strong></p>
+            <v-chip v-if="!profile.is_superuser && profile.is_volunteer" class="mt-3" color="blue-darken-1">志愿者</v-chip>
             <v-chip v-if="profile.is_superuser" class="mt-3" color="purple-darken-1">超级管理员</v-chip>
+            <v-chip v-if="!profile.is_superuser && !profile.is_volunteer" class="mt-3" color="green-darken-1">普通用户</v-chip>
           </div>
           <v-expand-transition>
             <div v-show="showProfileEdit" class="mt-8">

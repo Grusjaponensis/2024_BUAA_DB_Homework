@@ -27,6 +27,12 @@
               label="猫咪健康状况"
               required
             ></v-text-field>
+            <v-select
+              v-model="cat_in.health_condition"
+              :items="['HEALTHY', 'SICK','VACCINATED','DEAD']"
+              label="猫咪健康状况"
+              required
+            ></v-select>
             <!-- <v-text-field
               v-model="cat_in.breed"
               label="猫咪品种"
@@ -99,7 +105,7 @@
         name: cat_in.value.name,
         is_male: cat_in.value.is_male === 'male', 
         age: parseInt(cat_in.value.age, 10),
-        health_condition: parseInt(cat_in.value.health_condition, 10),
+        health_condition: cat_in.value.health_condition === 'HEALTHY'? 1 : cat_in.value.health_condition === 'SICK'? 2 : cat_in.value.health_condition === 'VACCINATED'? 3 : 4,
         description: cat_in.value.description,
       },
       location_in: {
