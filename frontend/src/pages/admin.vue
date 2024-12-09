@@ -3,7 +3,7 @@
       <!-- 用户数量展示 -->
       <v-row justify="center">
         <v-chip class="ma-4" color="primary" label>
-          <v-icon left>mdi-account-group</v-icon> 用户数量：{{ count }}
+          <v-icon left class="mr-2">mdi-account-group</v-icon> 用户数量：{{ count }}
         </v-chip>
       </v-row>
   
@@ -17,13 +17,14 @@
                 <v-img :src="addPrefix(profile.avatar_url)" alt="用户头像"></v-img>
               </v-avatar>
               <div class="mt-4">
-                <div class="text-h6 font-weight-bold">昵称：{{ profile.nickname }}</div>
-                <div class="text-subtitle-1 text-grey-darken-1">邮箱：{{ profile.email }}</div>
+                <div class="text-h6 font-weight-bold ma-2">{{ profile.nickname }}</div>
+                <div class="text-subtitle-1 text-grey-darken-1">{{ profile.email }}</div>
                 <div class="text-subtitle-2 mt-2">
-                  <v-chip color="green" small v-if="!profile.is_superuser">
-                    志愿者：{{ profile.is_volunteer ? "是" : "否" }}
+                  <v-chip small v-if="!profile.is_superuser && profile.is_volunteer" class="ma-1" color="blue-darken-1">
+                    志愿者
                   </v-chip>
-                  <v-chip color="red" small v-if="profile.is_superuser">超级管理员</v-chip>
+                  <v-chip small v-if="profile.is_superuser" class="ma-1" color="purple-darken-1">超级管理员</v-chip>
+                  <v-chip small v-if="!profile.is_superuser && !profile.is_volunteer" class="ma-1" color="green-darken-1">普通用户</v-chip>
                 </div>
               </div>
   
@@ -77,28 +78,28 @@
             <!-- 按钮组 -->
             <v-card-actions class="justify-center pb-4">
               <v-btn
-                color="primary"
+                color="blue-accent-3"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showProfileEdit', true)"
               >
-                <v-icon left>mdi-pencil</v-icon> 修改资料
+                <v-icon left class="mr-1">mdi-pencil</v-icon> 修改资料
               </v-btn>
               <v-btn
-                color="green"
+                color="green-accent-2"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showAvatarUpload', true)"
               >
-                <v-icon left>mdi-image</v-icon> 更新头像
+                <v-icon left class="mr-1">mdi-image</v-icon> 更新头像
               </v-btn>
               <v-btn
-                color="red"
+                color="red-accent-2"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showPasswordChange', true)"
               >
-                <v-icon left>mdi-lock</v-icon> 修改密码
+                <v-icon left class="mr-1">mdi-lock</v-icon> 修改密码
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -169,7 +170,7 @@
   }
   
   .v-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
   }
   
   .v-btn {
