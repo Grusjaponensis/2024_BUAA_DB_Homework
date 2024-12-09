@@ -11,6 +11,7 @@
           :title="item.title">
         </v-list-item>
         <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if="finishLoadingProfile && user.login"></v-list-item>
+        <v-list-item prepend-icon="mdi-shield-account" title="管理账户信息" to="/admin" v-if="finishLoadingProfile && user.is_superuser"></v-list-item>
         <v-list-item prepend-icon="mdi-logout" title="退出登录" v-if="finishLoadingProfile && user.login" @click="handleLogout"></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -35,7 +36,7 @@
     <v-bottom-navigation v-if="finishLoadingProfile && !user.login">
       <v-btn to="/">
         <v-icon>mdi-home</v-icon>
-        <span>主页</span>
+        <span>首页</span>
       </v-btn>
 
       <v-btn to="/login">
@@ -99,6 +100,7 @@ const handleLogout = () => {
   document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
   // window.location.href = "/";
   router.push("/")
+  showDrawer.value = false;
   console.log("成功推出登录！")
   snackbar_.success("成功退出登录！")
 }

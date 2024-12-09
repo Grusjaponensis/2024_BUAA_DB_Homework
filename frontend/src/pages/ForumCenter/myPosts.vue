@@ -36,6 +36,7 @@
   <script setup>
   import { getMyPosts, likePost, unlikePost, deletePost } from '@/api/post';
   import { useRouter } from 'vue-router';
+  import snackbar from '@/api/snackbar';
   const router = useRouter();
   const posts = ref([]); 
   // 获取帖子列表
@@ -62,8 +63,10 @@
     try {
       await deletePost(post.id);
       posts.value = posts.value.filter(p => p.id !== post.id);
+      snackbar.success('删除成功');
     } catch (error) {
       console.error('删除帖子失败:', error);
+      snackbar.error('删除失败');
     }
   };
   // 修改帖子

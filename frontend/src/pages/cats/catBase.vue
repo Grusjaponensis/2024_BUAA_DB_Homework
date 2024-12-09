@@ -1,7 +1,7 @@
 <template>
   <v-container>
   <v-container>
-    <v-chip-group absolute top left>
+    <v-chip-group absolute top left v-if="user.login">
       <v-chip>
         剩余罐罐: {{ remainingCans }}
       </v-chip>
@@ -35,8 +35,8 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-footer padless>
-    <v-row justify="end" no-gutters>
+  <v-footer padless v-if="isAdmin && user.login">
+    <v-row justify="end" no-gutters >
       <v-btn
         fab
         dark
@@ -56,11 +56,23 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getProfile } from '@/api/user';
+import { user } from '@/api/user';
+import snackbar from '@/api/snackbar';
 
 const cats = ref([]);
-const isAdmin = ref(true);
+const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
+
+const fetchProfile = async () => {
+  try {
+    const response = await getProfile();
+    isAdmin.value = response.data.is_superuser;
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+};
 
 // 模拟数据
 const catsData = {
@@ -106,6 +118,10 @@ cats.value = catsData.data;
 // };
 
 const feedCat = (cat) => {
+  if (!user.login) {
+    snackbar.warning('请先登录！')
+    return;
+  }
   if (remainingCans.value > 0) {
     remainingCans.value--;
     cat.cans++;
@@ -115,7 +131,7 @@ const feedCat = (cat) => {
 };
 
 onMounted(() => {
-
+  fetchProfile();
 });
 </script>
 

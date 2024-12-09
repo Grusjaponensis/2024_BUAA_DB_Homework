@@ -8,8 +8,8 @@
           </v-avatar>
           <div><strong>昵称:{{ profile.nickname }}</strong></div>
           <div><strong>邮箱:{{ profile.email }}</strong></div>
-          <div><strong>是否为志愿者:{{ profile.is_volunteer ? '是' : '否' }}</strong></div>
-        
+          <div v-if="!profile.is_superuser"><strong>是否为志愿者:{{ profile.is_volunteer ? '是' : '否' }}</strong></div>
+          <div v-if="profile.is_superuser"><strong>超级管理员</strong></div>
           <v-expand-transition>
             <div v-show="showProfileEdit" class="mt-8">
               <v-text-field
@@ -76,6 +76,7 @@
   import { ref, reactive, onMounted } from 'vue';
   import { getProfile, updateProfile, updateAvatar, updatePassword } from '@/api/user';
   import { addPrefix } from '@/api/post'
+  import snackbar from '@/api/snackbar';
   
 const showAvatarUpload = ref(false);
 const showPasswordChange = ref(false);
@@ -95,9 +96,11 @@ const fetchProfile = async () => {
           email: response.data.email,
           nickname: response.data.nickname,
           avatar_url: response.data.avatar_url,
+          is_volunteer: response.data.is_volunteer,
+          is_superuser: response.data.is_superuser,
         }
-        newNickname.value = response.nickname;
-        newEmail.value = response.email;
+        newNickname.value = response.data.nickname;
+        newEmail.value = response.data.email;
         console.log('个人资料获取成功', profile.value);
     } catch (error) {
         console.error('获取个人资料失败:', error);
@@ -115,8 +118,10 @@ const updateUserProfile = async () => {
         console.log('个人资料更新成功', response);
         showProfileEdit.value = false;
         fetchProfile();
+        snackbar.success('个人资料更新成功');
     } catch (error) {
         console.error('更新个人资料失败:', error);
+        snackbar.error('更新个人资料失败');
     }
 };
 
@@ -127,9 +132,11 @@ const updateUserAvatar = async () => {
         await updateAvatar(formData);
         console.log('头像更新成功');
         showAvatarUpload.value = false;
+        snackbar.success('头像更新成功');
         fetchProfile();
     } catch (error) {
         console.error('更新头像失败:', error);
+        snackbar.error('更新头像失败');
     }
 };
 
@@ -141,9 +148,11 @@ const updateUserPassword = async () => {
         };
         const response = await updatePassword(editPasswordData);
         console.log('密码更新成功', response);
+        snackbar.success('密码更新成功');
         showPasswordChange.value = false;
     } catch (error) {
         console.error('更新密码失败:', error);
+        snackbar.error('更新密码失败');
     }
 };
 
