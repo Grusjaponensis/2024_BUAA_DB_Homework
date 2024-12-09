@@ -88,7 +88,9 @@ export const getProfile = async () => {
         console.log("登录成功！");
     } else {
         user.login = false;
-        console.error("Failed to load user profile: " + response.data);
+        if (response != null) {
+            console.error("Failed to load user profile: " + response.data);
+        }
     }
     return response;
 }
