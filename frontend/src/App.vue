@@ -49,7 +49,15 @@
     :color="snackbar.color" 
     :text="snackbar.text" 
     :timeout="snackbar.timeout" 
-  ></v-snackbar>
+    >
+    <template #actions>
+      <v-btn
+        prepend-icon="mdi-close"
+        @click="snackbar.show = false"
+      >
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script setup>
