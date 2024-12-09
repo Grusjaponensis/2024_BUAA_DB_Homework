@@ -1,7 +1,7 @@
 <template>
   <v-container>
   <v-container>
-    <v-chip-group absolute top left>
+    <v-chip-group absolute top left v-if="user.login">
       <v-chip>
         剩余罐罐: {{ remainingCans }}
       </v-chip>
@@ -35,7 +35,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-footer padless v-if="isAdmin">
+  <v-footer padless v-if="isAdmin && user.login">
     <v-row justify="end" no-gutters >
       <v-btn
         fab
@@ -57,6 +57,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
+import { user } from '@/api/user';
+import snackbar from '@/api/snackbar';
 
 const cats = ref([]);
 const isAdmin = ref(false);
@@ -116,6 +118,10 @@ cats.value = catsData.data;
 // };
 
 const feedCat = (cat) => {
+  if (!user.login) {
+    snackbar.warning('请先登录！')
+    return;
+  }
   if (remainingCans.value > 0) {
     remainingCans.value--;
     cat.cans++;

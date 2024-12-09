@@ -8,8 +8,8 @@
           </v-avatar>
           <div><strong>昵称:{{ profile.nickname }}</strong></div>
           <div><strong>邮箱:{{ profile.email }}</strong></div>
-          <div><strong>是否为志愿者:{{ profile.is_volunteer ? '是' : '否' }}</strong></div>
-        
+          <div v-if="!profile.is_superuser"><strong>是否为志愿者:{{ profile.is_volunteer ? '是' : '否' }}</strong></div>
+          <div v-if="profile.is_superuser"><strong>超级管理员</strong></div>
           <v-expand-transition>
             <div v-show="showProfileEdit" class="mt-8">
               <v-text-field
@@ -96,6 +96,8 @@ const fetchProfile = async () => {
           email: response.data.email,
           nickname: response.data.nickname,
           avatar_url: response.data.avatar_url,
+          is_volunteer: response.data.is_volunteer,
+          is_superuser: response.data.is_superuser,
         }
         newNickname.value = response.data.nickname;
         newEmail.value = response.data.email;
