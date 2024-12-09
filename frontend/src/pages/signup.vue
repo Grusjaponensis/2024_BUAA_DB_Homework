@@ -71,6 +71,10 @@ const submitSignup = async () => {
         snackbar.error('邮箱不能为空')
         return
     }
+    if (email.value.indexOf('@') === -1 || email.value.indexOf('.') === -1) {
+        snackbar.error('邮箱格式不正确')
+        return
+    }
     if (password.value.trim() === '') {
         snackbar.error('密码不能为空')
         return

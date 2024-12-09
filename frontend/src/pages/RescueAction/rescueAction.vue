@@ -30,7 +30,7 @@
           bottom
           right
           color="primary"
-          to="/RescueAction/applyToBeVolunteer"
+          @click = applyToBeVolunteer
         >
           申请成为志愿者
         </v-btn>
@@ -42,7 +42,7 @@
           right
           color="primary"
           class="mx-4"  
-          to="/RescueAction/myApplications"
+          @click = myApplications
         >
           申请进度查询
         </v-btn>
@@ -82,6 +82,7 @@ import { ref, computed, onMounted } from 'vue';
 import { getActivities, deleteActivity, signUp, withdraw } from '@/api/activity';
 import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
+import { user } from '@/api/user';
 
 const activities = ref([]);
 
@@ -119,6 +120,24 @@ const activitiesData = {
 };
 
 activities.value = activitiesData.data;
+
+const myApplications = () => {
+  if (!user.login) {
+    snackbar.error('请先登录');
+    return;
+  } else {
+    router.push('/RescueAction/myApplications');
+  }
+}
+
+const applyToBeVolunteer = () => {
+  if (!user.login) {
+    snackbar.error('请先登录');
+    return;
+  } else {
+    router.push('/RescueAction/applyToBeVolunteer');
+  }
+};
 
 const fetchProfile = async () => {
   try {

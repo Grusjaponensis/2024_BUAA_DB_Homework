@@ -41,7 +41,6 @@
 }
 
 .home-container {
-  background-image: url('your-background-image.jpg'); /* Set background image */
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -49,7 +48,6 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay for better text visibility */
 }
 
 .kitten-logo {
@@ -64,7 +62,7 @@ h1.display-2 {
 }
 
 p.headline {
-  color: #ffffff; /* White color for subtitle */
+  color: #39a9ba; /* White color for subtitle */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); /* Strong shadow for readability */
 }
 
