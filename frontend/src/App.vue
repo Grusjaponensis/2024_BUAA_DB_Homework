@@ -64,6 +64,7 @@ const finishLoadingProfile = ref(false)
 
 onMounted(async() => {
   await getProfile();
+  console.log("Finish Loading Profile . User Login = " + user.login)
   finishLoadingProfile.value = true;
 })
 

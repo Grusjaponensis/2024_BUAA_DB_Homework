@@ -49,6 +49,7 @@ import { ref, computed } from 'vue';
 import { createPost } from '@/api/post';
 import { getTags } from '@/api/tags';
 import { useRouter } from 'vue-router';
+import snackbar from '@/api/snackbar';
 
 const router = useRouter();
 const post = ref({
@@ -81,9 +82,11 @@ const submitPost = async () => {
 
       const response = await createPost(formData);
       console.log('帖子提交成功', response.data.id);
+      snackbar.success('帖子提交成功');
       router.push('/ForumCenter/forumCenter'); 
     } catch (error) {
       console.error('发帖失败:', error);
+      snackbar.error('发帖失败');
     }
   }
 };

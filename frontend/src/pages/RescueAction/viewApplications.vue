@@ -25,7 +25,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { getApplications, updateApplicationStatus } from '@/api/volunteer';
-
+import snackbar from '@/api/snackbar';
 const applications = ref([]);
 
 // 模拟数据
@@ -71,8 +71,10 @@ const acceptApplication = async (application) => {
   try {
     await updateApplicationStatus(application.id, '已通过');
     application.status = '已通过';
+    snackbar.success('接受申请成功');
   } catch (error) {
     console.error('接受申请失败:', error);
+    snackbar.error('接受申请失败');
   }
 };
 
@@ -80,8 +82,10 @@ const rejectApplication = async (application) => {
   try {
     await updateApplicationStatus(application.id, '已退回');
     application.status = '已退回';
+    snackbar.success('退回申请成功');
   } catch (error) {
     console.error('退回申请失败:', error);
+    snackbar.error('退回申请失败');
   }
 };
 

@@ -35,8 +35,8 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-footer padless>
-    <v-row justify="end" no-gutters>
+  <v-footer padless v-if="isAdmin">
+    <v-row justify="end" no-gutters >
       <v-btn
         fab
         dark
@@ -56,11 +56,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getProfile } from '@/api/user';
 
 const cats = ref([]);
-const isAdmin = ref(true);
+const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
+
+const fetchProfile = async () => {
+  try {
+    const response = await getProfile();
+    isAdmin.value = response.data.is_superuser;
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+};
 
 // 模拟数据
 const catsData = {
@@ -115,7 +125,7 @@ const feedCat = (cat) => {
 };
 
 onMounted(() => {
-
+  fetchProfile();
 });
 </script>
 

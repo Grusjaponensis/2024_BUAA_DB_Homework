@@ -71,6 +71,7 @@
   import { getTags } from '@/api/tags';
   import { useRouter } from 'vue-router';
   import { useRoute } from 'vue-router';
+  import snackbar from '@/api/snackbar';
 
   const route = useRoute()
   const router = useRouter();
@@ -134,9 +135,11 @@
         console.log('formData', formData);
         const response = await updatePost(post.value.id, params, formData);
         console.log('帖子更新成功', response);
+        snackbar.success('帖子更新成功');
         router.push('/ForumCenter/myPosts');
         } catch (error) {
         console.error('更新帖子失败:', error);
+        snackbar.error('更新帖子失败');
         }
     }
     };
