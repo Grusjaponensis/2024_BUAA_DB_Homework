@@ -45,8 +45,10 @@
                 placeholder="点击上传头像"
                 accept="image/*"
               ></v-file-input>
-              <v-btn color="primary" @click="updateUserAvatar">确认更新头像</v-btn>
-              <v-btn color="grey" text @click="showAvatarUpload = false">取消</v-btn>
+              <div class="text-center">
+                <v-btn color="primary" variant="text" @click="updateUserAvatar">确认更新头像</v-btn>
+                <v-btn color="grey" variant="text" @click="showAvatarUpload = false">取消</v-btn>
+              </div>
             </div>
           </v-expand-transition>
   
@@ -64,18 +66,21 @@
                 type="text"
                 outlined
               ></v-text-field>
-              <v-btn color="primary" @click="updateUserPassword">确认更新密码</v-btn>
-              <v-btn color="grey" text @click="showPasswordChange = false">取消</v-btn>
+              <div class="text-center">
+                <v-btn color="primary" variant="text" @click="updateUserPassword">确认更新密码</v-btn>
+                <v-btn color="grey" variant="text" @click="showPasswordChange = false">取消</v-btn>
+              </div>
             </div>
           </v-expand-transition>
         </v-card-text>
-        <v-card-actions class="mt-4">
-          <v-btn color="primary" text @click="showProfileEdit = true">修改资料</v-btn>
-          <v-btn color="primary" text @click="showAvatarUpload = true">更新头像</v-btn>
-          <v-btn color="primary" text @click="showPasswordChange = true">修改密码</v-btn>
-        </v-card-actions>
+        <div class="pb-8">
+          <div class="text-center">
+            <v-btn color="primary" variant="text" @click="showProfileEdit = true">修改资料</v-btn>
+            <v-btn color="primary" variant="text" @click="showAvatarUpload = true">更新头像</v-btn>
+            <v-btn color="primary" variant="text" @click="showPasswordChange = true">修改密码</v-btn>
+          </div>
+        </div>
       </v-card>
-    </v-row>
     </v-container>
   </template>
   
