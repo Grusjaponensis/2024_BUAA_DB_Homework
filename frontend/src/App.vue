@@ -1,7 +1,7 @@
 <template>
-  <v-app no-footer>
+  <v-app no-footer :theme="theme">
     <v-navigation-drawer v-model="showDrawer" temporary>
-      <v-btn class="cat-btn" icon="mdi-cat" @click="showDrawer = false"></v-btn>
+      <v-icon icon="mdi-cat" size="40px" class="mx-4 mt-3" @click="showDrawer = false"></v-icon>
 
       <v-list density="compact" nav>
         <v-list-item v-for="item in items"
@@ -104,11 +104,29 @@ const handleLogout = () => {
   console.log("成功推出登录！")
   snackbar_.success("成功退出登录！")
 }
+
+const theme = ref('light')
+// 检测系统是否处于深色模式
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
+// 根据系统深色模式设置主题
+const setSystemTheme = () => {
+  theme.value = prefersDark.matches ? 'dark' : 'light'
+  localStorage.setItem('oo_theme', theme.value)
+}
+// 监听系统主题的变化
+prefersDark.addEventListener('change', setSystemTheme)
+const toggleTheme = () => {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+  localStorage.setItem('oo_theme', theme.value)
+}
+
+onMounted(async () => {
+  //const showSnackbar = route.path !== '/user/login';
+  if (localStorage.getItem('oo_theme')) {
+    theme.value = localStorage.getItem('oo_theme');
+  } else {
+    setSystemTheme();
+  }
+});
 </script>
 
-<style scoped>
-.cat-btn {
-  margin-top: 5px;
-  margin-left: 5px;
-}
-</style>

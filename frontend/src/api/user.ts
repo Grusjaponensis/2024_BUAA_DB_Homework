@@ -106,6 +106,26 @@ export const updateProfile = async (profileData: any) => {
     }
 };
 
+export const updateProfileByAdmin = async ( userId: number , profileData: any) => {
+    try {
+        const response = await server.patch(`/users/${userId}`, profileData);
+        return response.data;
+    } catch (error) {
+        console.error('更新个人资料失败:', error);
+        throw error;
+    }
+}
+
+export const getProfileByAdmin = async ( userId: number) => {
+    try {
+        const response = await server.get(`/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('获取个人资料失败', error);
+        throw error;
+    }
+}
+
 // 更新用户头像
 export const updateAvatar = async (formData: FormData) => {
 try {

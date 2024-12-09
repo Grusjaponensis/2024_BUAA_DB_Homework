@@ -10,7 +10,7 @@
       <!-- 用户卡片列表 -->
       <v-row justify="center">
         <v-col cols="12" md="4" v-for="profile in acounts" :key="profile.id">
-          <v-card class="mx-auto my-4" max-width="400" rounded="lg" elevation="4">
+          <v-card class="mx-auto my-4" max-width="600" rounded="lg" elevation="4">
             <!-- 头像展示 -->
             <v-card-text class="text-center">
               <v-avatar size="128" class="elevation-4" @click="showAvatarUpload = true">
@@ -50,27 +50,18 @@
                 </div>
               </v-expand-transition>
   
-              <!-- 更新头像区域 -->
+              <!-- 设置身份区域 -->
               <v-expand-transition>
-                <div v-show="showStates[profile.id]?.showAvatarUpload" class="mt-8">
-                  <v-file-input
-                    v-model="avatarFile"
-                    label="更新头像"
-                    placeholder="点击上传头像"
-                    accept="image/*"
-                  ></v-file-input>
-                  <v-btn color="primary" @click="updateUserAvatar(profile.id)">确认更新头像</v-btn>
-                  <v-btn color="grey" text @click="toggleSection(profile.id, 'showAvatarUpload', false)">取消</v-btn>
-                </div>
-              </v-expand-transition>
-  
-              <!-- 修改密码区域 -->
-              <v-expand-transition>
-                <div v-show="showStates[profile.id]?.showPasswordChange" class="mt-8">
-                  <v-text-field v-model="oldPassword" label="旧密码" type="text" outlined></v-text-field>
-                  <v-text-field v-model="newPassword" label="新密码" type="text" outlined></v-text-field>
-                  <v-btn color="primary" @click="updateUserPassword(profile.id)">确认更新密码</v-btn>
-                  <v-btn color="grey" text @click="toggleSection(profile.id, 'showPasswordChange', false)">取消</v-btn>
+                <div v-show="showStates[profile.id]?.showIdentityEdit" class="mt-8">
+                  <v-select
+                    v-model="newRole"
+                    :items="['志愿者', '普通用户']"
+                    label="设置身份"
+                    outlined
+                    dense
+                  ></v-select>
+                  <v-btn color="primary" @click="updateUserIdentity(profile.id)">确定</v-btn>
+                  <v-btn color="grey" text @click="toggleSection(profile.id, 'showIdentityEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
             </v-card-text>
@@ -89,17 +80,10 @@
                 color="green-accent-2"
                 rounded="lg"
                 variant="elevated"
-                @click="toggleSection(profile.id, 'showAvatarUpload', true)"
+                @click="toggleSection(profile.id, 'showIdentityEdit', true)"
+                v-if="!profile.is_superuser"
               >
-                <v-icon left class="mr-1">mdi-image</v-icon> 更新头像
-              </v-btn>
-              <v-btn
-                color="red-accent-2"
-                rounded="lg"
-                variant="elevated"
-                @click="toggleSection(profile.id, 'showPasswordChange', true)"
-              >
-                <v-icon left class="mr-1">mdi-lock</v-icon> 修改密码
+                <v-icon left class="mr-1">mdi-image</v-icon> 设置身份
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -112,16 +96,20 @@
   import { ref, onMounted } from "vue";
   import { getUsers } from "../api/superuser";
   import { addPrefix } from "../api/post";
+  import snackbar from '../api/snackbar'
+  import { updateProfileByAdmin } from '@/api/user';
   
   const count = ref(0);
   const acounts = ref([]);
   const showStates = ref({});
   const newNickname = ref("");
   const newEmail = ref("");
-  const avatarFile = ref(null);
   const oldPassword = ref("");
   const newPassword = ref("");
-  
+
+  const showAvatarUpload = ref(false);
+  const newRole = ref('');
+  const showIdentityEdit = ref(false); 
   // 初始化数据
   onMounted(async () => {
     const users = await getUsers();
@@ -143,25 +131,73 @@
     Object.keys(showStates.value).forEach((key) => {
       showStates.value[key][section] = key == id ? value : false;
     });
+
+    if (section === "showProfileEdit" && value) {
+        const user = acounts.value.find((u) => u.id === id)
+        newNickname.value = user.nickname;
+        newEmail.value = user.email;
+    }
+
+    if (section === "showIdentityEdit" && value) {
+        const user = acounts.value.find((u) => u.id === id)
+        newRole.value = user.is_volunteer ? '志愿者' : '普通用户';
+    }
   };
+
+  const fetchProfile = async () => {
+    try {
+        const updatedUsers = await getUsers();
+        const updatedData = updatedUsers.data;
+        acounts.value = acounts.value.map((user) => {
+            const updatedUser = updatedData.find((u) => u.id === user.id);
+            return updatedUser ? updatedUser : user;
+        });
+    } catch (error) {
+        console.error('获取更新个人资料失败:', error);
+        snackbar.error('获取更新个人资料失败');
+    }
+  }
   
   // 更新个人资料
   const updateUserProfile = async (id) => {
-    console.log("更新资料:", id, newNickname.value, newEmail.value);
-    toggleSection(id, "showProfileEdit", false);
+    try {
+      if (!newNickname.value || !newEmail.value || newNickname.value.trim() === '' || newEmail.value.trim() === '') {
+        snackbar.error('昵称或邮箱不能为空');
+        return;
+      }
+      const profileData = {
+        email: newEmail.value,
+        nickname: newNickname.value,
+      };
+      const response = await updateProfileByAdmin(id , profileData);
+      console.log('个人资料更新成功', response);
+      showProfileEdit.value = false;
+      await fetchProfile();
+      snackbar.success('个人资料更新成功');
+      toggleSection(id, "showProfileEdit", false);
+    } catch (error) {
+      console.error('更新个人资料失败:', error);
+      snackbar.error('更新个人资料失败');
+    }
   };
   
-  // 更新头像
-  const updateUserAvatar = async (id) => {
-    console.log("更新头像:", id, avatarFile.value);
-    toggleSection(id, "showAvatarUpload", false);
-  };
-  
-  // 更新密码
-  const updateUserPassword = async (id) => {
-    console.log("更新密码:", id, oldPassword.value, newPassword.value);
-    toggleSection(id, "showPasswordChange", false);
-  };
+  // 设置身份
+  const updateUserIdentity = async(id) => {
+    try {
+        const profileData = {
+            is_volunteer: newRole.value == '志愿者'
+        };
+        const response = await updateProfileByAdmin(id, profileData);
+        console.log('设置身份成功', response);
+        showIdentityEdit.value = false;
+        await fetchProfile();
+        snackbar.success('设置身份成功');
+        toggleSection(id, "showIdentityEdit", false);
+    } catch (error) {
+        console.error('设置身份失败:', error);
+        snackbar.error('设置身份失败');
+    }
+  }
   </script>
   
   <style scoped>
