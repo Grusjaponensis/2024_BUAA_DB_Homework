@@ -15,7 +15,7 @@ def save_file(path: str, file: UploadFile, user_email: str) -> str:
             shutil.copyfileobj(file.file, buffer)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"File save failed: {str(e)}")
-    return file_path
+    return "/".join(file_path.split("/")[1:])
 
 
 def remove_file(path: str, file_name: str | None = None):
