@@ -22,12 +22,12 @@ export const user = reactive<User>({
     password: ''
 })
 
-export const login = async (email: string, password: string) => {
+export const login = async (username: string, password: string) => {
     try {
         document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
         const response = await server.post(
             "/login/access-token",
-            { email, password },
+            { username, password },
             { "Content-Type": "multipart/form-data" }
         );
         if (response != null && response.status === 200) {
