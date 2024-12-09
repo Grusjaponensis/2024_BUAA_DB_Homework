@@ -80,6 +80,7 @@
           </div>
         </div>
       </v-card>
+    </v-row>
     </v-container>
   </template>
   
@@ -176,9 +177,8 @@ onMounted(fetchProfile);
 </script>
 
 <style scoped>
-/* 页面的特定样式 */
-strong {
-display: block;
-margin-top: 8px;
-}
+  .strong {
+  display: block;
+  margin-top: 15px;
+  }
 </style>

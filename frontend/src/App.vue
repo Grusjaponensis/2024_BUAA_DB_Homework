@@ -10,7 +10,7 @@
           :to="item.route"
           :title="item.title">
         </v-list-item>
-        <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if="finishLoadingProfile && user.login"></v-list-item>
+        <v-list-item prepend-icon="mdi-account" title="个人资料" to="/profile" v-if="finishLoadingProfile && user.login && !user.is_superuser"></v-list-item>
         <v-list-item prepend-icon="mdi-shield-account" title="管理账户信息" to="/admin" v-if="finishLoadingProfile && user.is_superuser"></v-list-item>
         <v-list-item prepend-icon="mdi-logout" title="退出登录" v-if="finishLoadingProfile && user.login" @click="handleLogout"></v-list-item>
       </v-list>
