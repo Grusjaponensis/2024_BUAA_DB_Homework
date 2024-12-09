@@ -7,7 +7,7 @@
             <v-card-text>
                 <v-form>
                     <v-text-field
-                        v-model="username"
+                        v-model="email"
                         label="邮箱"
                         outlined
                         dense
@@ -58,16 +58,17 @@
 import { ref } from 'vue';
 import { signup } from '../api/user';
 import { useRouter } from 'vue-router';
+import snackbar from '../api/snackbar'
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
 const nickname = ref('')
 const passwordConfirm = ref('')
 const router = useRouter()
 
 const submitSignup = async () => {
-    if (username.value.trim() === '') {
-        snackbar.error('用户名不能为空')
+    if (email.value.trim() === '') {
+        snackbar.error('邮箱不能为空')
         return
     }
     if (password.value.trim() === '') {
@@ -79,7 +80,7 @@ const submitSignup = async () => {
         return
     }
     try {
-        await signup(username.value, password.value , nickname.value);
+        await signup(email.value, password.value , nickname.value);
         router.push('/login');
     } catch (error) {
         console.error('注册失败', error);
