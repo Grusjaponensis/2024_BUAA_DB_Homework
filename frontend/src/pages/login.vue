@@ -7,8 +7,8 @@
             <v-card-title>
                 <v-form>
                     <v-text-field
-                        v-model="username"
-                        label="用户名"
+                        v-model="email"
+                        label="邮箱"
                         outlined
                         dense
                         prepend-inner-icon="mdi-account">
@@ -48,11 +48,11 @@ import { user } from '../api/user';
 import snackbar from '../api/snackbar';
 
 const router = useRouter();
-const username = ref('')
+const email = ref('')
 const password = ref('')
 const submitLogin = async () => {
-    if (username.value.trim() === '') {
-        snackbar.error('用户名不能为空')
+    if (email.value.trim() === '') {
+        snackbar.error('邮箱不能为空')
         return
     }
     if (password.value.trim() === '') {
@@ -60,7 +60,7 @@ const submitLogin = async () => {
         return
     }
     try {
-        await login(username.value, password.value)
+        await login(email.value, password.value)
         console.log("登录成功 " + user.login)
         router.push('/')
     } catch (error) {
