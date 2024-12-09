@@ -56,8 +56,6 @@
 import { ref} from 'vue';
 import { snackbar } from './stores/app';
 import { user } from './api/user'
-import { getProfile } from './api/user'
-import { onMounted } from 'vue'
 
 const items = ref([
   { title: '首页', icon: 'mdi-home', route: '/' },
@@ -78,13 +76,10 @@ const handleLogout = () => {
   user.password = '';
   
   document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
-
-  snackbar.success("成功退出登录！")
-
   window.location.href = "/";
+  console.log("成功推出登录")
+  snackbar.success("成功退出登录！")
 }
-
-
 </script>
 
 <style scoped>
