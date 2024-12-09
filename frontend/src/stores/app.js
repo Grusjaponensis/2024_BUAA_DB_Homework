@@ -5,5 +5,5 @@ export const snackbar = reactive({
   show: false,
   text: "",
   color: "green",
-  timeout: 3000
+  timeout: 1000
 })

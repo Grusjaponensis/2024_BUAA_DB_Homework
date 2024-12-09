@@ -75,6 +75,10 @@ const submitSignup = async () => {
         snackbar.error('密码不能为空')
         return
     }
+    if (password.value.length < 8) {
+        snackbar.error('密码长度必须大于等于8')
+        return
+    }
     if (password.value !== passwordConfirm.value) {
         snackbar.error('两次密码输入不一致')
         return

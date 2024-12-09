@@ -54,18 +54,19 @@ export const login = async (username: string, password: string) => {
 
 export const signup = async (email: string, password: string, nickname: string) => {
     try {
-        document.cookie = "register_user=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
         const response = await server.post(
-            "users/register",
+            "/users/register",
             { email, password, nickname },
-            { "Content-Type": "multipart/form-data" }
+            { "Content-Type": "application/json" }
         );
         if (response != null && response.status === 200) {
-            document.cookie = `register_user=${response.data.access_token};path=/`;
             snackbar.success("注册成功");
         } else {
             snackbar.error("注册失败");
-            throw new Error(response.data.detail || '注册失败');
+            console.log(response)
+            if (response != null && response.data.detail) {
+                throw new Error(response.data.detail || '注册失败');
+            }
         } 
     } catch (error) {
         snackbar.error("注册出错")
