@@ -1,8 +1,10 @@
 <template>
-    <v-container class="pa-0">
-      <v-card class="mx-auto my-8" max-width="400">
-        <v-card-title class="headline font-weight-bold">个人资料</v-card-title>
-        <v-card-text class="px-8 pt-6" v-if="profile">
+    <v-container class="pa-10" fluid>
+      <v-row justify="center">
+      <v-card class="mx-auto my-8" max-width="600" rounded="lg" elevation="4">
+        <v-card-title class="headline font-weight-bold text-center">个人资料</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="px-8 pt-6 text-center" v-if="profile">
           <v-avatar size="128" class="mb-4">
             <v-img :src="`${addPrefix(profile.avatar_url)}`" @click="showAvatarUpload = true"></v-img>
           </v-avatar>
@@ -63,12 +65,13 @@
             </div>
           </v-expand-transition>
         </v-card-text>
-        <v-card-actions class="pb-8">
+        <v-card-actions class="mt-4">
           <v-btn color="primary" text @click="showProfileEdit = true">修改资料</v-btn>
           <v-btn color="primary" text @click="showAvatarUpload = true">更新头像</v-btn>
           <v-btn color="primary" text @click="showPasswordChange = true">修改密码</v-btn>
         </v-card-actions>
       </v-card>
+    </v-row>
     </v-container>
   </template>
   
@@ -154,9 +157,8 @@ onMounted(fetchProfile);
 </script>
 
 <style scoped>
-/* 页面的特定样式 */
-strong {
-display: block;
-margin-top: 8px;
-}
+  .strong {
+  display: block;
+  margin-top: 15px;
+  }
 </style>
