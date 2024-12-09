@@ -3,11 +3,11 @@
       <v-card v-if="cat">
         <v-card-title class="headline">{{ cat.name }}</v-card-title>
         <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
-        <v-card-subtitle>品种: {{ cat.breed }}</v-card-subtitle>
-        <v-card-subtitle>性格: {{ cat.temperament }}</v-card-subtitle>
-        <v-card-subtitle>出没地点: {{ cat.location }}</v-card-subtitle>
+        <v-card-subtitle>性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
+        <v-card-subtitle>健康状况: {{ cat.health_condition }}/4</v-card-subtitle>
+        <v-card-subtitle>最近一次出没地点: {{ cat.latest_longitude }}, {{ cat.latest_latitude }}</v-card-subtitle>
         <v-card-text>
-          {{ cat.description }}
+          描述： {{ cat.description }}
         </v-card-text>
         <!-- 图片 -->
         <v-card-text v-if="cat.images && cat.images.length > 0">

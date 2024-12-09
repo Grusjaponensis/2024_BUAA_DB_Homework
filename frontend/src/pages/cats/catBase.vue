@@ -8,18 +8,19 @@
     </v-chip-group>
     <v-row>
       <v-col cols="12" md="4" v-for="cat in cats" :key="cat.id">
-        <!-- <v-card @click="goToCatDetails(cat.id)" class="d-flex flex-column"> -->
-        <v-card lass="d-flex flex-column">
+        <v-card class="d-flex flex-column">
+        <!-- <v-card lass="d-flex flex-column"> -->
           <v-img
             src="https://placekitten.com/200/300"
             height="200px"
             class="mx-auto"
           ></v-img>
-          <v-card-title class="headline">{{ cat.name }}</v-card-title>
-          <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
-          <v-card-subtitle>品种: {{ cat.breed }}</v-card-subtitle>
-          <v-card-subtitle>性格: {{ cat.temperament }}</v-card-subtitle>
-          <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle>
+          <v-card-title class="headline" @click="goToCatDetails(cat.id)">{{ cat.name }}</v-card-title>
+          <v-card-subtitle @click="goToCatDetails(cat.id)">年龄: {{ cat.age }}</v-card-subtitle>
+          <v-card-subtitle @click="goToCatDetails(cat.id)">性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
+          <v-card-subtitle @click="goToCatDetails(cat.id)">描述: {{ cat.description }}</v-card-subtitle>
+          <v-card-subtitle @click="goToCatDetails(cat.id)">健康状况: {{ cat.health_condition }}/4</v-card-subtitle>
+          <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
           <v-card-text>
             <v-btn
               text
@@ -29,6 +30,9 @@
             >
               <v-icon left>mdi-paw</v-icon>
               投喂
+            </v-btn>
+            <v-btn icon @click="removeCat(cat)" v-if="isAdmin">
+                <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-card-text>
         </v-card>
@@ -57,6 +61,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
+import { getCats,deleteCat } from '@/api/cat';
 import { user } from '@/api/user';
 import snackbar from '@/api/snackbar';
 
@@ -73,49 +78,27 @@ const fetchProfile = async () => {
     console.error('获取用户信息失败:', error);
   }
 };
-
-// 模拟数据
-const catsData = {
-  data: [
-    {
-      id: 1,
-      name: 'Kitty',
-      age: 3,
-      breed: 'Persian',
-      temperament: 'Playful',
-      cans: 5,
-    },
-    {
-      id: 2,
-      name: 'Fluffy',
-      age: 2,
-      breed: 'Maine Coon',
-      temperament: 'Docile',
-      cans: 7,
-    },
-    {
-      id: 3,
-      name: 'Whiskers',
-      age: 1,
-      breed: 'Bengal',
-      temperament: 'Independent',
-      cans: 4,
-    },
-  ],
+const fetchCats = async () => {
+  try {
+    const response = await getCats();
+    cats.value = response.cats;
+  } catch (error) {
+    console.error('获取猫咪列表失败:', error);
+  }
 };
-
-cats.value = catsData.data;
-// const fetchCats = async () => {
-//   try {
-//     const response = await getCats();
-//     cats.value = response.data;
-//   } catch (error) {
-//     console.error('获取猫咪列表失败:', error);
-//   }
-// };
-// const goToCatDetails = (id) => {
-//   router.push(`/cats/${id}`);
-// };
+const removeCat = async (cat) => {
+  try {
+    const response = await deleteCat(cat.id);
+    snackbar.success('删除成功！');
+    cats.value = cats.value.filter((c) => c.id !== cat.id);
+    fetchCats();
+  } catch (error) {
+    console.error('删除失败:', error);
+  }
+};
+const goToCatDetails = (id) => {
+  router.push(`/cats/${id}`);
+};
 
 const feedCat = (cat) => {
   if (!user.login) {
@@ -132,6 +115,7 @@ const feedCat = (cat) => {
 
 onMounted(() => {
   fetchProfile();
+  fetchCats();
 });
 </script>
 

@@ -1,89 +1,80 @@
 <template>
-    <v-container class="pa-10" fluid>
-      <v-row justify="center">
-        <v-card class="mx-auto my-4" max-width="400" rounded="lg" elevation="4">
-            <!-- 头像展示 -->
-            <v-card-text class="text-center">
-              <v-avatar size="128" class="elevation-4" @click="showAvatarUpload = true">
-                <v-img :src="addPrefix(profile.avatar_url)" alt="用户头像"></v-img>
-              </v-avatar>
-              <div class="mt-4">
-                <div class="text-h6 font-weight-bold">昵称：{{ profile.nickname}}</div>
-                <div class="text-subtitle-1 text-grey-darken-1">邮箱：{{ profile.email }}</div>
-                <div class="text-subtitle-2 mt-2">
-                  <v-chip color="green" small v-if="!profile.is_superuser">
-                    志愿者：{{ profile.is_volunteer ? "是" : "否" }}
-                  </v-chip>
-                  <v-chip color="red" small v-if="profile.is_superuser">超级管理员</v-chip>
-                </div>
-                </div>
-                <v-expand-transition>
-                <div v-show="showProfileEdit" class="mt-8">
-                <v-text-field
-                    v-model="newNickname"
-                    label="昵称"
-                    type="text"
-                    outlined
-                    :rules="[v => !!v || '昵称不能为空']"
-                ></v-text-field>
-                <v-text-field
-                    v-model="newEmail"
-                    label="邮箱"
-                    type="text"
-                    outlined
-                    :rules="[v => !!v || '邮箱不能为空']"
-                ></v-text-field>
-                <v-btn color="primary" @click="updateUserProfile">确认更新</v-btn>
-                <v-btn color="grey" text @click="showProfileEdit = false">取消</v-btn>
-                </div>
-                </v-expand-transition>
+    <v-container class="pa-0">
+      <v-card class="mx-auto my-8 pa-1" max-width="400">
+        <v-card-title class="headline font-weight-bold">个人资料</v-card-title>
+        <v-card-text class="px-8 pt-6" v-if="profile">
+          <div class="text-center">
+            <v-avatar size="128" class="mb-4">
+              <v-img :src="`${addPrefix(profile.avatar_url)}`" @click="showAvatarUpload = true"></v-img>
+            </v-avatar>
+          
+            <p class="text-h6 font-weight-bold mb-1">{{ profile.nickname }}</p>
+            <p class="text-h6 mb-1">{{ profile.email }}</p>
+            <v-chip v-if="!profile.is_superuser && profile.is_volunteer" class="mt-3" color="blue-darken-1">志愿者</v-chip>
+            <v-chip v-if="profile.is_superuser" class="mt-3" color="purple-darken-1">超级管理员</v-chip>
+            <v-chip v-if="!profile.is_superuser && !profile.is_volunteer" class="mt-3" color="green-darken-1">普通用户</v-chip>
+          </div>
+          <v-expand-transition>
+            <div v-show="showProfileEdit" class="mt-8">
+              <v-text-field
+                v-model="newNickname"
+                label="昵称"
+                type="text"
+                outlined
+                :rules="[v => !!v || '昵称不能为空']"
+              ></v-text-field>
+              <v-text-field
+                v-model="newEmail"
+                label="邮箱"
+                type="text"
+                outlined
+                :rules="[v => !!v || '邮箱不能为空']"
+              ></v-text-field>
+              <div class="text-center">
+                <v-btn color="primary" variant="text" @click="updateUserProfile">确认更新</v-btn>
+                <v-btn color="grey" variant="text" @click="showProfileEdit = false">取消</v-btn>
+              </div>
+            </div>
+          </v-expand-transition>
 
-                <v-expand-transition>
-                    <div v-show="showAvatarUpload" class="mt-8">
-                    <v-file-input
-                        v-model="avatarFile"
-                        label="更新头像"
-                        placeholder="点击上传头像"
-                        accept="image/*"
-                    ></v-file-input>
-                    <v-btn color="primary" @click="updateUserAvatar">确认更新头像</v-btn>
-                    <v-btn color="grey" text @click="showAvatarUpload = false">取消</v-btn>
-                    </div>
-                </v-expand-transition>
-        
-                <v-expand-transition>
-                    <div v-show="showPasswordChange" class="mt-8">
-                    <v-text-field
-                        v-model="oldPassword"
-                        label="旧密码"
-                        type="text"
-                        outlined
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="newPassword"
-                        label="新密码"
-                        type="text"
-                        outlined
-                    ></v-text-field>
-                    <v-btn color="primary" @click="updateUserPassword">确认更新密码</v-btn>
-                    <v-btn color="grey" text @click="showPasswordChange = false">取消</v-btn>
-                    </div>
-                </v-expand-transition>
-            </v-card-text>
+          <v-expand-transition>
+            <div v-show="showAvatarUpload" class="mt-8">
+              <v-file-input
+                v-model="avatarFile"
+                label="更新头像"
+                placeholder="点击上传头像"
+                accept="image/*"
+              ></v-file-input>
+              <v-btn color="primary" @click="updateUserAvatar">确认更新头像</v-btn>
+              <v-btn color="grey" text @click="showAvatarUpload = false">取消</v-btn>
+            </div>
+          </v-expand-transition>
   
-            <!-- 按钮组 -->
-            <v-card-actions class="justify-center pb-4">
-              <v-btn color="primary" rounded="lg" variant="elevated" @click="showProfileEdit = true">
-                <v-icon left>mdi-pencil</v-icon> 修改资料
-              </v-btn>
-              <v-btn color="green" rounded="lg" variant="elevated" @click="showAvatarUpload = true">
-                <v-icon left>mdi-image</v-icon> 更新头像
-              </v-btn>
-              <v-btn color="red" rounded="lg" variant="elevated" @click="showPasswordChange = true">
-                <v-icon left>mdi-lock</v-icon> 修改密码
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+          <v-expand-transition>
+            <div v-show="showPasswordChange" class="mt-8">
+              <v-text-field
+                v-model="oldPassword"
+                label="旧密码"
+                type="text"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                v-model="newPassword"
+                label="新密码"
+                type="text"
+                outlined
+              ></v-text-field>
+              <v-btn color="primary" @click="updateUserPassword">确认更新密码</v-btn>
+              <v-btn color="grey" text @click="showPasswordChange = false">取消</v-btn>
+            </div>
+          </v-expand-transition>
+        </v-card-text>
+        <v-card-actions class="mt-4">
+          <v-btn color="primary" text @click="showProfileEdit = true">修改资料</v-btn>
+          <v-btn color="primary" text @click="showAvatarUpload = true">更新头像</v-btn>
+          <v-btn color="primary" text @click="showPasswordChange = true">修改密码</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-row>
     </v-container>
   </template>
@@ -125,16 +116,20 @@ const fetchProfile = async () => {
 
 const updateUserProfile = async () => {
     try {
-        const profileData = {
+      if (!newNickname.value || !newEmail.value || newNickname.value.trim() === '' || newEmail.value.trim() === '') {
+        snackbar.error('昵称或邮箱不能为空');
+        return;
+      }
+      const profileData = {
         email: newEmail.value,
         nickname: newNickname.value,
-        };
+      };
 
-        const response = await  updateProfile(profileData);
-        console.log('个人资料更新成功', response);
-        showProfileEdit.value = false;
-        fetchProfile();
-        snackbar.success('个人资料更新成功');
+      const response = await  updateProfile(profileData);
+      console.log('个人资料更新成功', response);
+      showProfileEdit.value = false;
+      fetchProfile();
+      snackbar.success('个人资料更新成功');
     } catch (error) {
         console.error('更新个人资料失败:', error);
         snackbar.error('更新个人资料失败');
