@@ -8,6 +8,7 @@ from app.core.security import get_password_hash, verify_password
 
 from app.models.user import User, UserCreate, UserUpdate
 from app.models.post import Post, Like, PostTag
+from app.models.cat import Cat, CatLocation
 
 
 logger = logging.getLogger(__name__)
@@ -83,3 +84,17 @@ def get_like_status(*, session: Session, user_id: uuid.UUID, post_id: uuid.UUID)
         return False
     like = session.get(Like, (user_id, post_id))
     return like is not None
+
+
+# - MARK: Cat CRUD
+def get_latest_cat_location(session: Session, cat_id: uuid.UUID):
+    """
+    Get the latest cat location of a specific cat
+    """
+    if not cat_id:
+        return None
+
+    cat_location = session.exec(
+        select(CatLocation).where(CatLocation.cat_id == cat_id).order_by(CatLocation.created_at.desc())
+    ).first()
+    return cat_location

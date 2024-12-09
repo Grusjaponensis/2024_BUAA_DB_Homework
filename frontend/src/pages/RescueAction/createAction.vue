@@ -78,6 +78,7 @@
 import { ref } from 'vue';
 import { createActivity } from '@/api/activity';
 import { useRouter } from 'vue-router';
+import snackbar from '@/api/snackbar';
 
 const router = useRouter();
 
@@ -124,9 +125,11 @@ const submitactivity = async () => {
 
       const response = await createActivity(formData);
       console.log('活动提交成功', response.data.id);
+      snackbar.success('活动提交成功');
       router.push('/RescueAction'); 
     } catch (error) {
       console.error('活动提交失败:', error);
+      snackbar.error('活动提交失败');
     }
   }
 };

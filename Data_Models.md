@@ -220,7 +220,7 @@
 
 
 
-### `CatUpdateInfo` - 继承自`SQLModel`
+### `CatUpdateInfo` - 继承自`BaseModel`
 
 > 全部为可选值，每次更新时只需要部分信息
 
@@ -236,11 +236,12 @@
 
 
 
-### `CatUpdateLocation` - 继承自`SQLModel`
+### `CatUpdateLocation` - 继承自`BaseModel`
 
-| 字段名        | 类型  | 描述                         |
-| ------------- | ----- | ---------------------------- |
-| `location_id` | `int` | **必填**，最新一次记录的位置 |
+| 字段名      | 类型    | 描述                             |
+| ----------- | ------- | -------------------------------- |
+| `longitude` | `float` | **必填**，最新一次记录的位置纬度 |
+| `latitude`  | `float` | **必填**， 最新位置经度          |
 
 
 
@@ -267,7 +268,7 @@
 | `user_id` | `uuid`, ***ForeignKey, index*** | **外键**，用户id |
 | `longitude` | `float` | 经度，浮点数, 范围 $[-180, 180]$ |
 | `latitude`         | `float` | 纬度，浮点数，范围$[-90, 90]$ |
-| `timestamp`         | `datetime`, index | 时间戳 |
+| `created_at` | `datetime`, index | 时间戳 |
 
 
 
