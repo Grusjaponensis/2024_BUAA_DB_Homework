@@ -65,3 +65,11 @@ export const getMyPosts = async () => {
   const response = await server.get("/posts/my");
   return response.data;
 };
+
+export const addPrefix = (url: string) => {
+  console.log(url);
+  if (url.startsWith('http')) {
+    return url;
+  }
+  return `http://localhost:8000/${url}`;
+}

@@ -10,7 +10,7 @@
         <v-img
           v-for="(image, index) in post.images"
           :key="index"
-          :src="image"
+          :src="`${addPrefix(image)}`"
           class="mb-3"
           max-width="100%"
           max-height="300px"
@@ -56,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getPost, likePost, unlikePost } from '@/api/post';
+import { getPost, likePost, unlikePost, addPrefix } from '@/api/post';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()

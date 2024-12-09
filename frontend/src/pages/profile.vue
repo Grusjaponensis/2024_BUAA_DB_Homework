@@ -2,9 +2,9 @@
     <v-container class="pa-0">
       <v-card class="mx-auto my-8" max-width="400">
         <v-card-title class="headline font-weight-bold">个人资料</v-card-title>
-        <v-card-text class="px-8 pt-6">
+        <v-card-text class="px-8 pt-6" v-if="profile">
           <v-avatar size="128" class="mb-4">
-            <v-img :src="`http://localhost:8000/${profile.avatar_url}`" @click="showAvatarUpload = true"></v-img>
+            <v-img :src="`${addPrefix(profile.avatar_url)}`" @click="showAvatarUpload = true"></v-img>
           </v-avatar>
           <div><strong>昵称:{{ profile.nickname }}</strong></div>
           <div><strong>邮箱:{{ profile.email }}</strong></div>
@@ -75,16 +75,13 @@
   <script setup>
   import { ref, reactive, onMounted } from 'vue';
   import { getProfile, updateProfile, updateAvatar, updatePassword } from '@/api/user';
+  import { addPrefix } from '@/api/post'
   
 const showAvatarUpload = ref(false);
 const showPasswordChange = ref(false);
 const showProfileEdit = ref(false);
 
-const profile = reactive({
-    email: '',
-    nickname: '',
-    avatar_url: '',
-});
+const profile = ref(null);
 const avatarFile = ref(null);
 const newPassword = ref('');
 const oldPassword = ref('');
@@ -94,11 +91,14 @@ const newEmail = ref('');
 const fetchProfile = async () => {
     try {
         const response = await getProfile();
-        profile.email = response.email;
-        profile.nickname = response.nickname;
-        profile.avatar_url = response.avatar_url;
+        profile.value = {
+          email: response.data.email,
+          nickname: response.data.nickname,
+          avatar_url: response.data.avatar_url,
+        }
         newNickname.value = response.nickname;
         newEmail.value = response.email;
+        console.log('个人资料获取成功', profile.value);
     } catch (error) {
         console.error('获取个人资料失败:', error);
     }
