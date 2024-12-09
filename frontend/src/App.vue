@@ -99,6 +99,7 @@ const handleLogout = () => {
   document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";
   // window.location.href = "/";
   router.push("/")
+  showDrawer.value = false;
   console.log("成功推出登录！")
   snackbar_.success("成功退出登录！")
 }
