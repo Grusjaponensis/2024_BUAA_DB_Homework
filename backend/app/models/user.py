@@ -98,9 +98,9 @@ class UserRegister(SQLModel):
     avatar_url: str = DEFAULT
     ```
     """
-    email: EmailStr = Field(default=Form(...), max_length=USER_EMAIL_MAX_LENGTH)
-    password: str = Field(default=Form(...), min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
-    nickname: str | None = Field(default=Form(None), max_length=USER_NICKNAME_MAX_LENGTH)
+    email: EmailStr = Field(max_length=USER_EMAIL_MAX_LENGTH)
+    password: str = Field(min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
+    nickname: str | None = Field(default=None, max_length=USER_NICKNAME_MAX_LENGTH)
 
     
 class UserUpdateProfile(SQLModel):

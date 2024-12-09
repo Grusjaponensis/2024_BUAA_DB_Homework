@@ -47,7 +47,7 @@
   
   <script setup>
   import { ref } from 'vue';
-  
+  import snackbar from '@/api/snackbar';
   const cat = ref({
     name: '',
     age: null,
@@ -76,8 +76,10 @@
         temperament: '',
         photo: '',
       };
+      snackbar.success('提交成功！');
     } catch (error) {
       console.error('添加猫咪失败:', error);
+      snackbar.error('提交失败，请检查输入是否正确');
     }
   };
   </script>

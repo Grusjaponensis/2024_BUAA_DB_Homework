@@ -42,6 +42,7 @@
 <script setup>
 import { ref } from 'vue';
 import { submitApplication } from '@/api/volunteer'; 
+import snackbar from '@/api/snackbar';
 
 const volunteerForm = ref(null);
 const applicant = ref({
@@ -57,8 +58,10 @@ const submitApplication = async () => {
     try {
       await submitApplication(applicant.value);
       console.log('申请提交成功');
+      snackbar.success('申请提交成功');
     } catch (error) {
       console.error('申请提交失败:', error);
+      snackbar.error('申请提交失败');
     }
   }
 };

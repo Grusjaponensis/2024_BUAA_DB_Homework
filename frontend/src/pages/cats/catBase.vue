@@ -1,68 +1,78 @@
 <template>
   <v-container>
-    <v-container>
-      <v-chip-group absolute top left v-if="user.login">
-        <v-chip>
-          剩余罐罐: {{ remainingCans }}
-        </v-chip>
-      </v-chip-group>
-      <v-row>
-        <v-col cols="12" md="4" v-for="cat in cats" :key="cat.id">
-          <!-- <v-card @click="goToCatDetails(cat.id)" class="d-flex flex-column"> -->
-          <v-card lass="d-flex flex-column">
-            <v-img
-              src="https://placekitten.com/200/300"
-              height="200px"
-              class="mx-auto"
-            ></v-img>
-            <v-card-title class="headline">{{ cat.name }}</v-card-title>
-            <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
-            <v-card-subtitle>品种: {{ cat.breed }}</v-card-subtitle>
-            <v-card-subtitle>性格: {{ cat.temperament }}</v-card-subtitle>
-            <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle>
-            <v-card-text>
-              <v-btn
-                text
-                color="primary"
-                class="feed-button"
-                @click="feedCat(cat)"
-              >
-                <v-icon left>mdi-paw</v-icon>
-                投喂
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-footer padless v-if="user.login">
-      <v-row justify="end" no-gutters>
-        <v-btn
-          fab
-          dark
-          fixed
-          bottom
-          right
-          color="primary"
-          to="/cats/addCat"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </v-row>
-    </v-footer>
+  <v-container>
+    <v-chip-group absolute top left v-if="user.login">
+      <v-chip>
+        剩余罐罐: {{ remainingCans }}
+      </v-chip>
+    </v-chip-group>
+    <v-row>
+      <v-col cols="12" md="4" v-for="cat in cats" :key="cat.id">
+        <!-- <v-card @click="goToCatDetails(cat.id)" class="d-flex flex-column"> -->
+        <v-card lass="d-flex flex-column">
+          <v-img
+            src="https://placekitten.com/200/300"
+            height="200px"
+            class="mx-auto"
+          ></v-img>
+          <v-card-title class="headline">{{ cat.name }}</v-card-title>
+          <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
+          <v-card-subtitle>品种: {{ cat.breed }}</v-card-subtitle>
+          <v-card-subtitle>性格: {{ cat.temperament }}</v-card-subtitle>
+          <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle>
+          <v-card-text>
+            <v-btn
+              text
+              color="primary"
+              class="feed-button"
+              @click="feedCat(cat)"
+            >
+              <v-icon left>mdi-paw</v-icon>
+              投喂
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-footer padless v-if="isAdmin && user.login">
+    <v-row justify="end" no-gutters >
+      <v-btn
+        fab
+        dark
+        fixed
+        bottom
+        right
+        color="primary"
+        to="/cats/addCat"
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </v-row>
+  </v-footer>
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { getProfile } from '@/api/user';
 import { user } from '@/api/user';
 import snackbar from '@/api/snackbar';
 
 const cats = ref([]);
-const isAdmin = ref(true);
+const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
+
+const fetchProfile = async () => {
+  try {
+    const response = await getProfile();
+    isAdmin.value = response.data.is_superuser;
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+};
 
 // 模拟数据
 const catsData = {
@@ -121,7 +131,7 @@ const feedCat = (cat) => {
 };
 
 onMounted(() => {
-
+  fetchProfile();
 });
 </script>
 

@@ -80,11 +80,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { getActivities, deleteActivity, signUp, withdraw } from '@/api/activity';
+import { getProfile } from '@/api/user';
+import snackbar from '@/api/snackbar';
 
 const activities = ref([]);
 
 const isVolunteer = ref(false);
-const isAdmin = ref(true);
+const isAdmin = ref(false);
 
 // 模拟数据
 const activitiesData = {
@@ -118,6 +120,15 @@ const activitiesData = {
 
 activities.value = activitiesData.data;
 
+const fetchProfile = async () => {
+  try {
+    const response = await getProfile();
+    isVolunteer.value = response.data.is_volunteer === true;
+    isAdmin.value = response.data.is_superuser === true;
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+};
 
 const fetchactivities = async () => {
   try {
@@ -133,8 +144,10 @@ const removeActivity = async (activity) => {
   try {
     await deleteActivity(activity.id);
     activities.value = activities.value.filter(p => p.id !== activity.id);
+    snackbar.success('删除成功');
   } catch (error) {
     console.error('删除活动失败:', error);
+    snackbar.error('删除失败');
   }
 };
 const signUpActivity = async (activity) => {
@@ -144,8 +157,10 @@ const signUpActivity = async (activity) => {
     // 更新活动列表状态
     const updatedActivity = await getActivities();
     activities.value = updatedActivity;
+    snackbar.success('报名成功');
   } catch (error) {
     console.error('报名失败:', error);
+    snackbar.error('报名失败');
   }
 };
 
@@ -156,8 +171,10 @@ const withdrawActivity = async (activity) => {
     // 更新活动列表状态
     const updatedActivity = await getActivities();
     activities.value = updatedActivity;
+    snackbar.success('退选成功');
   } catch (error) {
     console.error('退选失败:', error);
+    snackbar.error('退选失败');
   }
 };
 
@@ -180,6 +197,7 @@ onMounted(() => {
   //   isAdmin.value = user.is_superuser === true;
   // }
   // fetchactivities();
+  fetchProfile();
 });
 </script>
 
