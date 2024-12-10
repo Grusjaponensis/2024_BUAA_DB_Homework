@@ -1,6 +1,5 @@
 <template>
   <v-container>
-  <v-container>
     <v-chip-group absolute top left v-if="user.login">
       <v-chip>
         剩余罐罐: {{ remainingCans }}
@@ -29,7 +28,7 @@
               color = "blue-darken-3"
               @click="feedCat(cat)"
             >
-              <v-icon left class = "mr - 1">mdi-paw</v-icon>投喂
+              <v-icon left class = "mr-1">mdi-paw</v-icon>投喂
             </v-btn>
             <v-btn 
               rounded="lg"
@@ -45,31 +44,30 @@
       </v-col>
     </v-row>
     <v-dialog v-model="showDeleteDialog" max-width="500px">
-        <v-card>
-          <v-card-title class="headline">
-            确认删除
-          </v-card-title>
-          <v-card-text>
-            确认要删除该猫咪吗？此操作不可恢复。
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
-            <v-btn color="red" @click = "deleteCat(removeCatId)"> 确认</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <v-card>
+        <v-card-title class="headline">
+          确认删除
+        </v-card-title>
+        <v-card-text>
+          确认要删除该猫咪吗？此操作不可恢复。
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
+          <v-btn color="red" @click = "removeCat(removeCatId)"> 确认</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
-  <v-footer padless v-if="isAdmin && user.login">
-    <v-row justify="end" no-gutters >
-      <v-btn
-        color="primary"
-        @click="showAddCatDialog = true"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-row>
-  </v-footer>
-  </v-container>
+  <v-btn
+      color="blue-accent-2"
+      class="elevation-4"
+      style="position: fixed; bottom: 24px; right: 24px;"
+      size="large"
+      @click = "showAddCatDialog = true"
+      v-if = user.login && user.is_superuser
+    >
+    <v-icon>mdi-plus</v-icon>
+    </v-btn>
 
   <v-dialog 
     v-model="showAddCatDialog" 
@@ -139,7 +137,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
-import { getCats,deleteCat, createCat } from '@/api/cat';
+import { getCats, createCat,deleteCat } from '@/api/cat';
 import { user } from '@/api/user';
 import snackbar from '@/api/snackbar';
 
@@ -193,6 +191,10 @@ const submitForm = async () => {
         description: cat_in.value.description,
       },
     };
+    if (cat_in.value.age > 30) {
+      snackbar.error('年龄过大，请重新输入！');
+      return;
+    }
     const response = await createCat(data);
     console.log('提交猫咪信息：', response);
     // 提交后重置表单
@@ -203,6 +205,8 @@ const submitForm = async () => {
       health_condition: null,
       description: '',
     };
+    fetchCats();
+    showAddCatDialog.value = false;
     snackbar.success('提交成功！');
   } catch (error) {
     console.error('添加猫咪失败:', error);
@@ -220,6 +224,7 @@ const fetchProfile = async () => {
     console.error('获取用户信息失败:', error);
   }
 };
+
 const fetchCats = async () => {
   try {
     const response = await getCats();
@@ -228,13 +233,16 @@ const fetchCats = async () => {
     console.error('获取猫咪列表失败:', error);
   }
 };
-const removeCat = async (cat) => {
+
+const removeCat = async (id) => {
   try {
-    const response = await deleteCat(cat.id);
+    const response = await deleteCat(id);
     snackbar.success('删除成功！');
-    cats.value = cats.value.filter((c) => c.id !== cat.id);
+    cats.value = cats.value.filter((c) => c.id !== id);
     fetchCats();
+    showDeleteDialog.value = false;
   } catch (error) {
+    snackbar.error('删除失败');
     console.error('删除失败:', error);
   }
 };
