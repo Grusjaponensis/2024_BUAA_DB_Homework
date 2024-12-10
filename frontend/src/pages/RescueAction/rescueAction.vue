@@ -84,6 +84,9 @@ import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
 import router from '@/router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const activities = ref([]);
 
