@@ -8,7 +8,7 @@
     </v-chip-group>
     <v-row>
       <v-col cols="12" md="4" v-for="cat in cats" :key="cat.id">
-        <v-card class="d-flex flex-column">
+        <v-card class="d-flex flex-column text-center">
         <!-- <v-card lass="d-flex flex-column"> -->
           <v-img
             src="https://placekitten.com/200/300"
@@ -23,21 +23,41 @@
           <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
           <v-card-text>
             <v-btn
-              text
-              color="primary"
-              class="feed-button"
+              rounded="lg"
+              class="mr-2"
+              variant="elevated"
+              color = "blue-darken-3"
               @click="feedCat(cat)"
             >
-              <v-icon left>mdi-paw</v-icon>
-              投喂
+              <v-icon left class = "mr - 1">mdi-paw</v-icon>投喂
             </v-btn>
-            <v-btn icon @click="removeCat(cat)" v-if="isAdmin">
-                <v-icon>mdi-delete</v-icon>
+            <v-btn 
+              rounded="lg"
+              @click="showDeleteDialog = true ; removeCatId = cat.id" 
+              v-if="isAdmin" 
+              class="ml-2" 
+              variant="elevated"
+              color="red darken-1">
+              <v-icon left class = "mr-1">mdi-delete</v-icon>删除
             </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
+    <v-dialog v-model="showDeleteDialog" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            确认删除
+          </v-card-title>
+          <v-card-text>
+            确认要删除该猫咪吗？此操作不可恢复。
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
+            <v-btn color="red" @click = "deleteCat(removeCatId)"> 确认</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
   </v-container>
   <v-footer padless v-if="isAdmin && user.login">
     <v-row justify="end" no-gutters >
@@ -46,8 +66,8 @@
         dark
         fixed
         bottom
-        right
-        color="primary"
+        right = "24px"
+        color="indigo-darken-1"
         to="/cats/addCat"
       >
         <v-icon>mdi-plus</v-icon>
@@ -69,6 +89,8 @@ const cats = ref([]);
 const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
+const showDeleteDialog = ref(false);
+const removeCatId = ref(null);
 
 const fetchProfile = async () => {
   try {
@@ -118,22 +140,3 @@ onMounted(() => {
   fetchCats();
 });
 </script>
-
-<style scoped>
-/* 针对 catBase 页面的特定样式 */
-.feed-button {
-  margin: 4px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  text-transform: none;
-  font-weight: 500;
-  transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-.feed-button:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
-}
-
-</style>

@@ -9,8 +9,8 @@
   
       <!-- 用户卡片列表 -->
       <v-row justify="center">
-        <v-col cols="12" md="4" v-for="profile in acounts" :key="profile.id">
-          <v-card class="mx-auto my-4" max-width="600" rounded="lg" elevation="4">
+        <v-col cols="12" lg="4" xl="3" md="6" v-for="profile in acounts" :key="profile.id">
+          <v-card class="mx-auto my-4" rounded="lg" elevation="4">
             <!-- 头像展示 -->
             <v-card-text class="text-center">
               <v-avatar size="128" class="elevation-4" @click="showAvatarUpload = true">
