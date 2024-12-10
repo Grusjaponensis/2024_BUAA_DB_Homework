@@ -24,22 +24,12 @@
     <v-footer padless>
       <v-row v-if="!isVolunteer && !isAdmin" justify="end" no-gutters>
         <v-btn
-          fab
-          dark
-          fixed
-          bottom
-          right
           color="primary"
           @click = applyToBeVolunteer
         >
           申请成为志愿者
         </v-btn>
         <v-btn
-          fab
-          dark
-          fixed
-          bottom
-          right
           color="primary"
           class="mx-4"  
           @click = myApplications
@@ -50,22 +40,12 @@
 
       <v-row v-if="isAdmin" justify="end" no-gutters>
         <v-btn
-          fab
-          dark
-          fixed
-          bottom
-          right
           color="primary"
           to="/RescueAction/viewApplications"
         >
           查看申请
         </v-btn>
         <v-btn
-          fab
-          dark
-          fixed
-          bottom
-          right
           color="primary"
           class="mx-4"  
           to="/RescueAction/createAction"
