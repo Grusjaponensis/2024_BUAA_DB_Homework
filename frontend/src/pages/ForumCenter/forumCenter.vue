@@ -102,7 +102,7 @@
                 >
                   <v-icon>mdi-tag</v-icon>
                 </v-btn>
-                <span class="caption">标签管理</span>
+                <span class="caption" v-if="isAdmin">标签管理</span>
               </div>
             </v-card-text>
           </v-card>
