@@ -64,6 +64,20 @@
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showIdentityEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
+
+              <v-expand-transition>
+                <div v-show="showStates[profile.id]?.showAvatarUpload" class="mt-8">
+                  <v-file-input
+                    v-model="avatar"
+                    label="上传头像"
+                    prepend-icon="mdi-upload"
+                    accept="image/*"
+                    @change="onAvatarChange"
+                  ></v-file-input>
+                  <v-btn color="primary" @click="updateAvatar">确认上传</v-btn>
+                  <v-btn color="grey" text @click="toggleSection(profile.id, 'showAvatarUpload', false)">取消</v-btn>
+                </div>
+              </v-expand-transition>
             </v-card-text>
   
             <!-- 按钮组 -->
@@ -94,6 +108,16 @@
                 v-if="!profile.is_superuser"
               >
                 <v-icon left class="mr-1">mdi-delete</v-icon> 删除用户
+              </v-btn>
+
+              <v-btn
+                color="purple-accent-3"
+                rounded="lg"
+                variant="elevated"
+                @click="toggleSection(profile.id, 'showAvatarUpload', true)"
+                v-if="profile.is_superuser"
+              >
+              <v-icon left class="mr-1">mdi-image</v-icon> 修改头像
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -148,6 +172,8 @@
   const showAvatarUpload = ref(false);
   const newRole = ref('');
   const showIdentityEdit = ref(false); 
+  const showProfileEdit = ref(false);
+
   // 初始化数据
   onMounted(async () => {
     const users = await getUsers();
@@ -250,6 +276,21 @@
     }
     showDeleteDialog.value = false;
   }
+
+  const onAvatarChange = async () => {
+    try {
+        const formData = new FormData();
+        formData.append('avatar', avatarFile.value);
+        await updateAvatar(formData);
+        console.log('头像更新成功');
+        showAvatarUpload.value = false;
+        snackbar.success('头像更新成功');
+        fetchProfile();
+    } catch (error) {
+        console.error('更新头像失败:', error);
+        snackbar.error('更新头像失败');
+    }
+  };
   </script>
   
   <style scoped>

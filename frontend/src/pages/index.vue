@@ -58,12 +58,12 @@
 
 h1.display-2 {
   color: #00bbff; /* Golden color for the title */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); /* Strong shadow for readability */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Strong shadow for readability */
 }
 
 p.headline {
   color: #39a9ba; /* White color for subtitle */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); /* Strong shadow for readability */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Strong shadow for readability */
 }
 
 .v-card {
