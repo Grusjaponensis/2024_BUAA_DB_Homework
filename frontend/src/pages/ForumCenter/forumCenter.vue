@@ -74,6 +74,7 @@
               bottom
               right
               color="primary"
+              @click = createPost
               to="/ForumCenter/createPost"
             >
               <v-icon>mdi-pencil</v-icon>
@@ -89,7 +90,7 @@
             right
             color="secondary"
             class="mx-4"  
-            to="/ForumCenter/myPosts"
+            @click = myPosts
           >
             <v-icon>mdi-cat</v-icon>
           </v-btn>
@@ -102,7 +103,7 @@
             bottom
             right
             color="light-blue"
-            to="/ForumCenter/myFavorites"
+            @click = myFavorites
           >
             <v-icon>mdi-heart</v-icon>
           </v-btn>
@@ -116,6 +117,8 @@ import { getTags, create, remove } from '@/api/tags';
 import { getProfile } from '@/api/user';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { user } from '@/api/user';
+import snackbar from '@/api/snackbar';
 
 const router = useRouter();
 const posts = ref([]); 
@@ -123,6 +126,33 @@ const isAdmin = ref(false);
 const showDialog = ref(false);
 const tags = ref([]);
 const newTag = ref('');
+
+const myPosts = () => {
+  if (!user.login) {
+    router.push('/login')
+    snackbar.warning('请先登录'); 
+  } else {
+    router.push('/ForumCenter/myPosts');
+  }
+}
+
+const createPost = () => {
+  if (!user.login) {
+    router.push('/login')
+    snackbar.warning('请先登录'); 
+  } else {
+    router.push('/ForumCenter/createPost');
+  }
+}
+
+const myFavorites = () => {
+  if (!user.login) {
+    router.push('/login')
+    snackbar.warning('请先登录'); 
+  } else {
+    router.push('/ForumCenter/myFavorites');
+  }
+}
 
 const fetchTags = async () => {
   try {

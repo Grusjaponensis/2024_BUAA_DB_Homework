@@ -38,13 +38,6 @@
                     outlined
                     :rules="[v => !!v || '昵称不能为空']"
                   ></v-text-field>
-                  <v-text-field
-                    v-model="newEmail"
-                    label="邮箱"
-                    type="text"
-                    outlined
-                    :rules="[v => !!v || '邮箱不能为空']"
-                  ></v-text-field>
                   <v-btn color="primary" @click="updateUserProfile(profile.id)">确认更新</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showProfileEdit', false)">取消</v-btn>
                 </div>
@@ -87,7 +80,7 @@
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showProfileEdit', true)"
               >
-                <v-icon left class="mr-1">mdi-pencil</v-icon> 修改资料
+                <v-icon left class="mr-1">mdi-pencil</v-icon> 修改昵称
               </v-btn>
               <v-btn
                 color="green-accent-2"
@@ -161,7 +154,6 @@
   const acounts = ref([]);
   const showStates = ref({});
   const newNickname = ref("");
-  const newEmail = ref("");
   const oldPassword = ref("");
   const newPassword = ref("");
   const router = useRouter();
@@ -199,7 +191,6 @@
     if (section === "showProfileEdit" && value) {
         const user = acounts.value.find((u) => u.id === id)
         newNickname.value = user.nickname;
-        newEmail.value = user.email;
     }
 
     if (section === "showIdentityEdit" && value) {
@@ -225,19 +216,18 @@
   // 更新个人资料
   const updateUserProfile = async (id) => {
     try {
-      if (!newNickname.value || !newEmail.value || newNickname.value.trim() === '' || newEmail.value.trim() === '') {
+      if (!newNickname.value || newNickname.value.trim() === '') {
         snackbar.error('昵称或邮箱不能为空');
         return;
       }
       const profileData = {
-        email: newEmail.value,
         nickname: newNickname.value,
       };
       const response = await updateProfileByAdmin(id , profileData);
-      console.log('个人资料更新成功', response);
+      console.log('昵称修改成功', response);
       showProfileEdit.value = false;
       await fetchProfile();
-      snackbar.success('个人资料更新成功');
+      snackbar.success('昵称修改成功');
       toggleSection(id, "showProfileEdit", false);
     } catch (error) {
       console.error('更新个人资料失败:', error);
