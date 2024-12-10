@@ -85,11 +85,45 @@
               >
                 <v-icon left class="mr-1">mdi-image</v-icon> 设置身份
               </v-btn>
+
+              <v-btn
+                color="red-accent-4"
+                rounded="lg"
+                variant="elevated"
+                @click="showDeleteDialog = true; deleteId = profile.id"
+                v-if="!profile.is_superuser"
+              >
+                <v-icon left class="mr-1">mdi-delete</v-icon> 删除用户
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
+
+      <v-dialog v-model="showDeleteDialog" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            确认删除
+          </v-card-title>
+          <v-card-text>
+            确认要删除该用户吗？此操作不可恢复。
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
+            <v-btn color="red" @click = "deleteUser(deleteId)"> 确认</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
+    <v-btn
+      color="blue-accent-3"
+      class="elevation-4"
+      style="position: fixed; bottom: 24px; right: 24px;"
+      size="large"
+      to = "/signup"
+    >
+    <v-icon>mdi-plus</v-icon>
+    </v-btn>
   </template>
   
   <script setup>
@@ -97,7 +131,8 @@
   import { getUsers } from "../api/superuser";
   import { addPrefix } from "../api/post";
   import snackbar from '../api/snackbar'
-  import { updateProfileByAdmin } from '@/api/user';
+  import { useRouter } from 'vue-router';
+  import { updateProfileByAdmin , deleteUserByAdmin } from '@/api/user';
   
   const count = ref(0);
   const acounts = ref([]);
@@ -106,6 +141,9 @@
   const newEmail = ref("");
   const oldPassword = ref("");
   const newPassword = ref("");
+  const router = useRouter();
+  const showDeleteDialog = ref(false);
+  const deleteId = ref(0);
 
   const showAvatarUpload = ref(false);
   const newRole = ref('');
@@ -197,6 +235,20 @@
         console.error('设置身份失败:', error);
         snackbar.error('设置身份失败');
     }
+  }
+
+  const deleteUser = async(id) => {
+    try {
+      const response = await deleteUserByAdmin(id);
+      console.log('删除用户成功', response);
+      acounts.value = acounts.value.filter((user) => user.id !== id);
+      count.value = count.value - 1;
+      snackbar.success('删除用户成功');
+    } catch (error) {
+      console.error('删除用户失败:', error);
+      snackbar.error('删除用户失败');
+    }
+    showDeleteDialog.value = false;
   }
   </script>
   

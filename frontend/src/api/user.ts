@@ -59,8 +59,11 @@ export const signup = async (email: string, password: string, nickname: string) 
             { email, password, nickname },
             { "Content-Type": "application/json" }
         );
+
         if (response != null && response.status === 200) {
             snackbar.success("注册成功");
+        } else if (response != null && response.status === 409) {
+            snackbar.error("邮箱已被注册");
         } else {
             snackbar.error("注册失败");
             console.log(response)
@@ -112,6 +115,16 @@ export const updateProfileByAdmin = async ( userId: number , profileData: any) =
         return response.data;
     } catch (error) {
         console.error('更新个人资料失败:', error);
+        throw error;
+    }
+}
+
+export const deleteUserByAdmin = async (userId: number) => {
+    try {
+        const response = await server._delete(`/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('删除用户失败:', error);
         throw error;
     }
 }

@@ -37,6 +37,7 @@ const post = async (url: string, data?: any, headers = {})=> {
 		return res
 	} catch (error) {
 		console.error(error);
+		return error;
 	}
 };
 
@@ -77,6 +78,7 @@ const _delete = async (url: string, data?: any) => {
 		console.error(error);
 	}
 }
+
 const patch = async (url: string, data?: any, headers = {}) => {
 	if (document.cookie.includes('access_token=')) {
 	  headers = {
