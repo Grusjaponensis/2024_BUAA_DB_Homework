@@ -170,7 +170,8 @@ async def update_post(
     session: SessionDep, 
     current_user: CurrentUser, 
     id: uuid.UUID, 
-    post_in: PostUpdate = Depends(), 
+    title: str | None = Form(default=None), 
+    content: str | None = Form(default=None), 
     tags: List[str] | None = Form(default=None),
     keep_images: List[str] | None = Form(default=None),
     upload_images: list[UploadFile] | None = File(default=None)
@@ -208,7 +209,8 @@ async def update_post(
     post = session.get(Post, id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    post.sqlmodel_update(post_in.model_dump(exclude_defaults=True))
+    post.title = title or post.title
+    post.content = content or post.content
     post.tags.clear()
     if tags:
         for tag in tags:
