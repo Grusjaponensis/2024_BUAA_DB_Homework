@@ -83,7 +83,6 @@ import { getActivities, deleteActivity, signUp, withdraw } from '@/api/activity'
 import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
-import router from '@/router';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
