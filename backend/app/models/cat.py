@@ -112,6 +112,11 @@ class CatCreate(CatBase):
 
 # - MARK: CatLocCreate
 class CatLocationCreate(BaseModel):
+    """
+    Data model for creating a new cat location:
+    - longitude: Longitude of the location (-180 to 180)
+    - latitude: Latitude of the location (-90 to 90)
+    """
     longitude: float = Field(ge=-180, le=180)
     latitude: float = Field(ge=-90, le=90)
 
@@ -164,6 +169,7 @@ class CatPublic(BaseModel):
     health_condition: int
     description: str | None = None
     created_at: datetime.datetime
+    image_urls: list[str] = []
 
 
 class CatsPublic(BaseModel):
