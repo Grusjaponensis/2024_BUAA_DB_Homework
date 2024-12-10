@@ -19,11 +19,11 @@
             ></v-textarea>
 
             <!-- 显示图片并允许删除 -->
-            <div v-if="post.keep_images && post.keep_images.length > 0">
+            <div v-if="post.keep_images && post.keep_images.length > 0"  style="margin: auto;">
                 <v-img
                 v-for="(image, index) in post.keep_images"
                 :key="index"
-                :src="image"
+                :src="`${addPrefix(image)}`"
                 class="mb-3"
                 max-width="100%"
                 max-height="300px"
@@ -46,7 +46,7 @@
             <v-select
               v-if="showTags"
               v-model="post.tags"
-              :items="allTags"
+              :items="allTags.map((tag) => tag.name)"
               multiple
               chips
               label="Tags"
@@ -67,7 +67,7 @@
   
   <script setup>
   import { ref, computed, onMounted } from 'vue';
-  import { getPost, updatePost } from '@/api/post';
+  import { getPost, updatePost, addPrefix } from '@/api/post';
   import { getTags } from '@/api/tags';
   import { useRouter } from 'vue-router';
   import { useRoute } from 'vue-router';
@@ -112,34 +112,58 @@
   // 提交帖子
   const submitPost = async () => {
     if (isFormValid.value) {
-        try {
-        const formData = new FormData();
-        formData.append('tags', null);
-        if (post.value.keep_images.length > 0) {
-            post.value.keep_images.forEach((image, index) => {
-            formData.append('keep_images', image);
-            });
-        }
-        if (post.value.upload_images.length > 0) {
-            post.value.upload_images.forEach((image, index) => {
-            formData.append('upload_images', image);
-            });
-        }
+        // try {
+        // const formData = new FormData();
+        // formData.append('tags', post.value.tags.join(','));
+        // if (post.value.keep_images.length > 0) {
+        //     post.value.keep_images.forEach((image, index) => {
+        //     formData.append('keep_images', image);
+        //     });
+        // }
+        // if (post.value.upload_images.length > 0) {
+        //     post.value.upload_images.forEach((image, index) => {
+        //     formData.append('upload_images', image);
+        //     });
+        // }
 
-        const params = {
-            title: post.value.title,
-            content: post.value.content,
-            cat_id: "string",
-        };
-        console.log('params', params);
-        console.log('formData', formData);
-        const response = await updatePost(post.value.id, params, formData);
-        console.log('帖子更新成功', response);
-        snackbar.success('帖子更新成功');
-        router.push('/ForumCenter/myPosts');
+        // const params = {
+        //     title: post.value.title,
+        //     content: post.value.content,
+        //     cat_id: "string",
+        // };
+        // console.log('params', params);
+        // console.log('formData', formData);
+        // const response = await updatePost(post.value.id, params, formData);
+        // console.log('帖子更新成功', response);
+        // snackbar.success('帖子更新成功');
+        // router.push('/ForumCenter/myPosts');
+        // } catch (error) {
+        // console.error('更新帖子失败:', error);
+        // snackbar.error('更新帖子失败');
+        // }
+        try {
+          const formData = new FormData();
+          formData.append('title', post.value.title);
+          formData.append('content', post.value.content);
+          formData.append('tags', post.value.tags);
+          if (post.value.keep_images.length > 0) {
+            post.value.images.forEach((image, index) => {
+              formData.append(`keep_images`, image);
+            });
+          }
+          if (post.value.upload_images.length > 0) {
+            post.value.upload_images.forEach((image, index) => {
+              formData.append(`upload_images`, image);
+            });
+          }
+          console.log('formData', formData.get('content'));
+          const response = await updatePost(post.value.id, formData);
+          console.log('帖子更新成功', response);
+          snackbar.success('帖子更新成功');
+          router.push('/ForumCenter/myPosts');
         } catch (error) {
-        console.error('更新帖子失败:', error);
-        snackbar.error('更新帖子失败');
+          console.error('更新帖子失败:', error);
+          snackbar.error('更新帖子失败');
         }
     }
     };

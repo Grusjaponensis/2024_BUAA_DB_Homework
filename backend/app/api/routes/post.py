@@ -16,7 +16,7 @@ from app.api.deps import (
     get_current_superuser
 )
 from app.models.post import (
-    Post, PostPublic, PostsPublic, PostCreate, 
+    Post, PostPublic, PostsPublic, PostTagCreate, 
     PostTag, PostUpdate, PostTagPublic, PostMedia,
     Like
 )
@@ -148,6 +148,21 @@ async def create_post(
     return response
 
 
+# - MARK: sudo create tag
+@router.post("/tags", response_model=PostTagPublic, dependencies=[Depends(get_current_superuser)], tags=["superuser"])
+async def create_tag_by_superuser(
+    session: SessionDep, current_user: CurrentUser, tag_in: PostTagCreate
+) -> PostTagPublic:
+    """
+    Create a new tag by superuser
+    """
+    tag = PostTag(name=tag_in.name, user_id=current_user.id)
+    session.add(tag)
+    session.commit()
+    session.refresh(tag)
+    return PostTagPublic(**tag.model_dump())
+
+
 # - MARK: update post
 @router.patch("/{id}", response_model=PostPublic)
 async def update_post(
@@ -232,6 +247,20 @@ async def update_post(
     response.images = [image.image_url for image in post.images]
     # Notice that like_status and likes_number are not included in the response, use the old values instead
     return response
+
+
+# - MARK: sudo delete tag
+@router.delete("/tags/{tag_id}", dependencies=[Depends(get_current_superuser)], tags=["superuser"])
+async def delete_tag_by_superuser(*, session: SessionDep, tag_id: uuid.UUID):
+    """
+    Delete a tag by superuser
+    """
+    tag = session.get(PostTag, tag_id)
+    if not tag:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    session.delete(tag)
+    session.commit()
+    return JSONResponse(status_code=200, content={"message": "删除成功"})
 
 
 # - MARK: delete post

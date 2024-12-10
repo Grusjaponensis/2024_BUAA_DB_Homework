@@ -25,7 +25,7 @@
           <v-select
             v-if="showTags"
             v-model="post.tags"
-            :items="allTags"
+            :items="allTags.map(tag => tag.name)"
             multiple
             chips
             label="Tags"
@@ -73,7 +73,7 @@ const submitPost = async () => {
       const formData = new FormData();
       formData.append('title', post.value.title);
       formData.append('content', post.value.content);
-      formData.append('tags', JSON.stringify(post.value.tags));
+      formData.append('tags', post.value.tags);
       if (post.value.images.length > 0) {
         post.value.images.forEach((image, index) => {
           formData.append(`upload_images`, image);
@@ -97,6 +97,7 @@ const showTags = ref(false);
 const fetchTags = async () => {
   const data = await getTags();
   allTags.value = data;
+  console.log('所有标签', allTags.value);
 };
 
 watchEffect(() => {
