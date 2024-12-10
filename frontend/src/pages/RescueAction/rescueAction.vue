@@ -6,10 +6,10 @@
         <v-col v-for="activity in activities" :key="activity.id" cols="12" md="4">
           <v-card>
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
-            <v-card-subtitle>需要志愿者: {{ activity.volunteersSignedUp }}/{{ activity.volunteerNeeded }}</v-card-subtitle>
-            <v-card-subtitle>行动时间: {{ activity.startTime }} - {{ activity.endTime }}</v-card-subtitle>
-            <v-card-subtitle>行动地点: {{ activity.activityLocation }}</v-card-subtitle>
-            <v-card-subtitle>报名时段: {{ activity.signupStartTime }} - {{ activity.signupEndTime }}</v-card-subtitle>
+            <v-card-subtitle>需要志愿者: 0/{{ activity.max_participants }}</v-card-subtitle>
+            <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
+            <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
+            <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="isVolunteer || isAdmin">
               <v-btn v-if="canSignUp(activity) && !isSignedUp(activity)" color="primary" @click="signUpActivity(activity)">报名</v-btn>
@@ -93,36 +93,36 @@ const isVolunteer = ref(false);
 const isAdmin = ref(false);
 
 // 模拟数据
-const activitiesData = {
-  data: [
-    { 
-      id: 1,
-      title: '清理路障',
-      volunteerNeeded: 8,
-      volunteersSignedUp: 3,
-      startTime: '2024-01-01 10:00:00',
-      endTime: '12:00:00',
-      activityLocation: '校园中路',
-      signupStartTime: '20224-01-01 09:00:00',
-      signupEndTime: '11:00:00',
-      description: '清理路障，为学生提供便利。',
-    },
-    { 
-      id: 2,
-      title: '清理垃圾',
-      volunteerNeeded: 10,
-      volunteersSignedUp: 5,
-      startTime: '2024-01-02 10:00:00',
-      endTime: '12:00:00',
-      activityLocation: '绿园',
-      signupStartTime: '2024-01-02 09:00:00',
-      signupEndTime: '11:00:00',
-      description: '清理垃圾，为学生提供便利。',
-    },
-  ],
-};
+// const activitiesData = {
+//   data: [
+//     { 
+//       id: 1,
+//       title: '清理路障',
+//       volunteerNeeded: 8,
+//       volunteersSignedUp: 3,
+//       startTime: '2024-01-01 10:00:00',
+//       endTime: '12:00:00',
+//       activityLocation: '校园中路',
+//       signupStartTime: '20224-01-01 09:00:00',
+//       signupEndTime: '11:00:00',
+//       description: '清理路障，为学生提供便利。',
+//     },
+//     { 
+//       id: 2,
+//       title: '清理垃圾',
+//       volunteerNeeded: 10,
+//       volunteersSignedUp: 5,
+//       startTime: '2024-01-02 10:00:00',
+//       endTime: '12:00:00',
+//       activityLocation: '绿园',
+//       signupStartTime: '2024-01-02 09:00:00',
+//       signupEndTime: '11:00:00',
+//       description: '清理垃圾，为学生提供便利。',
+//     },
+//   ],
+// };
 
-activities.value = activitiesData.data;
+// activities.value = activitiesData.data;
 
 const myApplications = () => {
   if (!user.login) {
@@ -157,7 +157,8 @@ const fetchProfile = async () => {
 const fetchactivities = async () => {
   try {
     const response = await getActivities();
-    activities.value = response.data;
+    activities.value = response;
+    console.log("获取行动信息成功:", response);
   } catch (error) {
     console.error('获取行动信息失败:', error);
   }
@@ -220,7 +221,7 @@ onMounted(() => {
   //   isVolunteer.value = user.is_volunteer === true;
   //   isAdmin.value = user.is_superuser === true;
   // }
-  // fetchactivities();
+  fetchactivities();
   fetchProfile();
 });
 </script>
