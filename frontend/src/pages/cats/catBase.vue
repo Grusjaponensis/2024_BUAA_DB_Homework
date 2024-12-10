@@ -259,7 +259,7 @@ const feedCat = (cat) => {
     remainingCans.value--;
     cat.cans++;
   } else {
-    alert('已达每日投喂上限！');
+    snackbar.warning('已到达每日投喂上限');
   }
 };
 
