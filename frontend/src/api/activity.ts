@@ -7,7 +7,7 @@ export const getActivities = async () => {
 
 export const deleteActivity = async (id: string) => {
   try {
-    const response = await server._delete(`/activities/${id}`,id);
+    const response = await server._delete(`/activities/${id}`);
     return response.data;
   } catch (error) {
     console.error('删除活动失败:', error);
@@ -16,7 +16,7 @@ export const deleteActivity = async (id: string) => {
 };
 
 export const createActivity = async (data: any) => {
-  return await server.post('/activities/', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  return await server.post('/activities/', data);
 };
 
 // 报名

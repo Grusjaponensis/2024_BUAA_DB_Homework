@@ -112,21 +112,22 @@ const menu = ref(false);
 const submitactivity = async () => {
   if (isFormValid.value && activity.value) { 
     try {
-      const formData = new FormData();
-      formData.append('name', activity.value.name);
-      formData.append('startTime', activity.value.startTime);
-      formData.append('endTime', activity.value.endTime);
-      formData.append('signupStartTime', activity.value.signupStartTime);
-      formData.append('signupEndTime', activity.value.signupEndTime);
-      formData.append('location', activity.value.location);
-      formData.append('volunteerCount', activity.value.volunteerCount);
-      formData.append('description', activity.value.description);
+      const data = {
+        type: "rescue",
+        title: activity.value.name,
+        description: activity.value.description,
+        location: activity.value.location,
+        starts_at: activity.value.startTime,
+        ends_at: activity.value.endTime,
+        signup_starts_at: activity.value.signupStartTime,
+        signup_ends_at: activity.value.signupEndTime,
+        max_participants: activity.value.volunteerCount,
+      }
 
-
-      const response = await createActivity(formData);
-      console.log('活动提交成功', response.data.id);
+      const response = await createActivity(data);
+      console.log('活动提交成功', response);
       snackbar.success('活动提交成功');
-      router.push('/RescueAction'); 
+      router.push('/RescueAction/rescueAction'); 
     } catch (error) {
       console.error('活动提交失败:', error);
       snackbar.error('活动提交失败');
