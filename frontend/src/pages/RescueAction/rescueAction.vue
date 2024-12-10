@@ -83,6 +83,7 @@ import { getActivities, deleteActivity, signUp, withdraw } from '@/api/activity'
 import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
+import router from '@/router';
 
 const activities = ref([]);
 
@@ -123,7 +124,8 @@ activities.value = activitiesData.data;
 
 const myApplications = () => {
   if (!user.login) {
-    snackbar.error('请先登录');
+    router.push('/login');
+    snackbar.warning('请先登录');
     return;
   } else {
     router.push('/RescueAction/myApplications');
@@ -132,7 +134,8 @@ const myApplications = () => {
 
 const applyToBeVolunteer = () => {
   if (!user.login) {
-    snackbar.error('请先登录');
+    router.push('/login');
+    snackbar.warning('请先登录');
     return;
   } else {
     router.push('/RescueAction/applyToBeVolunteer');
