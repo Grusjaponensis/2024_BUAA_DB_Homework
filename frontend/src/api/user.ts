@@ -139,32 +139,42 @@ export const getProfileByAdmin = async ( userId: number) => {
     }
 }
 
-// 更新用户头像
 export const updateAvatar = async (formData: FormData) => {
-try {
-    const response = await server.patch("/users/profile/avatar", formData, {
-    headers: {
-        "Content-Type": "multipart/form-data",
-    },
-    });
-    return response.data; 
-} catch (error) {
-    console.error('更新头像失败:', error);
-    throw error; 
-}
+    try {
+        const response = await server.patch("/users/profile/avatar", formData,{
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        if (response != null && response.status === 200) {
+            snackbar.success("更新头像成功");
+        } else {
+            snackbar.error("更新头像失败");
+            console.log(response)
+            if (response != null && response.data.detail) {
+                throw new Error(response.data.detail || '更新头像失败');
+            } else {
+                throw new Error("更新头像失败");
+            }
+        }
+    } catch (error) {
+        snackbar.error("更新头像出错");
+        console.error('更新头像失败:', error);
+        throw error; 
+    }
 };
 
 // 更新用户密码
 export const updatePassword = async (formData: FormData) => {
-try {
-    const response = await server.patch("/users/profile/password", formData, {
-    headers: {
-        "Content-Type": "multipart/form-data",
-    },
-    });
-    return response.data; 
-} catch (error) {
-    console.error('更新密码失败:', error);
-    throw error; 
-}
+    try {
+        const response = await server.patch("/users/profile/password", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+        });
+        return response.data; 
+    } catch (error) {
+        console.error('更新密码失败:', error);
+        throw error; 
+    }
 };

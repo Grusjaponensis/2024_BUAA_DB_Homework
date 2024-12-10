@@ -152,7 +152,6 @@ const updateUserAvatar = async () => {
         fetchProfile();
     } catch (error) {
         console.error('更新头像失败:', error);
-        snackbar.error('更新头像失败');
     }
 };
 
