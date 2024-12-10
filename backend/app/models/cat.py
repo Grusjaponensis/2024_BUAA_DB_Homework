@@ -57,8 +57,23 @@ class Cat(CatBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     
     # relationships
+    images: list["CatMedia"] = Relationship(back_populates="cat_ref", cascade_delete=True)
     locations: list["CatLocation"] = Relationship(back_populates="cat_ref", cascade_delete=True)
         
+
+class CatMedia(SQLModel, table=True):
+    """
+    CatMedia model representing the table:
+    - id: Primary key (UUID, auto-generated)
+    - cat_id: Foreign key to Cat (UUID)
+    - image_url: URL of the image
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    cat_id: uuid.UUID = Field(foreign_key="cat.id", index=True, ondelete="CASCADE")
+    image_url: str
+
+    # relationships
+    cat_ref: Cat = Relationship(back_populates="images")
 
 # - MARK: CatLocation
 class CatLocation(SQLModel, table=True):

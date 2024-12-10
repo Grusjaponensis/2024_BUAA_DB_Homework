@@ -17,7 +17,7 @@ from app.models.user import (
     ActivityRegistration, User, Activity,
     VolunteerApplication
 )
-from app.models.volunteer import ActivityRegistrationUpdate
+from app.models.volunteer import ActivityRegistrationUpdate, VolunteerApplicationCreate, VolunteerApplicationUpdate
 from app.core.config import settings
 
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # - MARK: sudo all registrations
-@router.get("/", response_model=list[ActivityRegistration], dependencies=[Depends(get_current_superuser)], tags=["superuser"])
+@router.get("/", response_model=list[ActivityRegistration], dependencies=[Depends(get_current_superuser)], tags=["superuser", "registration"])
 async def get_all_activity_registrations(session: SessionDep):
     """
     Get all activity registrations by superuser
@@ -37,7 +37,7 @@ async def get_all_activity_registrations(session: SessionDep):
 
 
 # - MARK: my registrations
-@router.get("/my", response_model=list[ActivityRegistration])
+@router.get("/my", response_model=list[ActivityRegistration], tags=["registration"])
 async def get_activity_registrations_for_volunteer(
     session: SessionDep,
     current_user: CurrentUser
@@ -54,7 +54,8 @@ async def get_activity_registrations_for_volunteer(
     return [ActivityRegistration(**application.model_dump()) for application in applications]
 
 
-@router.get("/applications", response_model=list[VolunteerApplication])
+# - MARK: get all applications
+@router.get("/applications", response_model=list[VolunteerApplication], tags=["superuser", "application"])
 async def get_volunteer_applications(
     session: SessionDep,
     current_user: CurrentUser
@@ -71,8 +72,9 @@ async def get_volunteer_applications(
     applications = session.exec(select(VolunteerApplication).where(VolunteerApplication.user_id == current_user.id))
     return [VolunteerApplication(**application.model_dump()) for application in applications]
 
+
 # - MARK: get registration by id
-@router.get("/{activity_id}", response_model=ActivityRegistration)
+@router.get("/{activity_id}", response_model=ActivityRegistration, tags=["registration"])
 async def get_activity_registration_by_id(
     session: SessionDep, current_user: CurrentUser, activity_id: uuid.UUID
 ):
@@ -88,8 +90,32 @@ async def get_activity_registration_by_id(
     return application
 
 
+# - MARK: create application
+@router.post("/applications", tags=["application"])
+async def apply_to_be_volunteer(
+    session: SessionDep,
+    current_user: CurrentUser,
+    volunteer_application_in: VolunteerApplicationCreate
+):
+    """
+    Apply to be a volunteer
+    """
+    if current_user.is_volunteer or current_user.is_superuser:
+        raise HTTPException(status_code=400, detail="You are already a volunteer or a superuser")
+    
+    exist_application = session.exec(select(VolunteerApplication).where(VolunteerApplication.user_id == current_user.id)).first()
+    if exist_application:
+        raise HTTPException(status_code=400, detail="You have already applied for volunteer")
+    
+    new_application = VolunteerApplication(**volunteer_application_in.model_dump(), user_id=current_user.id)
+    session.add(new_application)
+    session.commit()
+    session.refresh(new_application)
+    return JSONResponse(status_code=201, content={"message": "Application submitted successfully"})
+    
+
 # - MARK: create registration
-@router.post("/{activity_id}", response_model=ActivityRegistration)
+@router.post("/{activity_id}", response_model=ActivityRegistration, tags=["registration"])
 async def create_activity_registration(
     session: SessionDep,
     current_user: CurrentUser,
@@ -115,8 +141,39 @@ async def create_activity_registration(
     return new_registration
     
     
-# - MARK: update registration
-@router.patch("/{activity_id}", response_model=ActivityRegistration, dependencies=[Depends(get_current_superuser)], tags=["superuser"])
+# - MARK: sudo update application
+@router.patch(
+    "/applications/{application_id}", 
+    dependencies=[Depends(get_current_superuser)], tags=["superuser", "application"]
+)
+async def update_activity_registration_by_id(
+    session: SessionDep,
+    application_id: uuid.UUID,
+    volunteer_application_in: VolunteerApplicationUpdate
+):
+    """
+    Update a volunteer registration status by id, perform by superuser
+    """
+    application = session.get(VolunteerApplication, application_id)
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    application.sqlmodel_update(volunteer_application_in.model_dump(exclude_unset=True))
+    application.updated_at = datetime.datetime.now(settings.UTC_8)
+    
+    session.add(application)
+    session.commit()
+    session.refresh(application)
+    
+    return application
+
+
+# - MARK: sudo update registration
+@router.patch(
+    "/{activity_id}", 
+    response_model=ActivityRegistration, 
+    dependencies=[Depends(get_current_superuser)], tags=["superuser", "registration"]
+)
 async def update_activity_registration(
     session: SessionDep,
     applicant_id: uuid.UUID, # user_id

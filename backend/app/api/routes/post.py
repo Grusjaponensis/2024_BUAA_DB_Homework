@@ -20,6 +20,7 @@ from app.models.post import (
     PostTag, PostUpdate, PostTagPublic, PostMedia,
     Like
 )
+from app.models.cat import Cat
 from app.util.utils import save_file, remove_file
 from app.core.config import settings
 
@@ -110,6 +111,7 @@ async def create_post(
     current_user: CurrentUser, 
     title: str = Form(...), 
     content: str = Form(...), 
+    cat_id: uuid.UUID | None = Form(default=None),
     tags: List[str] | None = Form(default=None),
     upload_images: list[UploadFile] | None = File(default=None)
 ) -> PostPublic:
@@ -119,7 +121,10 @@ async def create_post(
     ### 如果选择的tag为空也**必须保留tag字段**，但是如果上传文件为空则不需要保留upload_images字段!
     """
     post = Post(title=title, content=content, user_id=current_user.id)
-    # TODO: link with cats
+    if cat_id:
+        cat = session.get(Cat, cat_id)
+        post.cat_id = cat_id if cat else None
+
     if tags:
         logger.info(f"tags: {tags}")
         for tag in tags:
@@ -143,7 +148,6 @@ async def create_post(
     response.tags = [tag.name for tag in post.tags]
     response.images = [image.image_url for image in post.images]
     response.like_status = False
-    # TODO: should I return all tags?
     
     return response
 
