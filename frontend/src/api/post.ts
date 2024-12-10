@@ -19,25 +19,38 @@ export const createPost = async (data: any) => {
   return await server.post('/posts/', data, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
 
-export const updatePost = async (id: string, params: any, data: any) => {
-  let headers = {};
-  if (document.cookie.includes('access_token=')) {
-    headers = {
-      ...headers,
-      'Authorization': 'Bearer ' + document.cookie.split('access_token=')[1].split(';')[0],
-      'Content-Type': 'multipart/form-data',
-    };
-  }
+// export const updatePost = async (id: string, params: any, data: any) => {
+//   let headers = {};
+//   if (document.cookie.includes('access_token=')) {
+//     headers = {
+//       ...headers,
+//       'Authorization': 'Bearer ' + document.cookie.split('access_token=')[1].split(';')[0],
+//       'Content-Type': 'multipart/form-data',
+//     };
+//   }
 
+//   try {
+//     const response = await server.patch(`/posts/${id}`, data, {
+//       params, 
+//       headers, 
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error('更新帖子失败:', error);
+//     throw error;
+//   }
+// };
+export const updatePost = async (id: string, data: any) => {
   try {
     const response = await server.patch(`/posts/${id}`, data, {
-      params, 
-      headers, 
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
-    return response.data;
+    return response.data; 
   } catch (error) {
-    console.error('更新帖子失败:', error);
-    throw error;
+    console.error(`更新帖子失败: ${error}`);
+    throw error; 
   }
 };
 

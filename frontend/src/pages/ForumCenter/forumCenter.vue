@@ -17,7 +17,7 @@
           <ul>
             <li v-for="tag in tags" :key="tag.id">
               {{ tag.name }}
-              <button @click="removeTag(tag)"><v-icon>mdi-delete</v-icon></button>
+              <button @click="removeTag(tag)"><v-icon>mdi-close</v-icon></button>
             </li>
           </ul>
           <div class="input-group" >
@@ -34,7 +34,13 @@
             <v-list-item
               v-for="post in posts"
               :key="post.id"
-              class="my-2"
+              class="post-card my-4"
+            >
+            <v-card
+              class="pa-4 post-card"
+              color="#fff"
+              elevation="4"
+              hover
             >
               <v-list-item-content @click="goToPostDetails(post.id)">
                 <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
@@ -54,6 +60,7 @@
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </v-list-item-action>
+            </v-card>
             </v-list-item>
           </v-list>
         </v-container>
@@ -151,6 +158,7 @@ const fetchTags = async () => {
   try {
     const response = await getTags();
     tags.value = response;
+    console.log(tags.value);
   } catch (error) {
     console.error('获取标签列表失败:', error);
   }
@@ -262,5 +270,59 @@ input {
 .input-group input {
   flex-grow: 1;
   margin-right: 10px;
+}
+
+/* 添加渐变背景 */
+body {
+  background: linear-gradient(135deg, #74b9ff, #ff7777);
+}
+
+/* 美化帖子卡片 */
+.post-card {
+  border-radius: 10px; /* 圆角 */
+  transition: transform 0.3s ease-in-out; /* 平滑变换 */
+}
+
+.post-card:hover {
+  transform: translateY(-5px); /* 鼠标悬停时上移 */
+}
+
+/* 美化操作按钮 */
+.v-btn {
+  transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
+}
+
+.v-btn:hover {
+  background-color: #e0e0e0; /* 鼠标悬停时的背景色 */
+}
+
+/* 标签管理卡片美化 */
+.tag-management-card {
+  border-radius: 10px; /* 圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影 */
+}
+
+/* 增加输入框和按钮的美观性 */
+.input-group button {
+  border: none;
+  background-color: #ff7777;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.input-group button:hover {
+  background-color: #e06c6c;
+}
+
+/* 底部按钮美化 */
+.v-footer .v-btn {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.v-footer .v-btn:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 </style>
