@@ -37,7 +37,7 @@
                 outlined
                 dense
               ></v-select>
-              <div class="mt-8">
+              <!-- <div class="mt-8">
                 <v-file-input
                   v-model="avatarFile"
                   label="上传图片"
@@ -46,7 +46,7 @@
                   outlined
                   dense
                 ></v-file-input>
-              </div>
+              </div> -->
               <v-textarea
                 v-model="cat_in.description"
                 label="对猫咪的描述"
@@ -62,6 +62,7 @@
                 rounded
                 class="mt-4"
                 block
+                to="/cats/catBase"
               >
                 加入猫咪大军
               </v-btn>
