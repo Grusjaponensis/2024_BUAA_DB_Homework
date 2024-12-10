@@ -144,7 +144,11 @@ const updateUserProfile = async () => {
 const updateUserAvatar = async () => {
     try {
         const formData = new FormData();
-        formData.append('avatar', avatarFile.value);
+        formData.append('upload_avatar', avatarFile.value);
+        if (avatarFile.value === null) {
+          snackbar.error('请选择头像文件');
+          return;
+        }
         await updateAvatar(formData);
         console.log('头像更新成功');
         showAvatarUpload.value = false;

@@ -16,7 +16,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar elevation="20" dark prominent>
+    <v-app-bar elevation="5" dark prominent>
       <template #prepend>
         <v-btn icon="mdi-menu" @click="showDrawer = !showDrawer"></v-btn>
       </template>

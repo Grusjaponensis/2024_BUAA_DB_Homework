@@ -68,13 +68,12 @@
               <v-expand-transition>
                 <div v-show="showStates[profile.id]?.showAvatarUpload" class="mt-8">
                   <v-file-input
-                    v-model="avatar"
+                    v-model="avatarFile"
                     label="上传头像"
-                    prepend-icon="mdi-upload"
+                    placeholder="点击上传头像"
                     accept="image/*"
-                    @change="onAvatarChange"
                   ></v-file-input>
-                  <v-btn color="primary" @click="updateAvatar">确认上传</v-btn>
+                  <v-btn color="primary" @click="onAvatarUpload(profile.id)">确认上传</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showAvatarUpload', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -156,7 +155,7 @@
   import { addPrefix } from "../api/post";
   import snackbar from '../api/snackbar'
   import { useRouter } from 'vue-router';
-  import { updateProfileByAdmin , deleteUserByAdmin } from '@/api/user';
+  import { updateProfileByAdmin , deleteUserByAdmin , updateAvatar } from '@/api/user';
   
   const count = ref(0);
   const acounts = ref([]);
@@ -166,6 +165,7 @@
   const oldPassword = ref("");
   const newPassword = ref("");
   const router = useRouter();
+  const avatarFile = ref(null);
   const showDeleteDialog = ref(false);
   const deleteId = ref(0);
 
@@ -277,18 +277,21 @@
     showDeleteDialog.value = false;
   }
 
-  const onAvatarChange = async () => {
+  const onAvatarUpload = async (id) => {
     try {
         const formData = new FormData();
-        formData.append('avatar', avatarFile.value);
+        formData.append('upload_avatar', avatarFile.value);
+        if (avatarFile.value === null) {
+          snackbar.error('请选择图片文件');
+          return;
+        }
         await updateAvatar(formData);
         console.log('头像更新成功');
         showAvatarUpload.value = false;
-        snackbar.success('头像更新成功');
         fetchProfile();
+        toggleSection(id, "showAvatarUpload", false);
     } catch (error) {
         console.error('更新头像失败:', error);
-        snackbar.error('更新头像失败');
     }
   };
   </script>
