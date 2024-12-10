@@ -33,7 +33,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="submitApplication">提交申请</v-btn>
+          <v-btn color="primary" @click="submitApplicationForm">提交申请</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -53,7 +53,7 @@ const applicant = ref({
   status: '待审核'
 });
 
-const submitApplication = async () => {
+const submitApplicationForm = async () => {
   if (volunteerForm.value.validate()) {
     try {
       await submitApplication(applicant.value);
