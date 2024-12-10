@@ -1,9 +1,10 @@
-import uuid, random, string
+import uuid, random, string, datetime
+from enum import Enum
 
-from fastapi import Form
-from pydantic import EmailStr
-from sqlmodel import SQLModel, Field
+from pydantic import EmailStr, BaseModel
+from sqlmodel import SQLModel, Field, Relationship
 
+from app.models.activity import ActivityBase
 from app.core.config import settings
 
 
@@ -11,6 +12,74 @@ USER_EMAIL_MAX_LENGTH = 100
 USER_PASSWORD_MIN_LENGTH = 8
 USER_PASSWORD_MAX_LENGTH = 100
 USER_NICKNAME_MAX_LENGTH = 50
+
+
+UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
+
+
+# - MARK: Activity registration
+class ApplicationStatus(str, Enum):
+    """
+    Enum to represent the status of a volunteer application.
+    Possible values:
+    - PENDING: Application is pending review
+    - APPROVED: Application is approved
+    - REJECTED: Application is rejected
+    """
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
+class ActivityRegistration(SQLModel, table=True):
+    """
+    Represents a volunteer application for an activity.
+    Attributes:
+    - user_id: Foreign key referencing the user applying
+    - activity_id: Foreign key referencing the activity
+    - reason: Reason for applying to the activity
+    - status: Status of the application (Pending, Approved, Rejected)
+    - created_at: Date and time when the application was created
+    - updated_at: Date and time when the application was last updated
+    """
+    user_id: uuid.UUID = Field(foreign_key="user.id", primary_key=True, index=True)
+    activity_id: uuid.UUID = Field(foreign_key="activity.id", primary_key=True, index=True)
+    status: ApplicationStatus = Field(default=ApplicationStatus.PENDING)
+    created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
+
+
+# - MARK: Activity
+class Activity(ActivityBase, table=True):
+    """
+    Represents an activity that volunteers can apply for.
+    Attributes:
+    - creator_id: ID of the user who created the activity
+    - max_participants: Maximum number of participants allowed
+    - signup_start_at: Start date and time for accepting participants
+    - signup_end_at: End date and time for accepting participants
+    - participants: List of users who have applied for the activity, linked with VolunteerApplication
+    """
+    creator_id: uuid.UUID = Field(foreign_key="user.id")
+    max_participants: int
+
+
+# - MARK: Volunteer application
+class VolunteerApplication(SQLModel, table=True):
+    """
+    Represents user trying to apply to be a volunteer.
+    Attributes:
+    - user_id: Foreign key referencing the user applying
+    - reason: Reason for applying to the activity
+    - status: Status of the application (Pending, Approved, Rejected)
+    - created_at: Date and time when the application was created
+    - updated_at: Date and time when the application was last updated
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
+    status: ApplicationStatus = Field(default=ApplicationStatus.PENDING)
+    created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
 
 
 # User model for database
@@ -68,6 +137,7 @@ class UserUpdate(UserBase):
     password: str | None = Field(default=None, min_length=USER_PASSWORD_MIN_LENGTH, max_length=USER_PASSWORD_MAX_LENGTH)
 
 
+# - MARK: User
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
     """
@@ -77,10 +147,9 @@ class User(UserBase, table=True):
     id: uuid.UUID
     hashed_password: str
     ```
-    """
+    """    
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
-    # other properties
+    hashed_password: str 
 
     
 # Properties to return via API, id is always required
@@ -157,4 +226,3 @@ class Token(SQLModel):
     
 class TokenPayload(SQLModel):
     sub: str | None = None
-    
