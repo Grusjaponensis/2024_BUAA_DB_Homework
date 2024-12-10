@@ -1,38 +1,136 @@
 <template>
     <v-container>
-      <v-container>
-       <!-- 管理员进行标签管理 -->
-      <v-row v-if="isAdmin">
-        <v-col>
-          <v-btn color="primary" @click="showDialog = !showDialog" class="mb-4">
-            标签管理
-          </v-btn>
-        </v-col>
-      </v-row>
+      <!-- 顶部欢迎横栏 -->
+      <v-toolbar color='#eadbe7' dark class="top-bar">
+        <v-toolbar-title>
+          Hello，{{ username }}，欢迎来到论坛中心，一起来积极互动吧！
+        </v-toolbar-title>
+      </v-toolbar>
+        <!-- 标签管理卡片 -->
+        <v-card v-if="showDialog" class="tag-management-card">
+          <v-card-title class="headline">标签管理</v-card-title>
+          <v-card-text>
+            <ul>
+              <li v-for="tag in tags" :key="tag.id">
+                {{ tag.name }}
+                <button @click="removeTag(tag)"><v-icon>mdi-close</v-icon></button>
+              </li>
+            </ul>
+            <div class="input-group" >
+              <input v-model="newTag" placeholder="添加新标签" />
+              <button @click="addTag"><v-icon>mdi-plus</v-icon></button>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn text @click="showDialog = false" ><v-icon>mdi-close</v-icon>关闭</v-btn>
+          </v-card-actions>
+        </v-card>
 
-      <!-- 标签管理卡片 -->
-      <v-card v-if="showDialog" class="tag-management-card">
-        <v-card-title class="headline">标签管理</v-card-title>
-        <v-card-text>
-          <ul>
-            <li v-for="tag in tags" :key="tag.id">
+      <v-container>
+      <!-- 侧边栏（包含按钮） -->
+      <v-row class="mb-4" no-gutters>
+        <v-col cols="12" md="3" class="sidebar">
+          <!-- 分析数据栏 -->
+            <v-card elevation="4" class="mb-4">
+              <v-card-text class="pa-4">
+                <div class="d-flex flex-column align-start">
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">帖子总数： </span>
+                    <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
+                  </div>
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">今日新增： </span>
+                    <span class="font-weight-bold ml-auto">25{{ newToday }}</span>
+                  </div>
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">总浏览量： </span>
+                    <span class="font-weight-bold ml-auto">1215{{ totalViews }}</span>
+                  </div>
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">站内热帖： </span>
+                    <span class="font-weight-bold ml-auto">《寻找失踪小橘猫》</span>
+                  </div>
+                  <!-- 更多分析数据 -->
+                </div>
+              </v-card-text>
+            </v-card>
+          <v-card elevation="4">
+            <v-card-text class="pa-4">
+              <!-- 按钮组 -->
+              <div class="d-flex flex-column align-center">
+                <v-btn
+                  fab
+                  dark
+                  rounded
+                  color=#eadbe7
+                  @click="createPost"
+                  to="/ForumCenter/createPost"
+                >
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <span class="caption">创建帖子</span>
+                
+                <v-btn
+                  fab
+                  dark
+                  rounded
+                  color=#aeb9e2
+                  @click="myPosts"
+                >
+                  <v-icon>mdi-cat</v-icon>
+                </v-btn>
+                <span class="caption">我的帖子</span>
+                
+                <v-btn
+                  fab
+                  dark
+                  rounded
+                  color=#acc9e9
+                  @click="myFavorites"
+                >
+                  <v-icon>mdi-heart</v-icon>
+                </v-btn>
+                <span class="caption">我的收藏</span>
+
+                <v-btn
+                  v-if="isAdmin"
+                  fab
+                  dark
+                  rounded
+                  color=#f2ddb3
+                  @click="showDialog = !showDialog"
+                >
+                  <v-icon>mdi-tag</v-icon>
+                </v-btn>
+                <span class="caption">标签管理</span>
+              </div>
+            </v-card-text>
+          </v-card>
+          <v-img src="@/assets/cat-forum.png" />
+        </v-col>
+
+        <!-- 主内容区域（帖子列表） -->
+        <v-col cols="12" md="9">
+          <!-- 标签按钮组 -->
+          <div class="d-flex justify-start mb-4 button-group">
+            <v-btn
+              v-for="tag in tags"
+              :key="tag.id"
+              :color="isSelected(tag.name) ? '#acc9e9' : '#f0f0f0'"
+              fab
+              dark
+              depressed
+              small
+              class="v-tag-btn"
+              @click="filterPostsByTag(tag.name)"
+            >
               {{ tag.name }}
-              <button @click="removeTag(tag)"><v-icon>mdi-close</v-icon></button>
-            </li>
-          </ul>
-          <div class="input-group" >
-            <input v-model="newTag" placeholder="添加新标签" />
-            <button @click="addTag"><v-icon>mdi-plus</v-icon></button>
+            </v-btn>
           </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="showDialog = false" ><v-icon>mdi-close</v-icon>关闭</v-btn>
-        </v-card-actions>
-      </v-card>
         <!-- 主内容区域 -->
           <v-list>
             <v-list-item
-              v-for="post in posts"
+              v-for="post in filteredPosts"
               :key="post.id"
               class="post-card my-4"
             >
@@ -42,72 +140,54 @@
               elevation="4"
               hover
             >
-              <v-list-item-content @click="goToPostDetails(post.id)">
-                <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
-                <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
-                <v-list-item-subtitle class="grey--text">
-                  post at {{ new Date(post.created_at).toLocaleString() }}
-                </v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  {{ post.likes_number }} likes
-                </v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn icon @click="toggleFavorite(post)">
-                  <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="removePost(post)" v-if="isAdmin">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
+              <v-row>
+                <!-- 左侧列：标题和内容 -->
+                <v-col cols="12" md="8">
+                  <v-list-item-content @click="goToPostDetails(post.id)">
+                    <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
+                    <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
+                    <v-list-item-subtitle class="grey--text">
+                      post at {{ new Date(post.created_at).toLocaleString() }}
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ post.likes_number }} likes
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-col>
+                <v-col cols="12" md="4" class="d-flex align-center justify-end">
+                  <div class="d-flex align-center">
+                    <v-chip
+                      v-for="tagName in post.tags"
+                      :key="tagName"
+                      :color="getTagColor(tagName)"
+                      class="ma-1"
+                      outlined
+                      small
+                    >
+                      {{ tagName }}
+                    </v-chip>
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row >
+                <v-col cols="12" md="8"></v-col>
+                <v-col cols="12" md="4" class="d-flex align-center justify-end">
+                  <v-list-item-action>
+                    <v-btn icon @click="toggleFavorite(post)" style="margin-right: 12px;">
+                      <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                    </v-btn>
+                    <v-btn icon @click="removePost(post)" v-if="isAdmin">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-col>
+              </v-row>
             </v-card>
             </v-list-item>
           </v-list>
-        </v-container>
-        <!-- 发帖 -->
-        <v-footer padless>
-          <v-row justify="end" no-gutters>
-            <v-btn
-              fab
-              dark
-              fixed
-              bottom
-              right
-              color="primary"
-              @click = createPost
-              to="/ForumCenter/createPost"
-            >
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </v-row>
-
-          <!-- 我的帖子按钮 -->
-          <v-btn
-            fab
-            dark
-            fixed
-            bottom
-            right
-            color="secondary"
-            class="mx-4"  
-            @click = myPosts
-          >
-            <v-icon>mdi-cat</v-icon>
-          </v-btn>
-
-          <!-- 我的点赞按钮 -->
-          <v-btn
-            fab
-            dark
-            fixed
-            bottom
-            right
-            color="light-blue"
-            @click = myFavorites
-          >
-            <v-icon>mdi-heart</v-icon>
-          </v-btn>
-        </v-footer>
+        </v-col>
+      </v-row>
+      </v-container>
   </v-container>
 </template>
 
@@ -126,7 +206,8 @@ const isAdmin = ref(false);
 const showDialog = ref(false);
 const tags = ref([]);
 const newTag = ref('');
-
+const selectedTags = ref(new Set());
+const username = ref('');
 const myPosts = () => {
   if (!user.login) {
     router.push('/login')
@@ -188,6 +269,7 @@ const removeTag = async (tag) => {
 const fetchProfile = async () => {
   try {
     const profile = await getProfile();
+    username.value = profile.data.nickname;
     isAdmin.value = profile.data.is_superuser;
   } catch (error) {
     console.error('获取用户信息失败:', error);
@@ -234,6 +316,39 @@ onMounted(() => {
   fetchProfile();
   fetchPosts();
 });
+
+const tagColors = {
+  分享: 'green',
+  求助: 'red',
+  讨论: 'blue',
+  精华: 'purple',
+}
+
+function getTagColor(tagName) {
+  return tagColors[tagName] || tagColors['讨论']; 
+}
+
+// 过滤帖子的方法
+const filterPostsByTag = (tag) => {
+  if (selectedTags.value.has(tag)) {
+    selectedTags.value.delete(tag);
+  } else {
+    selectedTags.value.add(tag);
+  }
+};
+
+const isSelected = (tagName) => {
+  return selectedTags.value.has(tagName);
+};
+
+const filteredPosts = computed(() => {
+  if (selectedTags.value.size === 0) {
+    return posts.value;
+  }
+  return posts.value.filter((post) => {
+    return post.tags.some((tag) => selectedTags.value.has(tag));
+  });
+});
 </script>
 
 <style scoped>
@@ -272,15 +387,16 @@ input {
   margin-right: 10px;
 }
 
-/* 添加渐变背景 */
-body {
-  background: linear-gradient(135deg, #74b9ff, #ff7777);
-}
-
 /* 美化帖子卡片 */
 .post-card {
   border-radius: 10px; /* 圆角 */
   transition: transform 0.3s ease-in-out; /* 平滑变换 */
+  background-color: #f0f0f0; /* 背景色 */
+  padding: 10px; /* 内边距 */
+  margin-bottom: 20px; /* 外边距 */
+  cursor: pointer; /* 鼠标指针 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
+
 }
 
 .post-card:hover {
@@ -324,5 +440,33 @@ body {
 
 .v-footer .v-btn:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.sidebar {
+  max-width: 240px; 
+  margin-right: 30px;
+}
+
+.v-btn {
+  border-radius: 25%; 
+  width: 40px; 
+  height: 40px; 
+  margin-right: 6px;
+}
+.v-tag-btn {
+  border-radius: 25%; 
+  width: 40px; 
+  height: 40px; 
+  margin-right: 12px;
+}
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-bar {
+  border-radius: 8px; /* 设置圆角 */
+  margin-bottom:10px; /* 设置底部间距 */
+  padding: 1px 1px; /* 设置内边距 */
 }
 </style>

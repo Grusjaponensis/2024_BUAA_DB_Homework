@@ -112,35 +112,6 @@
   // 提交帖子
   const submitPost = async () => {
     if (isFormValid.value) {
-        // try {
-        // const formData = new FormData();
-        // formData.append('tags', post.value.tags.join(','));
-        // if (post.value.keep_images.length > 0) {
-        //     post.value.keep_images.forEach((image, index) => {
-        //     formData.append('keep_images', image);
-        //     });
-        // }
-        // if (post.value.upload_images.length > 0) {
-        //     post.value.upload_images.forEach((image, index) => {
-        //     formData.append('upload_images', image);
-        //     });
-        // }
-
-        // const params = {
-        //     title: post.value.title,
-        //     content: post.value.content,
-        //     cat_id: "string",
-        // };
-        // console.log('params', params);
-        // console.log('formData', formData);
-        // const response = await updatePost(post.value.id, params, formData);
-        // console.log('帖子更新成功', response);
-        // snackbar.success('帖子更新成功');
-        // router.push('/ForumCenter/myPosts');
-        // } catch (error) {
-        // console.error('更新帖子失败:', error);
-        // snackbar.error('更新帖子失败');
-        // }
         try {
           const formData = new FormData();
           formData.append('title', post.value.title);
