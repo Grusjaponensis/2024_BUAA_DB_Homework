@@ -6,7 +6,10 @@ from sqlmodel import Session, select, func
 
 from app.core.security import get_password_hash, verify_password
 
-from app.models.user import User, UserCreate, UserUpdate
+from app.models.user import (
+    User, UserCreate, UserUpdate, 
+    ActivityRegistration, ApplicationStatus, Activity
+)
 from app.models.post import Post, Like, PostTag
 from app.models.cat import Cat, CatLocation
 
@@ -98,3 +101,24 @@ def get_latest_cat_location(session: Session, cat_id: uuid.UUID):
         select(CatLocation).where(CatLocation.cat_id == cat_id).order_by(CatLocation.created_at.desc())
     ).first()
     return cat_location
+
+
+# - MARK: Activity CRUD
+def get_participants_count(session: Session, activity_id: uuid.UUID) -> int:
+    """
+    Get the number of participants for an activity
+    """
+    if not activity_id:
+        return 0
+
+    if not session.exec(select(Activity).where(Activity.id == activity_id)).first():
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    count = session.exec(
+        select(func.count(ActivityRegistration.user_id)).where(
+                ActivityRegistration.activity_id == activity_id and 
+                ActivityRegistration.status == ApplicationStatus.APPROVED
+            )
+    )
+    
+    return count.one()
