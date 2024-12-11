@@ -1,4 +1,5 @@
 <template>
+  <div class="view-applications">
     <!-- 主内容区域 -->
     <v-container>
       <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
@@ -9,7 +10,7 @@
         <v-col v-for="application in applications"
           :key="application.id"
           class="my-2" cols="12" md="4">
-          <v-card>
+          <v-card style="border: 2px solid #d1e9f4; border-radius: 10px;">
             <v-card-title class="headline">申请情况</v-card-title>
             <v-card-subtitle>基本信息：{{ application.name }} - {{ application.age }} - {{ application.gender }}</v-card-subtitle>
             <v-card-subtitle class="grey--text">
@@ -23,6 +24,7 @@
         </v-col>
       </v-row>
     </v-container>
+  </div>
   </template>
   
   <script setup>
@@ -79,4 +81,8 @@
   
   <style scoped>
   /* 页面的特定样式 */
+  .view-applications {
+  background-color: #f0f0f0;
+  height: 100%;
+}
   </style>

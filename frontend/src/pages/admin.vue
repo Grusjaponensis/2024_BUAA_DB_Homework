@@ -39,7 +39,7 @@
                     outlined
                     :rules="[v => !!v || '昵称不能为空']"
                   ></v-text-field>
-                  <v-btn color="primary" @click="updateUserProfile(profile.id)">确认更新</v-btn>
+                  <v-btn color="#c2d7f3" @click="updateUserProfile(profile.id)">确认更新</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showProfileEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -54,7 +54,7 @@
                     outlined
                     dense
                   ></v-select>
-                  <v-btn color="primary" @click="updateUserIdentity(profile.id)">确定</v-btn>
+                  <v-btn color="#c2d7f3" @click="updateUserIdentity(profile.id)">确定</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showIdentityEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -67,7 +67,7 @@
                     placeholder="点击上传头像"
                     accept="image/*"
                   ></v-file-input>
-                  <v-btn color="primary" @click="onAvatarUpload(profile.id)">确认上传</v-btn>
+                  <v-btn color="#c2d7f3" @click="onAvatarUpload(profile.id)">确认上传</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showAvatarUpload', false)">取消</v-btn>
                 </div>
               </v-expand-transition>

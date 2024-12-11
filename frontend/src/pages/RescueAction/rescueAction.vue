@@ -29,10 +29,10 @@
                 </div>
               </v-card-text>
             </v-card>
-          <v-card elevation="4">
+          <v-card elevation="4"  v-if="isAdmin || !isVolunteer">
             <v-card-text class="pa-4">
               <!-- 按钮组 -->
-              <div class="d-flex flex-column align-center" >
+              <div class="d-flex flex-column align-center">
                 <v-btn
                   v-if="!isVolunteer && !isAdmin"
                   fab
@@ -89,7 +89,7 @@
         <v-col cols="12" md="9">
         <!-- 主内容区域 -->
         <v-col v-for="activity in activities" :key="activity.id" >
-          <v-card>
+          <v-card style="background-color: #fbf1d7; border: 2px solid #f7cf83;" >
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
             <v-card-subtitle>需要志愿者: 0/{{ activity.max_participants }}</v-card-subtitle>
             <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
@@ -97,8 +97,8 @@
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="isVolunteer || isAdmin">
-              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="#fbf1d7" @click="signUpActivity(activity)">报名</v-btn>
-              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if=canSignUp(activity) && !isSignedUp(activity) color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
+              <v-btn v-if=canSignUp(activity) && isSignedUp(activity) color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
               <v-btn v-if="isAdmin" color="#faadac" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>

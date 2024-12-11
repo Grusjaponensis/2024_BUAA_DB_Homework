@@ -14,7 +14,7 @@
         </v-col>
 
         <!-- 帖子内容 -->
-        <v-col cols="12" md="4" >
+        <v-col cols="12" md="8" >
           <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/forumCenter')" class="mb-3"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
           
           
@@ -157,7 +157,7 @@ onMounted(() => {
 .post-card {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 600px;
 }
 
 .illustration {
