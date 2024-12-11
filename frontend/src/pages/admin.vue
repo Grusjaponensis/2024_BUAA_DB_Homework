@@ -75,7 +75,7 @@
             <!-- 按钮组 -->
             <v-card-actions class="justify-center pb-4">
               <v-btn
-                color="blue-lighten-1"
+                color="#d4eae0"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showProfileEdit', true)"
@@ -83,7 +83,7 @@
                 <v-icon left class="mr-1">mdi-pencil</v-icon> 修改昵称
               </v-btn>
               <v-btn
-                color="green-lighten-1"
+                color="#c7d9e9"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showIdentityEdit', true)"
@@ -93,7 +93,7 @@
               </v-btn>
 
               <v-btn
-                color="red-lighten-1"
+                color="#dbc6e0"
                 rounded="lg"
                 variant="elevated"
                 @click="showDeleteDialog = true; deleteId = profile.id"
@@ -103,7 +103,7 @@
               </v-btn>
 
               <v-btn
-                color="purple-lighten-1"
+                color="#fee6a6"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showAvatarUpload', true)"
@@ -132,7 +132,7 @@
       </v-dialog>
     </v-container>
     <v-btn
-      color="blue-accent-2"
+      color="#8ea5cc"
       class="elevation-4"
       style="position: fixed; bottom: 24px; right: 24px;"
       size="large"

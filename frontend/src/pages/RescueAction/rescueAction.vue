@@ -1,9 +1,91 @@
 <template>
-  <v-container>
-    <v-container>
-      <!-- 行动卡片 -->
-      <v-row>
-        <v-col v-for="activity in activities" :key="activity.id" cols="12" lg="6" md="12">
+<v-container>
+      <!-- 顶部欢迎横栏 -->
+      <v-toolbar color='#fcedbe' dark class="top-bar">
+        <v-toolbar-title>
+          Hello，{{ username }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
+        </v-toolbar-title>
+      </v-toolbar>
+
+      <v-container>
+      <!-- 侧边栏（包含按钮） -->
+      <v-row class="mb-4" no-gutters>
+        <v-col cols="12" md="3" class="sidebar">
+          <!-- 分析数据栏 -->
+            <v-card elevation="4" class="mb-4">
+              <v-card-text class="pa-4">
+                <div class="d-flex flex-column align-start">
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">志愿者总数： </span>
+                    <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
+                  </div>
+                  <div class="d-flex align-start">
+                    <span class="body-2 mb-2">组织救助行动： </span>
+                    <span class="font-weight-bold ml-auto">352{{ totalPosts }}次</span>
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          <v-card elevation="4">
+            <v-card-text class="pa-4">
+              <!-- 按钮组 -->
+              <div class="d-flex flex-column align-center" >
+                <v-btn
+                  v-if="!isVolunteer && !isAdmin"
+                  fab
+                  dark
+                  rounded
+                  color=#f7cf83
+                  @click="applyToBeVolunteer"
+                >
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <span class="caption" v-if="!isVolunteer && !isAdmin">申请成为志愿者</span>
+                
+                <v-btn
+                  v-if="!isVolunteer && !isAdmin"
+                  fab
+                  dark
+                  rounded
+                  color=#f8c9d5
+                  @click="myApplications"
+                >
+                  <v-icon>mdi-cat</v-icon>
+                </v-btn>
+                <span class="caption" v-if="!isVolunteer && !isAdmin">申请进度查询</span>
+                
+                <v-btn
+                  v-if="isAdmin"
+                  fab
+                  dark
+                  rounded
+                  color=#f8c9d5
+                  @click="viewApplications"
+                >
+                  <v-icon>mdi-heart</v-icon>
+                </v-btn>
+                <span class="caption" v-if="isAdmin">查看申请</span>
+
+                <v-btn
+                  v-if="isAdmin"
+                  fab
+                  dark
+                  rounded
+                  color=#f7cf83
+                  @click = "showAddActionDialog = true"
+                >
+                  <v-icon>mdi-tag</v-icon>
+                </v-btn>
+                <span class="caption" v-if="isAdmin">添加活动</span>
+              </div>
+            </v-card-text>
+          </v-card>
+          <v-img src="@/assets/rescue.png" />
+        </v-col>
+
+        <v-col cols="12" md="9">
+        <!-- 主内容区域 -->
+        <v-col v-for="activity in activities" :key="activity.id" >
           <v-card>
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
             <v-card-subtitle>需要志愿者: 0/{{ activity.max_participants }}</v-card-subtitle>
@@ -18,36 +100,11 @@
             </v-card-text>
           </v-card>
         </v-col>
+        </v-col>
       </v-row>
-    </v-container>
+      </v-container>
 
-    <v-row justify="center" class="text-center" no-gutters>
-      <v-row v-if="!isVolunteer && !isAdmin" justify="end" no-gutters>
-        <v-btn
-          color="primary"
-          @click = applyToBeVolunteer
-        >
-          申请成为志愿者
-        </v-btn>
-        <v-btn
-          color="primary"
-          class="mx-4"  
-          @click = myApplications
-        >
-          申请进度查询
-        </v-btn>
-      </v-row>
-
-      <v-row v-if="isAdmin" justify="end" no-gutters>
-        <v-btn
-          color="primary"
-          to="/RescueAction/viewApplications"
-        >
-          查看申请
-        </v-btn>
-      </v-row>
-    </v-row>
-    <v-dialog v-model="showDeleteDialog" max-width="500px">
+      <v-dialog v-model="showDeleteDialog" max-width="500px">
         <v-card>
           <v-card-title class="headline">
             确认删除
@@ -60,17 +117,9 @@
             <v-btn color="red" @click = "removeActivity(deleteId)"> 确认</v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
+    </v-dialog>
   </v-container>
-  <v-btn
-      color="blue-accent-2"
-      class="elevation-4"
-      style="position: fixed; bottom: 24px; right: 24px;"
-      size="large"
-      @click = "showAddActionDialog = true"
-    >
-    <v-icon>mdi-plus</v-icon>
-    </v-btn>
+
   <v-dialog v-model="showAddActionDialog" 
     max-width="80vw"
     width="750px">
@@ -149,6 +198,7 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
 </template>
   
 <script setup>
@@ -188,11 +238,22 @@ const applyToBeVolunteer = () => {
   }
 };
 
+const viewApplications = () => {
+  if (!user.login) {
+    router.push('/login');
+    snackbar.warning('请先登录');
+    return;
+  } else {
+    router.push('/RescueAction/viewApplications');
+  }
+};
+const username = ref('');
 const fetchProfile = async () => {
   try {
     const response = await getProfile();
     isVolunteer.value = response.data.is_volunteer === true;
     isAdmin.value = response.data.is_superuser === true;
+    username.value = response.data.nickname;
   } catch (error) {
     console.error('获取用户信息失败:', error);
   }
@@ -326,6 +387,7 @@ const submitactivity = async () => {
       const response = await createActivity(data);
       console.log('活动提交成功', response);
       snackbar.success('活动提交成功');
+      fetchactivities();
       router.push('/RescueAction/rescueAction'); 
       showAddActionDialog.value = false;
     } catch (error) {
@@ -335,3 +397,47 @@ const submitactivity = async () => {
   }
 };
 </script>
+
+<style scoped>  
+/* 美化帖子卡片 */
+.card {
+  border-radius: 10px; /* 圆角 */
+  transition: transform 0.3s ease-in-out; /* 平滑变换 */
+  background-color: #f0f0f0; /* 背景色 */
+  padding: 10px; /* 内边距 */
+  margin-bottom: 20px; /* 外边距 */
+  cursor: pointer; /* 鼠标指针 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
+
+}
+
+.card:hover {
+  transform: translateY(-5px); /* 鼠标悬停时上移 */
+}
+
+/* 美化操作按钮 */
+.v-btn {
+  transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
+}
+
+.v-btn:hover {
+  background-color: #e0e0e0; /* 鼠标悬停时的背景色 */
+}
+
+.sidebar {
+  max-width: 200px; 
+  margin-right: 30px;
+}
+.v-btn {
+  border-radius: 25%; 
+  width: 40px; 
+  height: 40px; 
+  margin-right: 6px;
+}
+
+.top-bar {
+  border-radius: 8px; /* 设置圆角 */
+  margin-bottom:10px; /* 设置底部间距 */
+  padding: 1px 1px; /* 设置内边距 */
+}
+</style>

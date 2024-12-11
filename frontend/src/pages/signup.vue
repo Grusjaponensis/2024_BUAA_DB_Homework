@@ -116,7 +116,7 @@ const submitSignup = async () => {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #7874eb, #c1ace5);
+    background: linear-gradient(135deg, #d4eae0, #dcd5f2);
     padding: 16px;
     }
 

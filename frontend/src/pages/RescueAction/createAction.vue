@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+<v-container>
     <v-card class="mx-auto" max-width="600">
       <v-card-title class="headline">创建新的志愿活动</v-card-title>
       <v-card-text>
