@@ -229,13 +229,13 @@ async def update_post(
     
     if not keep_images:
         for image in post.images:
-            remove_file(image.image_url)
+            remove_file(settings.UPLOAD_POST_IMAGE_FOLDER, image.image_url.split("/")[-1])
             session.delete(image)
     else:
         for old_image in post.images:
             if old_image.image_url not in keep_images:
                 # remove discarded image file
-                remove_file(old_image.image_url)
+                remove_file(settings.UPLOAD_POST_IMAGE_FOLDER, old_image.image_url.split("/")[-1])
                 # remove image record from database
                 session.delete(old_image)
     
@@ -282,7 +282,7 @@ async def delete_post(*, session: SessionDep, current_user: CurrentUser, id: uui
         if not current_user.is_superuser:
             raise HTTPException(status_code=403, detail="Forbidden")
     for image in post.images:
-        remove_file(image.image_url)
+        remove_file(settings.UPLOAD_POST_IMAGE_FOLDER, image.image_url.split("/")[-1])
     session.delete(post)
     session.commit()
     return JSONResponse(status_code=200, content={"message": "删除成功"})
