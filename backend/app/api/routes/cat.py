@@ -171,7 +171,6 @@ async def update_cat_info(
     if new_images:
         for old_img in cat.images:
             remove_file(settings.UPLOAD_CAT_IMAGE_FOLDER, old_img.image_url.split('/')[-1])
-
         # NOTE: cannot delete items while iterating
         cat.images.clear()
 

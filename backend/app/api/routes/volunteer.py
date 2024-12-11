@@ -15,7 +15,7 @@ from app.api.deps import (
 )
 from app.models.user import (
     ActivityRegistration, User, Activity,
-    VolunteerApplication
+    VolunteerApplication, ApplicationStatus
 )
 from app.models.volunteer import ActivityRegistrationUpdate, VolunteerApplicationCreate, VolunteerApplicationUpdate
 from app.core.config import settings
@@ -198,3 +198,25 @@ async def update_activity_registration(
     session.commit()
     session.refresh(registration)
     return registration
+
+
+# - MARK: delete registration
+@router.delete("/{activity_id}", tags=["registration"])
+async def delete_activity_registration(
+    session: SessionDep,
+    current_user: CurrentUser,
+    activity_id: uuid.UUID
+):
+    """
+    Delete a volunteer registration by that user who applied for it
+    """
+    registration = session.get(ActivityRegistration, (current_user.id, activity_id))
+    if not registration:
+        raise HTTPException(status_code=404, detail="Registration not found")
+    
+    if registration.status != ApplicationStatus.PENDING:
+        raise HTTPException(status_code=400, detail="You cannot delete a registration that has been approved or rejected")
+    
+    session.delete(registration)
+    session.commit()
+    return JSONResponse(status_code=204, content={"message": "Registration deleted successfully"})
