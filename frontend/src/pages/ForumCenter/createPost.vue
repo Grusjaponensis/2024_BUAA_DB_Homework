@@ -33,10 +33,14 @@
               ></v-select>
             </v-col>
           </v-row>
-          <!-- 上传文件按钮 -->
-          <v-row class="mt-5">
-            <input type="file" multiple @change="handleFileUpload" />
-          </v-row>
+          <!-- 上传图片按钮 -->
+          <v-file-input
+            label="上传图片"
+            accept="image/*"
+            class="mt-2"
+            multiple
+            @change="handleFileUpload"
+          ></v-file-input>
 
           <!-- 发帖按钮靠右 -->
           <v-row class="mt-5 justify-end">

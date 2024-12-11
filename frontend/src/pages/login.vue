@@ -25,12 +25,12 @@
                 </v-form>
             </v-card-title>
             <v-card-actions class="actions" justify="center">
-                <v-btn color="primary" size="large" block @click="submitLogin">
+                <v-btn color="primary" size="large" block variant="text" @click="submitLogin">
                     登录
                 </v-btn>
             </v-card-actions>
             <v-card-actions class="actions" justify="center">
-                <v-btn color="secondary" size="large" block to="/signup">
+                <v-btn color="secondary" size="large" block variant="text" to="/signup">
                     注册
                 </v-btn>
             </v-card-actions>

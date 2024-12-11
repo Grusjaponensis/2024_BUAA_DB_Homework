@@ -122,7 +122,6 @@
         </v-card>
     </v-dialog>
   </v-container>
-
   <v-dialog v-model="showAddActionDialog" 
     max-width="80vw"
     width="750px">
