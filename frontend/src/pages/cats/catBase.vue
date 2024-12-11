@@ -453,6 +453,12 @@ const fetchCats = async () => {
   try {
     const response = await getCats();
     cats.value = response.cats;
+    cats.value.forEach((cat) => {
+      showStates.value[cat.id] = {
+        showCatEdit: false,
+        showAvatarUpload: false,
+      };
+    })
     console.log('获取猫咪列表成功', response.cats);
   } catch (error) {
     console.error('获取猫咪列表失败:', error);
