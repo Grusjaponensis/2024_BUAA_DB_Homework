@@ -24,9 +24,8 @@
       <v-app-bar-title>北航猫咪管理系统</v-app-bar-title>
 
       <template v-slot:append>
-        <v-btn icon="mdi-heart"></v-btn>
         <v-btn icon="mdi-magnify"></v-btn>
-        <v-btn icon="mdi-dots-vertical"></v-btn>
+        <v-btn :icon="theme === 'light' ? 'mdi-weather-night' : 'mdi-white-balance-sunny'" @click="toggleTheme"></v-btn>
       </template>
     </v-app-bar>
 
