@@ -1,5 +1,6 @@
 <template>
     <v-container>
+      <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
       <v-card class="mx-auto" max-width="600">
         <v-card-title class="headline">申请成为志愿者</v-card-title>
         <v-card-text>

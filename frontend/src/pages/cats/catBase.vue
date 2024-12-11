@@ -1,12 +1,14 @@
 <template>
+  <div class="cat-base">
   <v-container>
-    <v-chip-group absolute top left v-if="user.login && !user.is_superuser">
-      <v-chip>
-        剩余罐罐: {{ remainingCans }}
-      </v-chip>
-    </v-chip-group>
-    <v-row>
-      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
+    <!-- 顶部欢迎横栏 -->
+    <!-- <v-toolbar color='#d4eae0' dark class="top-bar">
+        <v-toolbar-title>
+          这里是猫猫基地，猫猫欢迎你！
+        </v-toolbar-title>
+      </v-toolbar> -->
+    <v-row class="mt-5">
+      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center" align="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
@@ -22,6 +24,7 @@
               ></v-img>
             </v-carousel-item>
           </v-carousel>
+          <div style="background-color:white; padding: 10px;">
           <v-card-title class="headline">{{ cat.name }}</v-card-title>
           <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
           <v-card-subtitle >性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
@@ -30,7 +33,7 @@
           <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
           
           <v-expand-transition>
-            <div v-show="showStates[cat.id]?.showCatEdit" class="mt-8">
+            <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
               <v-text-field
                 v-model="name"
                 label="姓名"
@@ -43,12 +46,12 @@
                 type="text"
                 :rules="[v => !!v || '描述不能为空']"
               ></v-text-field>
-              <v-btn color="primary" @click="updateCatProfile(cat.id)">确认更新</v-btn>
-              <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
+              <v-btn color="#bbd5eb" @click="updateCatProfile(cat.id)" >确认更新</v-btn>
+              <v-btn color="#f0f0f0" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
             </div>
           </v-expand-transition>
           <v-expand-transition>
-            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-4">
+            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-4 mb-4">
               <v-file-input
               label="上传图片"
               accept="image/*"
@@ -69,8 +72,8 @@
                     ></v-img>
                 </v-col>
               </v-row>
-              <v-btn color="primary" class = "mt-2" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
-              <v-btn color="grey" class="ml-2 mt-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
+              <v-btn color="#bbd5eb" class = "mt-2" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
+              <v-btn color="#f0f0f0" class="ml-2 mt-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
             </div>
           </v-expand-transition>
 
@@ -78,7 +81,7 @@
             <v-btn
               rounded="lg"
               variant="elevated"
-              color = "blue-lighten-1"
+              color = "#c2d7f3"
               @click="feedCat(cat)"
               v-if="user.login && !user.is_superuser"
             >
@@ -87,14 +90,14 @@
             <v-btn
               rounded="lg"
               variant="elevated"
-              color = "green-lighten-1"
+              color = "#fff8dc"
               @click= goToCatDetails(cat.id)
               v-if="user.login"
               >
             <v-icon left class = "mr-1">mdi-cat</v-icon> 详情
             </v-btn>
             <v-btn
-                color="blue-lighten-1"
+                color="#e8d6ec"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(cat.id, 'showCatEdit', true)"
@@ -103,7 +106,7 @@
               <v-icon left class="mr-1">mdi-pencil</v-icon> 修改信息
             </v-btn>
             <v-btn
-                color="purple-lighten-1"
+                color="#d9ecfc"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(cat.id, 'showAvatarUpload', true)"
@@ -116,10 +119,11 @@
               @click="showDeleteDialog = true ; removeCatId = cat.id" 
               v-if="isAdmin" 
               variant="elevated"
-              color="red-lighten-1">
+              color="#f8d6dd">
               <v-icon left class = "mr-1">mdi-delete</v-icon>删除猫咪
             </v-btn>
           </v-card-actions>
+        </div>
         </v-card>
       </v-col>
     </v-row>
@@ -139,7 +143,7 @@
     </v-dialog>
   </v-container>
   <v-btn
-      color="blue-accent-2"
+      color="#bbd5eb"
       class="elevation-4"
       style="position: fixed; bottom: 24px; right: 24px;"
       size="large"
@@ -209,7 +213,7 @@
             class="mt-3"
           ></v-textarea>
           <v-btn
-            color="primary"
+            color="disabled? 'grey' : '#bbd5eb'"
             type="submit"
             :disabled="!formIsValid"
             rounded
@@ -222,7 +226,7 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-
+</div>
 </template>
 
 <script setup>
@@ -495,3 +499,16 @@ const feedCat = (cat) => {
 };
 
 </script>
+
+<style scoped>
+.top-bar {
+  border-radius: 8px; /* 设置圆角 */
+  margin-bottom:10px; /* 设置底部间距 */
+  padding: 1px 1px; /* 设置内边距 */
+}
+.cat-base {
+  background-color: #f0f0f0;
+  height: 100%;
+
+}
+</style>

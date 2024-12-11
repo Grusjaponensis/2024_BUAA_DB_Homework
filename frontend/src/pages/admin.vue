@@ -1,4 +1,5 @@
 <template>
+  <div class="admin-container">
     <v-container>
       <!-- 用户数量展示 -->
       <v-row justify="center">
@@ -38,7 +39,7 @@
                     outlined
                     :rules="[v => !!v || '昵称不能为空']"
                   ></v-text-field>
-                  <v-btn color="primary" @click="updateUserProfile(profile.id)">确认更新</v-btn>
+                  <v-btn color="#c2d7f3" @click="updateUserProfile(profile.id)">确认更新</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showProfileEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -53,7 +54,7 @@
                     outlined
                     dense
                   ></v-select>
-                  <v-btn color="primary" @click="updateUserIdentity(profile.id)">确定</v-btn>
+                  <v-btn color="#c2d7f3" @click="updateUserIdentity(profile.id)">确定</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showIdentityEdit', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -66,7 +67,7 @@
                     placeholder="点击上传头像"
                     accept="image/*"
                   ></v-file-input>
-                  <v-btn color="primary" @click="onAvatarUpload(profile.id)">确认上传</v-btn>
+                  <v-btn color="#c2d7f3" @click="onAvatarUpload(profile.id)">确认上传</v-btn>
                   <v-btn color="grey" text @click="toggleSection(profile.id, 'showAvatarUpload', false)">取消</v-btn>
                 </div>
               </v-expand-transition>
@@ -75,7 +76,7 @@
             <!-- 按钮组 -->
             <v-card-actions class="justify-center pb-4">
               <v-btn
-                color="blue-lighten-1"
+                color="#d4eae0"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showProfileEdit', true)"
@@ -83,7 +84,7 @@
                 <v-icon left class="mr-1">mdi-pencil</v-icon> 修改昵称
               </v-btn>
               <v-btn
-                color="green-lighten-1"
+                color="#c7d9e9"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showIdentityEdit', true)"
@@ -93,7 +94,7 @@
               </v-btn>
 
               <v-btn
-                color="red-lighten-1"
+                color="#dbc6e0"
                 rounded="lg"
                 variant="elevated"
                 @click="showDeleteDialog = true; deleteId = profile.id"
@@ -103,7 +104,7 @@
               </v-btn>
 
               <v-btn
-                color="purple-lighten-1"
+                color="#fee6a6"
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(profile.id, 'showAvatarUpload', true)"
@@ -132,7 +133,7 @@
       </v-dialog>
     </v-container>
     <v-btn
-      color="blue-accent-2"
+      color="#8ea5cc"
       class="elevation-4"
       style="position: fixed; bottom: 24px; right: 24px;"
       size="large"
@@ -140,6 +141,7 @@
     >
     <v-icon>mdi-plus</v-icon>
     </v-btn>
+  </div>
   </template>
   
   <script setup>
@@ -298,5 +300,12 @@
   .v-btn {
     margin: 4px;
     text-transform: none;
+  }
+  
+  .admin-container {
+    background: linear-gradient(135deg, #d4eae0, #dcd5f2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
   }
   </style>

@@ -73,13 +73,13 @@
 }
 .home-container {
   background-color: #d4eae0;
+  background: linear-gradient(135deg, #d4eae0, #c7d9e9);
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-
+  height: 100%;
 }
 
 

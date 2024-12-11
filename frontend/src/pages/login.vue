@@ -24,14 +24,16 @@
                     </v-text-field>
                 </v-form>
             </v-card-title>
-            <v-card-item>
+            <v-card-actions class="actions" justify="center">
                 <v-btn color="primary" size="large" block variant="text" @click="submitLogin">
                     登录
                 </v-btn>
+            </v-card-actions>
+            <v-card-actions class="actions" justify="center">
                 <v-btn color="secondary" size="large" block variant="text" to="/signup">
                     注册
                 </v-btn>
-            </v-card-item>
+            </v-card-actions>
         </v-card>
     </div>
 
@@ -81,7 +83,7 @@ const test = () => {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #7874eb, #c1ace5);
+    background: linear-gradient(135deg, #d4eae0, #dcd5f2);
     padding: 16px;
     }
 
@@ -96,13 +98,13 @@ const test = () => {
     text-align: center;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #dfd5d5;
+    color: #629a90;
     margin-bottom: 8px;
     }
 
     .actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     }
 </style>
