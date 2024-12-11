@@ -128,63 +128,56 @@
             </v-btn>
           </div>
         <!-- 主内容区域 -->
-          <v-list>
-            <v-list-item
-              v-for="post in filteredPosts"
-              :key="post.id"
-              class="post-card my-4"
-            >
-            <v-card
-              class="pa-4 post-card"
-              color="#fff"
-              elevation="4"
-              hover
-            >
-              <v-row>
-                <!-- 左侧列：标题和内容 -->
-                <v-col cols="12" md="8">
-                  <v-list-item-content @click="goToPostDetails(post.id)">
-                    <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
-                    <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
-                    <v-list-item-subtitle class="grey--text">
-                      post at {{ new Date(post.created_at).toLocaleString() }}
-                    </v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                      {{ post.likes_number }} likes
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-col>
-                <v-col cols="12" md="4" class="d-flex align-center justify-end">
-                  <div class="d-flex align-center">
-                    <v-chip
-                      v-for="tagName in post.tags"
-                      :key="tagName"
-                      :color="getTagColor(tagName)"
-                      class="ma-1"
-                      outlined
-                      small
-                    >
-                      {{ tagName }}
-                    </v-chip>
-                  </div>
-                </v-col>
-              </v-row>
-              <v-row >
-                <v-col cols="12" md="8"></v-col>
-                <v-col cols="12" md="4" class="d-flex align-center justify-end">
-                  <v-list-item-action>
-                    <v-btn icon @click="toggleFavorite(post)" style="margin-right: 12px;">
-                      <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                    </v-btn>
-                    <v-btn icon @click="removePost(post)" v-if="isAdmin">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-col>
-              </v-row>
-            </v-card>
-            </v-list-item>
-          </v-list>
+          <v-card
+            v-for="post in filteredPosts"
+            :key="post.id"
+            class="pa-4 mb-4 rounded-lg"
+            elevation="2"
+            :to="`/ForumCenter/postDetails/${post.id}`"
+          >
+            <v-row>
+              <!-- 左侧列：标题和内容 -->
+              <v-col cols="12" md="8">
+                <v-list-item-content @click="goToPostDetails(post.id)">
+                  <v-list-item-title class="text-h6 mb-2">{{ post.title }}</v-list-item-title>
+                  <!-- <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle> -->
+                  <v-list-item-subtitle class="grey--text mb-1">
+                    发布于 {{ new Date(post.created_at).toLocaleString() }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ post.likes_number }} likes
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-col>
+              <v-col cols="12" md="4" class="d-flex align-center justify-end">
+                <div class="d-flex align-center">
+                  <v-chip
+                    v-for="tagName in post.tags"
+                    :key="tagName"
+                    :color="getTagColor(tagName)"
+                    class="ma-1"
+                    outlined
+                    small
+                  >
+                    {{ tagName }}
+                  </v-chip>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row >
+              <v-col cols="12" md="8"></v-col>
+              <v-col cols="12" md="4" class="d-flex align-center justify-end">
+                <v-list-item-action>
+                  <v-btn icon @click="toggleFavorite(post)" style="margin-right: 12px;">
+                    <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="removePost(post)" v-if="isAdmin">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-col>
       </v-row>
       </v-container>
@@ -393,7 +386,6 @@ input {
 .post-card {
   border-radius: 10px; /* 圆角 */
   transition: transform 0.3s ease-in-out; /* 平滑变换 */
-  background-color: #f0f0f0; /* 背景色 */
   padding: 10px; /* 内边距 */
   margin-bottom: 20px; /* 外边距 */
   cursor: pointer; /* 鼠标指针 */
@@ -402,7 +394,7 @@ input {
 }
 
 .post-card:hover {
-  transform: translateY(-5px); /* 鼠标悬停时上移 */
+  background-color: #e5edf2;
 }
 
 /* 美化操作按钮 */

@@ -60,10 +60,10 @@
         <v-row>
           <v-col cols="12" md="8">
             <v-list-item-content>
-              <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
-              <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
-              <v-list-item-subtitle class="grey--text">
-                post at {{ new Date(post.created_at).toLocaleString() }}
+              <v-list-item-title class="text-h6 mb-2">{{ post.title }}</v-list-item-title>
+              <!-- <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle> -->
+              <v-list-item-subtitle class="grey--text mb-1">
+                发布于 {{ new Date(post.created_at).toLocaleString() }}
               </v-list-item-subtitle>
               <v-list-item-subtitle>
                 {{ post.likes_number }} likes
@@ -223,9 +223,10 @@ const filteredPosts = computed(() => {
 .v-btn {
   transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
 }
+/*
 .post-card:hover {
-  transform: translateY(-5px); /* 鼠标悬停时上移 */
-}
+  transform: translateY(-5px);
+} */
 .v-tag-btn {
   border-radius: 25%; 
   width: 40px; 
