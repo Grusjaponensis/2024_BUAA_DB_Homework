@@ -9,11 +9,9 @@
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
         <v-card class="d-flex flex-column text-center">
         <!-- <v-card lass="d-flex flex-column"> -->
-          <v-img
-            src="https://placekitten.com/200/300"
-            height="200px"
-            class="mx-auto"
-          ></v-img>
+          <!-- <v-avatar size="120px" class="elevation-4">
+            <v-img :src="addPrefix(cat)"></v-img>
+          </v-avatar> -->
           <v-card-title class="headline">{{ cat.name }}</v-card-title>
           <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
           <v-card-subtitle >性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
@@ -163,7 +161,6 @@
             v-model="avatarFile"
             label="上传图片"
             accept="image/*"
-            @click="AvatarUpload"
           ></v-file-input>
           <v-textarea
             v-model="cat_in.description"
@@ -194,6 +191,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
+import { addPrefix } from '@/api/post';
 import { getCats, createCat,deleteCat,updateCatByAdmin } from '@/api/cat';
 import { user } from '@/api/user';
 import snackbar from '@/api/snackbar';
@@ -239,8 +237,8 @@ const toggleSection = (id, section, value) => {
 const updateCatAvatar = async (id) => {
   try {
     const formData = new FormData();
-    formData.append('avatar', avatarFile.value);
-    const response = await updateCatByAdmin(id, { avatar: formData });
+    formData.append('new_images', avatarFile.value);
+    const response = await updateCatByAdmin(id, formData);
     console.log('头像上传成功', response);
     showCatEdit.value = false;
     toggleSection(id, "showAvatarUpload", false);
