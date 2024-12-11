@@ -8,7 +8,7 @@
         </v-toolbar-title>
       </v-toolbar> -->
     <v-row class="mt-5">
-      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center" align="center">
+      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
@@ -46,7 +46,7 @@
                 type="text"
                 :rules="[v => !!v || '描述不能为空']"
               ></v-text-field>
-              <v-btn color="#bbd5eb" @click="updateCatProfile(cat.id)" >确认更新</v-btn>
+              <v-btn color="#bbd5eb" @click="updateCatProfile(cat)" >确认更新</v-btn>
               <v-btn color="#f0f0f0" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
             </div>
           </v-expand-transition>
@@ -326,7 +326,7 @@ const updateCatAvatar = async (id) => {
   }
 }
 
-const updateCatProfile = async (id) => {
+const updateCatProfile = async (cat) => {
     try {
       if (!name.value || name.value.trim() === '') {
         snackbar.error('昵称或邮箱不能为空');
@@ -348,12 +348,12 @@ const updateCatProfile = async (id) => {
       catData.append('name', name.value);
       catData.append('description', description.value);
       console.error('catData', catData);
-      const response = await updateCatByAdmin(id , catData);
+      const response = await updateCatByAdmin(cat.id , catData);
       console.log('信息修改成功', response);
       showCatEdit.value = false;
       await fetchCats();
       snackbar.success('信息修改成功');
-      toggleSection(id, "showCatEdit", false);
+      toggleSection(cat.id, "showCatEdit", false);
     } catch (error) {
       console.error('更新猫咪资料失败:', error);
       snackbar.error('更新猫咪资料失败');
