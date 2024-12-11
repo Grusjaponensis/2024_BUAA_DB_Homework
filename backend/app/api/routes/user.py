@@ -77,7 +77,7 @@ async def update_user_avatar(
     # make sure new avatar file is saved before removing old avatar file
     if old_avatar_path != settings.DEFAULT_USER_AVATAR_URL:
         # remove old avatar file
-        remove_file(old_avatar_path)
+        remove_file(settings.UPLOAD_AVATAR_FOLDER, old_avatar_path.split("/")[-1])
 
     return current_user
 
