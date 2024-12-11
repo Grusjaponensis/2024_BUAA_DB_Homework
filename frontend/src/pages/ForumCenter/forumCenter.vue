@@ -8,8 +8,12 @@
     </v-toolbar>
     <v-dialog v-model="showDialog">
       <!-- 标签管理卡片 -->
-      <v-card class="tag-management-card" width="30vw">
-        <v-card-title class="headline">标签管理</v-card-title>
+      <v-card 
+        class="tag-management-card py-3 pl-6" 
+        width="30vw" 
+        title="标签管理"
+        :color="$vuetify.theme.name === 'dark' ? 'accent' : '#e5edf2'"
+      >
         <v-card-text>
           <ul>
             <li v-for="tag in tags" :key="tag.id">
@@ -19,7 +23,7 @@
           </ul>
           <div class="d-flex justify-space-between align-center" >
             <input v-model="newTag" placeholder="添加新标签" />
-            <v-btn @click="addTag" variant="text"><v-icon>mdi-plus</v-icon></v-btn>
+            <v-btn @click="addTag" variant="text" class="ml-2"><v-icon>mdi-plus</v-icon></v-btn>
           </div>
         </v-card-text>
         <v-card-actions>
@@ -29,14 +33,14 @@
     </v-dialog>
     <v-container>
     <!-- 侧边栏（包含按钮） -->
-    <v-row class="mb-4" no-gutters>
-      <v-col cols="12" md="3" class="sidebar">
+    <v-row class="mb-4">
+      <v-col cols="3">
         <!-- 按钮组 -->
         <div class="d-flex flex-column">
           <v-btn
             block
             :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' : 'blue-lighten-1'"
-            @click="showCreatePostDialog = !showCreatePostDialog"
+            @click="checkLogin(), showCreatePostDialog = !showCreatePostDialog"
             class="my-1"
             variant="outlined"
           >
@@ -79,7 +83,7 @@
           </v-btn>
         </div>
         <!-- 分析数据栏 -->
-        <v-card variant="tonal" class="mt-5">
+        <v-card variant="plain" class="mt-5">
           <v-card-text>
             <div class="d-flex flex-column align-start">
               <div class="d-flex align-start mt-2">
@@ -102,11 +106,11 @@
             </div>
           </v-card-text>
         </v-card>
-        <v-img src="@/assets/cat-forum.png" />
+        <v-img src="@/assets/cat-forum.png" class="mt-5"/>
       </v-col>
 
       <!-- 主内容区域（帖子列表） -->
-      <v-col cols="12" md="9">
+      <v-col cols="9">
         <!-- 标签按钮组 -->
         <div class="d-flex justify-start mb-4 button-group">
           <v-btn
@@ -123,51 +127,30 @@
         <v-card
           v-for="post in filteredPosts"
           :key="post.id"
-          class="pa-4 mb-4 rounded-lg"
+          class="pa-1 mb-4 rounded-lg"
           elevation="2"
           :to="`/ForumCenter/postDetails/${post.id}`"
         >
-          <v-row>
-            <!-- 左侧列：标题和内容 -->
-            <v-col cols="12" md="8">
-              <v-list-item-content @click="goToPostDetails(post.id)">
-                <v-list-item-title class="text-h6 mb-2">{{ post.title }}</v-list-item-title>
-                <v-list-item-subtitle class="grey--text mb-2">
-                  发布于 {{ new Date(post.created_at).toLocaleString() }}
-                </v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  {{ post.likes_number }} likes
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-col>
-            <v-col cols="12" md="4" class="d-flex align-center justify-end">
-              <div class="d-flex align-center">
-                <v-chip
-                  v-for="tagName in post.tags"
-                  :key="tagName"
-                  :color="getTagColor(tagName)"
-                  class="ma-1"
-                  outlined
-                  small
-                >
-                  {{ tagName }}
-                </v-chip>
-              </div>
-            </v-col>
-          </v-row>
-          <v-row >
-            <v-col cols="12" md="8"></v-col>
-            <v-col cols="12" md="4" class="d-flex align-center justify-end">
-              <v-list-item-action>
-                <v-btn icon @click="toggleFavorite(post)" style="margin-right: 12px;">
-                  <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="removePost(post)" v-if="isAdmin">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-col>
-          </v-row>
+          <template #append>
+            <v-chip
+              v-for="tagName in post.tags"
+              :key="tagName"
+              :color="getTagColor(tagName)"
+              class="ma-1"
+            >
+              {{ tagName }}
+            </v-chip>
+          </template>
+          <template #title>{{ post.title }}</template>
+          <v-card-text class="text-caption">
+              发布于 {{ new Date(post.created_at).toLocaleString() }}
+          </v-card-text>
+          <v-chip
+            :text="`${post.likes_number} likes`"
+            prepend-icon="mdi-heart"
+            color="red"
+            class="my-2 ml-3"
+          ></v-chip>
         </v-card>
       </v-col>
     </v-row>
@@ -257,25 +240,23 @@ const showCreatePostDialog = ref(false);
 const myPosts = () => {
   if (!user.login) {
     router.push('/login')
-    snackbar.warning('请先登录'); 
+    snackbar.error('请先登录!'); 
   } else {
     router.push('/ForumCenter/myPosts');
   }
 }
 
-// const createPost = () => {
-//   if (!user.login) {
-//     router.push('/login')
-//     snackbar.warning('请先登录'); 
-//   } else {
-//     router.push('/ForumCenter/createPost');
-//   }
-// }
+const checkLogin = () => {
+  if (!user.login) {
+    router.push('/login')
+    snackbar.error('请先登录!'); 
+  }
+}
 
 const myFavorites = () => {
   if (!user.login) {
     router.push('/login')
-    snackbar.warning('请先登录'); 
+    snackbar.error('请先登录!'); 
   } else {
     router.push('/ForumCenter/myFavorites');
   }
@@ -497,18 +478,6 @@ input {
   transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
 }
 
-/* .v-btn:hover {
-  background-color: #818181;
-} */
-
-/* 标签管理卡片美化 */
-.tag-management-card {
-  border-radius: 10px; /* 圆角 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影 */
-  background-color: #e5edf2;
-  margin-top: 20px;
-}
-
 /* 增加输入框和按钮的美观性 */
 .input-group button {
   border: none;
@@ -531,11 +500,6 @@ input {
 
 .v-footer .v-btn:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.sidebar {
-  max-width: 240px; 
-  margin-right: 30px;
 }
 
 .v-btn {
