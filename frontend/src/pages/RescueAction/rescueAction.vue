@@ -67,7 +67,7 @@
                 >
                   <v-icon>mdi-heart</v-icon>
                 </v-btn>
-                <span class="caption" v-if="user.is_superuser">查看申请</span>
+                <span class="caption" v-if="user.is_superuser">查看报名</span>
 
                 <v-btn
                   v-if="user.is_superuser"
@@ -91,14 +91,14 @@
         <v-col v-for="activity in activities" :key="activity.id" >
           <v-card style="background-color: #fbf1d7; border: 2px solid #f7cf83;" >
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
-            <v-card-subtitle>需要志愿者: 0/{{ activity.max_participants }}</v-card-subtitle>
+            <v-card-subtitle>需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
             <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
             <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="user.is_volunteer || user.is_superuser">
               <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
-              <!-- <v-btn v-if="user.is_volunteer" :disabled="!isSignedUp(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn> -->
+              <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
               <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
@@ -334,9 +334,12 @@ const canSignUp = (activity) => {
   return condition1 && condition2;
 };
 
-const isSignedUp = (activity) => {
-  // 是否已经报名
-  return applications.value.some(p => p.activity_id === activity.id);
+const canWithdraw = (activity) => {
+  // 是否可以退选
+  // console.log("canWithdraw", applications.value)
+  // console.log("canWithdraw", applications.value.some(p => p.activity_id === activity.id))
+  // console.log("canWithdraw", applications.value.some(p => p.activity_id === activity.id && p.status === 'pending'))
+  return applications.value.some(p => p.activity_id === activity.id && p.status === 'pending');
 };
 
 const rules = {

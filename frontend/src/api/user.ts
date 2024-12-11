@@ -132,6 +132,7 @@ export const deleteUserByAdmin = async (userId: number) => {
 export const getProfileByAdmin = async ( userId: number) => {
     try {
         const response = await server.get(`/users/${userId}`);
+        console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('获取个人资料失败', error);

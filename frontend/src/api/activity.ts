@@ -36,9 +36,9 @@ export const signUp = async (activity_id: string, user_id :string) => {
   };
   
   // 退选
-  export const withdraw = async (id: string) => {
+  export const withdraw = async (activity_id: string) => {
     try {
-      const response = await server.post(`/activities/${id}/withdraw`);
+      const response = await server._delete(`/volunteers/${activity_id}`);
       return response.data;
     } catch (error) {
       console.error('退选失败:', error);
