@@ -2,11 +2,11 @@
   <div class="cat-base">
   <v-container>
     <!-- 顶部欢迎横栏 -->
-    <!-- <v-toolbar color='#d4eae0' dark class="top-bar">
+    <v-toolbar color='#d4eae0' dark class="top-bar">
         <v-toolbar-title>
           这里是猫猫基地，猫猫欢迎你！
         </v-toolbar-title>
-      </v-toolbar> -->
+      </v-toolbar>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
@@ -34,12 +34,11 @@
           
           <v-expand-transition>
             <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
-              <v-text-field
-                v-model="name"
-                label="姓名"
-                type="text"
-                :rules="[v => !!v || '昵称不能为空']"
-              ></v-text-field>
+              <v-select
+                v-model="health_condition"
+                :items="['HEALTHY', 'SICK', 'VACCINATED', 'DEAD']"
+                label="猫咪健康状况"
+              ></v-select>
               <v-text-field
                 v-model="description"
                 label="描述"
@@ -247,6 +246,7 @@ const name = ref('');
 const description = ref('');
 const showCatEdit = ref(false);
 const fileUrls = ref([])
+const health_condition = ref('')
 
 const handleFiles = (event) => {
   const files = event.target.files;
@@ -289,8 +289,11 @@ const toggleSection = (id, section, value) => {
       // console.error(id)
       const cat = cats.value.find((u) => u.id === id)
       // console.error(cat)
-      name.value = cat.name;
       description.value = cat.description;
+      health_condition.value = cat.health_condition === 1 ? 'HEALTHY'
+        : cat.health_condition === 2 ? 'SICK'
+        : cat.health_condition === 3 ? 'VACCINATED'
+        : 'DEAD';
   }
 };
 
@@ -328,14 +331,6 @@ const updateCatAvatar = async (id) => {
 
 const updateCatProfile = async (cat) => {
     try {
-      if (!name.value || name.value.trim() === '') {
-        snackbar.error('昵称或邮箱不能为空');
-        return;
-      }
-      if (name.value.length > 128) {
-        snackbar.error('姓名长度不能超过128个字符');
-        return;
-      }
       if (!description.value || description.value.trim() === '') {
         snackbar.error('描述不能为空');
         return;
@@ -345,8 +340,12 @@ const updateCatProfile = async (cat) => {
         return;
       }
       const catData = new FormData();
-      catData.append('name', name.value);
       catData.append('description', description.value);
+      catData.append('health_condition', 
+      health_condition === 'HEALTHY' ? 1
+        : health_condition === 'SICK' ? 2
+        : health_condition === 'VACCINATED' ? 3
+        : 4);
       console.error('catData', catData);
       const response = await updateCatByAdmin(cat.id , catData);
       console.log('信息修改成功', response);
