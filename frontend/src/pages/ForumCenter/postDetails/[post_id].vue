@@ -36,7 +36,6 @@
                   {{ tagName }}
                 </v-chip>
           </div>
-          <v-card-text class="mb-3"  style="font-size: 18px;">{{ post.content }}</v-card-text>
           <v-md-preview :text="post.content"></v-md-preview>
           <!-- 展示图片 -->
           <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">

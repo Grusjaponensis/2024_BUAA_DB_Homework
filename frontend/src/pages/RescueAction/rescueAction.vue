@@ -2,8 +2,11 @@
 <v-container>
       <!-- 顶部欢迎横栏 -->
       <v-toolbar color='#fcedbe' dark class="top-bar">
-        <v-toolbar-title>
+        <v-toolbar-title v-if="isVolunteer || isAdmin">
           Hello，{{ username }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
+        </v-toolbar-title>
+        <v-toolbar-title v-if="!isVolunteer && !isAdmin">
+          Hello，{{ username }}，报名成为志愿者，和我们一起帮助猫猫吧！
         </v-toolbar-title>
       </v-toolbar>
 
@@ -94,9 +97,9 @@
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="isVolunteer || isAdmin">
-              <v-btn v-if="canSignUp(activity) && !isSignedUp(activity)" color="primary" @click="signUpActivity(activity)">报名</v-btn>
-              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="primary" @click="withdrawActivity(activity)">退选</v-btn>
-              <v-btn v-if="isAdmin" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
+              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="#fbf1d7" @click="signUpActivity(activity)">报名</v-btn>
+              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if="isAdmin" color="#faadac" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -318,6 +321,7 @@ const isSignedUp = (activity) => {
   // 是否已报名
   // const userId = store.getters.userId;
   // return activity.volunteers?.some(volunteer => volunteer.id === userId);
+  return false;
 };
 
 onMounted(() => {

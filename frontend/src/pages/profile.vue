@@ -1,6 +1,7 @@
 <template>
-    <v-container class="pa-0">
-      <v-card class="mx-auto my-8 pa-1" max-width="400">
+  <div class="profile">
+    <v-container class="pa-0" >
+      <v-card class="mx-auto my-8 pa-1" max-width="400" >
         <v-card-title class="headline font-weight-bold">个人资料</v-card-title>
         <v-card-text class="px-8 pt-6" v-if="profile">
           <div class="text-center">
@@ -82,6 +83,7 @@
         </div>
       </v-card>
     </v-container>
+  </div>
   </template>
   
   <script setup>
@@ -183,5 +185,11 @@ onMounted(fetchProfile);
   .strong {
   display: block;
   margin-top: 15px;
+  }
+  .profile {
+    background: linear-gradient(135deg, #d4eae0, #dcd5f2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
   }
 </style>

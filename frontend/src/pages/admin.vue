@@ -1,4 +1,5 @@
 <template>
+  <div class="admin-container">
     <v-container>
       <!-- 用户数量展示 -->
       <v-row justify="center">
@@ -140,6 +141,7 @@
     >
     <v-icon>mdi-plus</v-icon>
     </v-btn>
+  </div>
   </template>
   
   <script setup>
@@ -298,5 +300,12 @@
   .v-btn {
     margin: 4px;
     text-transform: none;
+  }
+  
+  .admin-container {
+    background: linear-gradient(135deg, #d4eae0, #dcd5f2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
   }
   </style>

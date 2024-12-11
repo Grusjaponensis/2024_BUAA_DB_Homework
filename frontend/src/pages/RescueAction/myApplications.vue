@@ -1,25 +1,27 @@
 <template>
     <!-- 主内容区域 -->
     <v-container>
-      <v-list>
-        <v-list-item
-          v-for="application in applications"
+      <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
+      <v-row>
+        <v-col cols="12" md="12" justify="center" align="center">
+          <img src="@/assets/myapply.png" alt="logo" width="20%">
+        </v-col>
+        <v-col v-for="application in applications"
           :key="application.id"
-          class="my-2"
-        >
-          <v-list-item-content>
-            <v-list-item-title class="headline">申请情况</v-list-item-title>
-            <v-list-item-subtitle>基本信息：{{ application.name }} - {{ application.age }} - {{ application.gender }}</v-list-item-subtitle>
-            <v-list-item-subtitle class="grey--text">
+          class="my-2" cols="12" md="4">
+          <v-card>
+            <v-card-title class="headline">申请情况</v-card-title>
+            <v-card-subtitle>基本信息：{{ application.name }} - {{ application.age }} - {{ application.gender }}</v-card-subtitle>
+            <v-card-subtitle class="grey--text">
               申请日期: {{ new Date(application.create_at).toLocaleString() }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle>
+            </v-card-subtitle>
+            <v-card-subtitle>
               状态: {{ application.status }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ application.reason }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+            </v-card-subtitle>
+            <v-card-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ application.reason }}</v-card-subtitle>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </template>
   
