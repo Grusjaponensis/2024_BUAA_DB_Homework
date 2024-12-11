@@ -43,7 +43,8 @@ async def startup_event():
     import os
     paths_to_create = [
         settings.UPLOAD_AVATAR_FOLDER,
-        settings.UPLOAD_POST_IMAGE_FOLDER
+        settings.UPLOAD_POST_IMAGE_FOLDER,
+        settings.UPLOAD_CAT_IMAGE_FOLDER
     ]
     for path in paths_to_create:
         os.makedirs(path, exist_ok=True) # set exist_ok to True to avoid error when folder already exists

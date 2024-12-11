@@ -1,4 +1,5 @@
 import uuid, logging
+from typing import List
 
 from fastapi import (
     APIRouter, HTTPException, Depends, 
@@ -17,7 +18,7 @@ from app.api.deps import (
 from app.models.cat import (
     Cat, CatCreate, CatLocation, CatPublic, 
     CatUpdateInfo, CatUpdateLocation, CatsPublic,
-    CatLocationCreate, CatLocationPublic
+    CatLocationCreate, CatLocationPublic, CatMedia
 )
 from app.util.utils import save_file, remove_file
 from app.core.config import settings
@@ -40,7 +41,8 @@ async def get_cats(session: SessionDep, offset: int = 0, limit: int = 100) -> Ca
         CatPublic(
             **cat.model_dump(),
             latest_longitude=getattr(crud.get_latest_cat_location(session, cat.id), 'longitude', None),
-            latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None)
+            latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None),
+            image_urls=[img.image_url for img in cat.images]
         ) for cat in cats
     ]
     
@@ -60,7 +62,8 @@ async def get_cat_by_id(session: SessionDep, cat_id: uuid.UUID) -> CatPublic:
     return CatPublic(
         **cat.model_dump(),
         latest_longitude=getattr(crud.get_latest_cat_location(session, cat.id), 'longitude', None),
-        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None)
+        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None),
+        image_urls=[img.image_url for img in cat.images]
     )
     
 
@@ -83,22 +86,42 @@ async def get_cat_locations(session: SessionDep, cat_id: uuid.UUID):
 async def create_cat(
     session: SessionDep, 
     current_user: CurrentUser, 
-    cat_in: CatCreate, 
-    location_in: CatLocationCreate | None = None
+    name: str = Form(..., max_length=128), 
+    is_male: bool = Form(...), 
+    age: int = Form(..., ge=0, le=30), 
+    health_condition: int = Form(default=1, ge=1, le=4),
+    description: str | None = Form(default=None, max_length=256),
+    longitude: float | None = Form(default=None),
+    latitude: float | None = Form(default=None),
+    image: list[UploadFile] | None = File(default=None)
 ) -> CatPublic:
     """
     Create cat
     """
-    new_name = cat_in.name
-    if session.exec(select(Cat).where(Cat.name == new_name)).first():
+    if session.exec(select(Cat).where(Cat.name == name)).first():
         raise HTTPException(status_code=400, detail="Cat already exists")
     
-    cat = Cat.model_validate(cat_in)
-    if location_in:
-        location_to_save = CatLocation(**location_in.model_dump())
+    cat = Cat(
+        name=name,
+        is_male=is_male,
+        age=age,
+        health_condition=health_condition,
+        description=description
+    )
+    
+    if longitude and latitude:
+        new_location = CatLocationCreate(longitude=longitude, latitude=latitude)
+        location_to_save = CatLocation(**new_location.model_dump())
         location_to_save.user_id = current_user.id
         location_to_save.cat_ref = cat
         cat.locations.append(location_to_save)
+    
+    if image:
+        for img in image:
+            file_path = save_file(settings.UPLOAD_CAT_IMAGE_FOLDER, img, current_user.email)
+            new_media = CatMedia(cat_id=cat.id, image_url=file_path)
+            cat.images.append(new_media)
+            new_media.cat_ref = cat
     
     session.add(cat)
     session.commit()
@@ -107,16 +130,24 @@ async def create_cat(
     return CatPublic(
         **cat.model_dump(),
         latest_longitude=getattr(crud.get_latest_cat_location(session, cat.id), 'longitude', None),
-        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None)
+        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None),
+        image_urls=[img.image_url for img in cat.images]
     )
     
     
 # - MARK: Update cat info
-@router.patch("/{cat_id}/info", response_model=CatPublic, dependencies=[LoginRequired])
+@router.patch("/{cat_id}/info", response_model=CatPublic)
 async def update_cat_info(
     session: SessionDep, 
+    current_user: CurrentUser, 
     cat_id: uuid.UUID, 
-    cat_in: CatUpdateInfo
+    name: str | None = Form(default=None, max_length=128), 
+    is_male: bool | None = Form(default=None), 
+    age: int | None = Form(default=None, ge=0, le=30), 
+    health_condition: int | None = Form(default=None, ge=1, le=4),
+    description: str | None = Form(default=None, max_length=256),
+    keep_images: List[str] | None = Form(default=None),
+    new_images: list[UploadFile] | None = File(default=None)
 ) -> CatPublic:
     """
     Update cat info
@@ -125,9 +156,28 @@ async def update_cat_info(
     if not cat:
         raise HTTPException(status_code=404, detail="Cat not found")
     
-    cat_in_data = cat_in.model_dump(exclude_unset=True)
-    for key, value in cat_in_data.items():
+    cat_in_data = CatUpdateInfo(
+        name=name,
+        is_male=is_male,
+        age=age,
+        health_condition=health_condition,
+        description=description
+    )
+    for key, value in cat_in_data.model_dump(exclude_none=True).items():
         setattr(cat, key, value)
+    
+    for old_img in cat.images:
+        if keep_images and old_img.image_url in keep_images:
+            continue
+        remove_file(settings.UPLOAD_CAT_IMAGE_FOLDER, old_img.image_url.split('/')[-1])
+        cat.images.remove(old_img)
+    
+    if new_images:
+        for img in new_images:
+            file_path = save_file(settings.UPLOAD_CAT_IMAGE_FOLDER, img, current_user.email)
+            new_media = CatMedia(cat_id=cat.id, image_url=file_path)
+            cat.images.append(new_media)
+            new_media.cat_ref = cat
     
     session.add(cat)
     session.commit()
@@ -136,7 +186,8 @@ async def update_cat_info(
     return CatPublic(
         **cat.model_dump(),
         latest_longitude=getattr(crud.get_latest_cat_location(session, cat.id), 'longitude', None),
-        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None)
+        latest_latitude=getattr(crud.get_latest_cat_location(session, cat.id), 'latitude', None),
+        image_urls=[img.image_url for img in cat.images]
     )
     
     
@@ -167,7 +218,8 @@ async def update_cat_location(
     return CatPublic(
         **cat.model_dump(),
         latest_longitude=location_to_save.longitude,
-        latest_latitude=location_to_save.latitude
+        latest_latitude=location_to_save.latitude,
+        image_urls=[img.image_url for img in cat.images]
     )
     
     

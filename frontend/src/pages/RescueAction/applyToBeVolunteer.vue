@@ -15,6 +15,7 @@
               type="number"
               label="年龄"
               required
+              :rules="[rules.age]"
             ></v-text-field>
   
             <v-select
@@ -33,7 +34,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="submitApplication">提交申请</v-btn>
+          <v-btn color="primary" @click="submitApplicationForm">提交申请</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -44,6 +45,12 @@ import { ref } from 'vue';
 import { submitApplication } from '@/api/volunteer'; 
 import snackbar from '@/api/snackbar';
 
+const rules = {
+  age: value => {
+    return value > 0 ? true : '年龄必须大于0';
+  }
+};
+
 const volunteerForm = ref(null);
 const applicant = ref({
   name: '',
@@ -53,16 +60,34 @@ const applicant = ref({
   status: '待审核'
 });
 
-const submitApplication = async () => {
-  if (volunteerForm.value.validate()) {
-    try {
-      await submitApplication(applicant.value);
-      console.log('申请提交成功');
-      snackbar.success('申请提交成功');
-    } catch (error) {
-      console.error('申请提交失败:', error);
-      snackbar.error('申请提交失败');
+const submitApplicationForm = async () => {
+  try {
+    if (applicant.value.name === '' ) {
+      snackbar.error('请填写姓名');
+      return;
     }
+    if (applicant.value.age === null ) {
+      snackbar.error('请填写年龄');
+      return;
+    }
+    if (applicant.value.age < 0 ) {
+      snackbar.error('年龄必须大于0');
+      return;
+    }
+    if (applicant.value.gender === '' ) {
+      snackbar.error('请选择性别');
+      return;
+    }
+    if (applicant.value.reason === '' ) {
+      snackbar.error('请填写申请理由');
+      return;
+    }
+    await submitApplication(applicant.value);
+    console.log('申请提交成功');
+    snackbar.success('申请提交成功');
+  } catch (error) {
+    console.error('申请提交失败:', error);
+    snackbar.error('申请提交失败');
   }
 };
 </script>

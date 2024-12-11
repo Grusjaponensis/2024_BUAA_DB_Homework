@@ -29,3 +29,12 @@ export const getCat = async (id: String) => {
   const response = await server.get(`/cats/${id}`);
   return response.data;
 };
+
+export const updateCatByAdmin = async (id: String, cat: any) => {
+  try {
+    const response = await server.patch(`/cats/${id}/info`, cat);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

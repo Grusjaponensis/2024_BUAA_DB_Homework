@@ -77,6 +77,7 @@ class VolunteerApplication(SQLModel, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
+    reason: str = Field(max_length=1024)
     status: ApplicationStatus = Field(default=ApplicationStatus.PENDING)
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
     updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))

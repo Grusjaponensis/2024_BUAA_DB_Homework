@@ -1,6 +1,7 @@
 <template>
     <v-container>
-      <v-card>
+      <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/myPosts')"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
+      <v-card class="elevation-12 mt-5">
         <v-card-title class="headline">编辑帖子</v-card-title>
         <v-card-text>
           <v-form ref="form" lazy-validation>
@@ -18,47 +19,58 @@
               required
             ></v-textarea>
 
-            <!-- 显示图片并允许删除 -->
-            <div v-if="post.keep_images && post.keep_images.length > 0"  style="margin: auto;">
-                <v-img
-                v-for="(image, index) in post.keep_images"
-                :key="index"
-                :src="`${addPrefix(image)}`"
-                class="mb-3"
-                max-width="100%"
-                max-height="300px"
-                ></v-img>
+            <v-col>
+              <v-row >
+                <v-col cols="12">
+                  <v-btn text @click="showTags = !showTags">添加标签</v-btn>
+                </v-col>
+                <v-col cols="12" v-if="showTags">
+                  <v-select
+                    v-model="post.tags"
+                    :items="allTags.map(tag => tag.name)"
+                    multiple
+                    chips
+                    label="Tags"
+                  ></v-select>
+                </v-col>
+              </v-row>
+              <!-- 上传文件按钮 -->
+              <v-row class="mt-5">
+                <div v-if="post.keep_images && post.keep_images.length > 0"  style="margin: auto; ">
+                  <v-img
+                  v-for="(image, index) in post.keep_images"
+                  :key="index"
+                  :src="`${addPrefix(image)}`"
+                  class="mb-3"
+                  max-width="100%"
+                  max-height="300px"
+                  ></v-img>
+                  <v-btn
+                  v-for="(image, index) in post.keep_images"
+                  :key="index"
+                  color="error"
+                  text
+                  @click="removeImage(image)"
+                  >
+                  删除图片
+                  </v-btn>
+              </div>
+              </v-row>
+              <v-row class="mt-5">
+                <input type="file" multiple @change="handleFileUpload" />
+              </v-row>
+
+              <!-- 发帖按钮靠右 -->
+              <v-row class="mt-5 justify-end">
                 <v-btn
-                v-for="(image, index) in post.keep_images"
-                :key="index"
-                color="error"
-                text
-                @click="removeImage(image)"
+                  color="primary"
+                  :disabled="!isFormValid"
+                  @click="submitPost"
                 >
-                删除图片
+                更新帖子
                 </v-btn>
-            </div>
-  
-            <input type="file" multiple @change="handleFileUpload" />
-  
-            <v-btn text @click="showTags = !showTags">添加标签</v-btn>
-  
-            <v-select
-              v-if="showTags"
-              v-model="post.tags"
-              :items="allTags.map((tag) => tag.name)"
-              multiple
-              chips
-              label="Tags"
-            ></v-select>
-  
-            <v-btn
-              color="primary"
-              :disabled="!isFormValid"
-              @click="submitPost"
-            >
-              更新帖子
-            </v-btn>
+              </v-row>
+            </v-col>
           </v-form>
         </v-card-text>
       </v-card>

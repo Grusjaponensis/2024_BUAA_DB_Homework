@@ -1,6 +1,7 @@
 <template>
   <v-container>
-    <v-card>
+    <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/forumCenter')"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
+    <v-card class="elevation-12 mt-5">
       <v-card-title class="headline">创建帖子</v-card-title>
       <v-card-text>
         <v-form ref="form" lazy-validation>
@@ -17,27 +18,39 @@
             counter="1000"
             required
           ></v-textarea>
+          
+        <v-col>
+          <v-row >
+            <v-col cols="12">
+              <v-btn text @click="showTags = !showTags">添加标签</v-btn>
+            </v-col>
+            <v-col cols="12" v-if="showTags">
+              <v-select
+                v-model="post.tags"
+                :items="allTags.map(tag => tag.name)"
+                multiple
+                chips
+                label="Tags"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <!-- 上传文件按钮 -->
+          <v-row class="mt-5">
+            <input type="file" multiple @change="handleFileUpload" />
+          </v-row>
 
-          <input type="file" multiple @change="handleFileUpload" />
+          <!-- 发帖按钮靠右 -->
+          <v-row class="mt-5 justify-end">
+            <v-btn
+              color="primary"
+              :disabled="!isFormValid"
+              @click="submitPost"
+            >
+              发帖
+            </v-btn>
+          </v-row>
+        </v-col>
 
-          <v-btn text @click="showTags = !showTags">添加标签</v-btn>
-
-          <v-select
-            v-if="showTags"
-            v-model="post.tags"
-            :items="allTags.map(tag => tag.name)"
-            multiple
-            chips
-            label="Tags"
-          ></v-select>
-
-          <v-btn
-            color="primary"
-            :disabled="!isFormValid"
-            @click="submitPost"
-          >
-            发帖
-          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>

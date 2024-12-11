@@ -57,8 +57,23 @@ class Cat(CatBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     
     # relationships
+    images: list["CatMedia"] = Relationship(back_populates="cat_ref", cascade_delete=True)
     locations: list["CatLocation"] = Relationship(back_populates="cat_ref", cascade_delete=True)
         
+
+class CatMedia(SQLModel, table=True):
+    """
+    CatMedia model representing the table:
+    - id: Primary key (UUID, auto-generated)
+    - cat_id: Foreign key to Cat (UUID)
+    - image_url: URL of the image
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    cat_id: uuid.UUID = Field(foreign_key="cat.id", index=True, ondelete="CASCADE")
+    image_url: str
+
+    # relationships
+    cat_ref: Cat = Relationship(back_populates="images")
 
 # - MARK: CatLocation
 class CatLocation(SQLModel, table=True):
@@ -97,6 +112,11 @@ class CatCreate(CatBase):
 
 # - MARK: CatLocCreate
 class CatLocationCreate(BaseModel):
+    """
+    Data model for creating a new cat location:
+    - longitude: Longitude of the location (-180 to 180)
+    - latitude: Latitude of the location (-90 to 90)
+    """
     longitude: float = Field(ge=-180, le=180)
     latitude: float = Field(ge=-90, le=90)
 
@@ -149,6 +169,7 @@ class CatPublic(BaseModel):
     health_condition: int
     description: str | None = None
     created_at: datetime.datetime
+    image_urls: list[str] = []
 
 
 class CatsPublic(BaseModel):
