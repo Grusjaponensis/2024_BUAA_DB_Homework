@@ -11,10 +11,10 @@
             <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
-            <v-card-text v-if="isVolunteer || isAdmin">
-              <v-btn v-if="canSignUp(activity) && !isSignedUp(activity)" color="primary" @click="signUpActivity(activity)">报名</v-btn>
-              <v-btn v-if="canSignUp(activity) && isSignedUp(activity)" color="primary" @click="withdrawActivity(activity)">退选</v-btn>
-              <v-btn v-if="isAdmin" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
+            <v-card-text v-if="user.is_volunteer || user.is_superuser">
+              <v-btn v-if="canSignUp(activity) && !isSignedUp(activity) && user.is_volunteer" color="primary" @click="signUpActivity(activity)">报名</v-btn>
+              <v-btn v-if="isSignedUp(activity) && user.is_volunteer" color="primary" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -22,7 +22,7 @@
     </v-container>
 
     <v-row justify="center" class="text-center" no-gutters>
-      <v-row v-if="!isVolunteer && !isAdmin" justify="end" no-gutters>
+      <v-row v-if="!user.is_volunteer && !user.is_superuser" justify="end" no-gutters>
         <v-btn
           color="primary"
           @click = applyToBeVolunteer
@@ -38,7 +38,7 @@
         </v-btn>
       </v-row>
 
-      <v-row v-if="isAdmin" justify="end" no-gutters>
+      <v-row v-if="user.is_superuser" justify="end" no-gutters>
         <v-btn
           color="primary"
           to="/RescueAction/viewApplications"
@@ -166,8 +166,11 @@ const showAddActionDialog = ref(false);
 
 const activities = ref([]);
 const deleteId = ref(0);
-const isVolunteer = ref(false);
-const isAdmin = ref(false);
+
+onMounted(() => {
+  fetchactivities();
+  fetchProfile();
+});
 
 const myApplications = () => {
   if (!user.login) {
@@ -191,9 +194,7 @@ const applyToBeVolunteer = () => {
 
 const fetchProfile = async () => {
   try {
-    const response = await getProfile();
-    isVolunteer.value = response.data.is_volunteer === true;
-    isAdmin.value = response.data.is_superuser === true;
+    await getProfile();
   } catch (error) {
     console.error('获取用户信息失败:', error);
   }
@@ -251,20 +252,14 @@ const withdrawActivity = async (activity) => {
 
 const canSignUp = (activity) => {
   // 是否可以报名
+  console.error("canSignUp " + activity.volunteerNeeded + " " + activity.volunteersSignedUp);
   return activity.volunteerNeeded > activity.volunteersSignedUp;
 };
 
 const isSignedUp = (activity) => {
   // 是否已报名
-  // const userId = store.getters.userId;
-  // return activity.volunteers?.some(volunteer => volunteer.id === userId);
+  return activity.volunteers?.some(volunteer => volunteer.id === user.id);
 };
-
-onMounted(() => {
-  fetchactivities();
-  fetchProfile();
-});
-
 
 const rules = {
   people: value => {
