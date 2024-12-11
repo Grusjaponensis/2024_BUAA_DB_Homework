@@ -269,10 +269,9 @@ const updateCatProfile = async (id) => {
         snackbar.error('描述长度不能超过256个字符');
         return;
       }
-      const catData = {
-        name: name.value,
-        description: description.value,
-      };
+      const catData = new FormData();
+      catData.append('name', name.value);
+      catData.append('description', description.value);
       console.error('catData', catData);
       const response = await updateCatByAdmin(id , catData);
       console.log('信息修改成功', response);

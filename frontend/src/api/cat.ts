@@ -32,9 +32,7 @@ export const getCat = async (id: String) => {
 
 export const updateCatByAdmin = async (id: String, cat: any) => {
   try {
-    const response = await server.patch(`/cats/${id}/info`, cat ,
-      { headers: { "Content-Type": "application/json" } }
-    );
+    const response = await server.patch(`/cats/${id}/info`, cat);
     return response.data;
   } catch (error) {
     console.log(error);
