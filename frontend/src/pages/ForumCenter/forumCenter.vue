@@ -102,7 +102,7 @@
                 >
                   <v-icon>mdi-tag</v-icon>
                 </v-btn>
-                <span class="caption">标签管理</span>
+                <span class="caption" v-if="isAdmin">标签管理</span>
               </div>
             </v-card-text>
           </v-card>
@@ -418,12 +418,13 @@ input {
 .tag-management-card {
   border-radius: 10px; /* 圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影 */
+  background-color: #e5edf2;
 }
 
 /* 增加输入框和按钮的美观性 */
 .input-group button {
   border: none;
-  background-color: #ff7777;
+  background-color: #c7d9e9;
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
@@ -432,7 +433,7 @@ input {
 }
 
 .input-group button:hover {
-  background-color: #e06c6c;
+  background-color: #8ea5cc;
 }
 
 /* 底部按钮美化 */
