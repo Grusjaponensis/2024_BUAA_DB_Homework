@@ -39,6 +39,17 @@
               <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
             </div>
           </v-expand-transition>
+          <v-expand-transition>
+            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-8">
+              <v-file-input
+                v-model="avatarFile"
+                label="上传图片"
+                accept="image/*"
+              ></v-file-input>
+              <v-btn color="primary" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
+              <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
+            </div>
+          </v-expand-transition>
 
           <v-card-actions class="d-flex justify-center">
             <v-btn
@@ -224,6 +235,21 @@ const toggleSection = (id, section, value) => {
       description.value = cat.description;
   }
 };
+
+const updateCatAvatar = async (id) => {
+  try {
+    const formData = new FormData();
+    formData.append('avatar', avatarFile.value);
+    const response = await updateCatByAdmin(id, { avatar: formData });
+    console.log('头像上传成功', response);
+    showCatEdit.value = false;
+    toggleSection(id, "showAvatarUpload", false);
+    snackbar.success('头像上传成功');
+  } catch (error) {
+    console.error('上传头像失败:', error);
+    snackbar.error('上传头像失败');
+  }
+}
 
 const updateCatProfile = async (id) => {
     try {
