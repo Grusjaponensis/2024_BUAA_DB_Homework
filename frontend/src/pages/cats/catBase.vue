@@ -7,7 +7,7 @@
     </v-chip-group>
     <v-row>
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
-        <v-card class="d-flex flex-column text-center">
+        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
           <v-carousel hide-delimiters="true" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
@@ -301,10 +301,18 @@ const updateCatAvatar = async (id) => {
       snackbar.error('请上传图片！');
       return;
     }
-    console.error('formData_Change_avatar' ,  formData)
+    console.log('formData_Change_avatar' ,  formData)
     const response = await updateCatByAdmin(id, formData);
     console.log('头像上传成功', response);
     showCatEdit.value = false;
+    cat_in.value = {
+      name: '',
+      age: null,
+      is_male: null,
+      health_condition: null,
+      description: '',
+      image: [],
+    };
     fetchCats();
     toggleSection(id, "showAvatarUpload", false);
     snackbar.success('头像上传成功');
