@@ -4,7 +4,8 @@
       <v-card-title class="headline">{{ post.title }}</v-card-title>
       <v-card-subtitle>发布时间: {{ post.created_at }}</v-card-subtitle>
       <v-card-subtitle>标签: {{ post.tags.join(', ') }}</v-card-subtitle>
-      <v-card-text style="margin: auto;">{{ post.content }}</v-card-text>
+      <!-- <v-card-text style="margin: auto;">{{ post.content }}</v-card-text> -->
+      <v-md-preview :text="post.content"></v-md-preview>
       <!-- 展示图片 -->
       <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">
         <v-img

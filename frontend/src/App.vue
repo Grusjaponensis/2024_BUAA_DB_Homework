@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref} from 'vue';
+import { ref } from 'vue';
 import { snackbar } from './stores/app';
 import snackbar_ from './api/snackbar'
 import { user } from './api/user'

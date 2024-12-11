@@ -12,13 +12,12 @@
             required
           ></v-text-field>
 
-          <v-textarea
-            v-model="post.content"
-            label="内容"
-            counter="1000"
-            required
-          ></v-textarea>
-          
+          <v-md-editor
+            v-model="post.content" 
+            height="400px"
+            left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | code | link table"
+          />
+
         <v-col>
           <v-row >
             <v-col cols="12">
@@ -64,6 +63,7 @@ import { getTags } from '@/api/tags';
 import { useRouter } from 'vue-router';
 import snackbar from '@/api/snackbar';
 
+const text = ref('');
 const router = useRouter();
 const post = ref({
   title: '',
