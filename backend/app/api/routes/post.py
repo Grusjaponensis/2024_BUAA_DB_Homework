@@ -33,7 +33,7 @@ router = APIRouter()
 
 # - MARK: get all posts
 @router.get("/", response_model=PostsPublic)
-async def get_posts(*, session: SessionDep, current_user: CurrentUser, offset: int = 0, limit: int = 100) -> PostsPublic:
+async def get_posts(*, session: SessionDep, offset: int = 0, limit: int = 100) -> PostsPublic:
     """
     Get all posts.
     """
@@ -44,7 +44,7 @@ async def get_posts(*, session: SessionDep, current_user: CurrentUser, offset: i
         PostPublic(
             **post.model_dump(), 
             likes_number=crud.get_post_likes_count(session=session, post_id=post.id),
-            like_status=crud.get_like_status(session=session, user_id=current_user.id, post_id=post.id),
+            like_status=False,
             tags=[tag.name for tag in post.tags], 
             images=[image.image_url for image in post.images]
         ) for post in posts
