@@ -39,6 +39,17 @@
               <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
             </div>
           </v-expand-transition>
+          <v-expand-transition>
+            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-8">
+              <v-file-input
+                v-model="avatarFile"
+                label="上传图片"
+                accept="image/*"
+              ></v-file-input>
+              <v-btn color="primary" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
+              <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
+            </div>
+          </v-expand-transition>
 
           <v-card-actions class="d-flex justify-center">
             <v-btn
@@ -225,6 +236,21 @@ const toggleSection = (id, section, value) => {
   }
 };
 
+const updateCatAvatar = async (id) => {
+  try {
+    const formData = new FormData();
+    formData.append('avatar', avatarFile.value);
+    const response = await updateCatByAdmin(id, { avatar: formData });
+    console.log('头像上传成功', response);
+    showCatEdit.value = false;
+    toggleSection(id, "showAvatarUpload", false);
+    snackbar.success('头像上传成功');
+  } catch (error) {
+    console.error('上传头像失败:', error);
+    snackbar.error('上传头像失败');
+  }
+}
+
 const updateCatProfile = async (id) => {
     try {
       if (!name.value || name.value.trim() === '') {
@@ -243,10 +269,9 @@ const updateCatProfile = async (id) => {
         snackbar.error('描述长度不能超过256个字符');
         return;
       }
-      const catData = {
-        name: name.value,
-        description: description.value,
-      };
+      const catData = new FormData();
+      catData.append('name', name.value);
+      catData.append('description', description.value);
       console.error('catData', catData);
       const response = await updateCatByAdmin(id , catData);
       console.log('信息修改成功', response);
