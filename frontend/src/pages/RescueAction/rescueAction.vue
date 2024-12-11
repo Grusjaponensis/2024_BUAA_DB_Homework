@@ -2,10 +2,10 @@
 <v-container>
       <!-- 顶部欢迎横栏 -->
       <v-toolbar color='#fcedbe' dark class="top-bar">
-        <v-toolbar-title v-if="isVolunteer || isAdmin">
+        <v-toolbar-title v-if="user.is_volunteer || user.is_superuser">
           Hello，{{ user.nickname }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
         </v-toolbar-title>
-        <v-toolbar-title v-if="!isVolunteer && !isAdmin">
+        <v-toolbar-title v-if="!user.is_volunteer && !user.is_superuser">
           Hello，{{ user.nickname }}，报名成为志愿者，和我们一起帮助猫猫吧！
         </v-toolbar-title>
       </v-toolbar>
@@ -29,7 +29,7 @@
                 </div>
               </v-card-text>
             </v-card>
-          <v-card elevation="4"  v-if="isAdmin || !isVolunteer">
+          <v-card elevation="4"  v-if="user.is_superuser || !user.is_volunteer">
             <v-card-text class="pa-4">
               <!-- 按钮组 -->
               <div class="d-flex flex-column align-center">
