@@ -29,35 +29,35 @@ import snackbar from '@/api/snackbar';
 const applications = ref([]);
 
 // 模拟数据
-const applicationDate = {
-    data: [
-        {
-            id: 1,
-            name: '张三',
-            gender: '男',
-            age: 20,
-            reason: '我想做义工',
-            status: '待审核'
-        },
-        {
-            id: 2,
-            name: 'xiaoming',
-            gender: '女',
-            age: 25,
-            reason: '我想做志愿者',
-            status: '已通过'
-        },
-        {
-            id: 3,
-            name: '王五',
-            gender: '男',
-            age: 30,
-            reason: '我想做志愿者',
-            status: '已退回'
-        }
-    ]
-}
-applications.value = applicationDate.data;
+// const applicationDate = {
+//     data: [
+//         {
+//             id: 1,
+//             name: '张三',
+//             gender: '男',
+//             age: 20,
+//             reason: '我想做义工',
+//             status: '待审核'
+//         },
+//         {
+//             id: 2,
+//             name: 'xiaoming',
+//             gender: '女',
+//             age: 25,
+//             reason: '我想做志愿者',
+//             status: '已通过'
+//         },
+//         {
+//             id: 3,
+//             name: '王五',
+//             gender: '男',
+//             age: 30,
+//             reason: '我想做志愿者',
+//             status: '已退回'
+//         }
+//     ]
+// }
+// applications.value = applicationDate.data;
 // const fetchApplications = async () => {
 //   try {
 //     const response = await getApplications();
