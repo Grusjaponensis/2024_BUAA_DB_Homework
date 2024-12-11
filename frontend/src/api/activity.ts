@@ -1,3 +1,4 @@
+import { a } from "node_modules/unplugin-vue-router/dist/types-DBiN4-4c.cjs";
 import server from "./server";
 
 export const getActivities = async () => {
@@ -20,9 +21,13 @@ export const createActivity = async (data: any) => {
 };
 
 // 报名
-export const signUp = async (id: string) => {
+export const signUp = async (activity_id: string, user_id :string) => {
     try {
-      const response = await server.post(`/activities/${id}/sign-up`);
+      const response = await server.post(
+        `/volunteers/${activity_id}`,
+        { user_id , activity_id },
+        { "Content-Type" : "application/json" }
+      );
       return response.data;
     } catch (error) {
       console.error('报名失败:', error);
