@@ -167,14 +167,14 @@ async def update_cat_info(
     )
     for key, value in cat_in_data.model_dump(exclude_none=True).items():
         setattr(cat, key, value)
-    
-    for old_img in cat.images:
-        remove_file(settings.UPLOAD_CAT_IMAGE_FOLDER, old_img.image_url.split('/')[-1])
-    
-    # NOTE: cannot delete items while iterating
-    cat.images.clear()
-    
+        
     if new_images:
+        for old_img in cat.images:
+            remove_file(settings.UPLOAD_CAT_IMAGE_FOLDER, old_img.image_url.split('/')[-1])
+
+        # NOTE: cannot delete items while iterating
+        cat.images.clear()
+
         for img in new_images:
             file_path = save_file(settings.UPLOAD_CAT_IMAGE_FOLDER, img, current_user.email)
             new_media = CatMedia(cat_id=cat.id, image_url=file_path)
