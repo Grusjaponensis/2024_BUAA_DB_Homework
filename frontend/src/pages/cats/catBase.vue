@@ -8,10 +8,12 @@
     <v-row>
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
         <v-card class="d-flex flex-column text-center">
-        <!-- <v-card lass="d-flex flex-column"> -->
-          <!-- <v-avatar size="120px" class="elevation-4">
-            <v-img :src="addPrefix(cat)"></v-img>
-          </v-avatar> -->
+          <v-carousel hide-delimiters="true">
+            <v-carousel-item v-for="image_url in cat.image_urls">
+              src="{{ addPrefix(image_url) }}"
+              cover
+            </v-carousel-item>
+          </v-carousel>
           <v-card-title class="headline">{{ cat.name }}</v-card-title>
           <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
           <v-card-subtitle >性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
@@ -40,7 +42,7 @@
           <v-expand-transition>
             <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-8">
               <v-file-input
-                v-model="avatarFile"
+                v-model="avatarFiles"
                 label="上传图片"
                 accept="image/*"
               ></v-file-input>
@@ -158,17 +160,31 @@
             label="猫咪健康状况"
           ></v-select>
           <v-file-input
-            v-model="avatarFile"
+            v-model="cat_in.image"
             label="上传图片"
             accept="image/*"
+            multiple
+            @update:model-value="handleFiles"
           ></v-file-input>
+          <v-row>
+            <v-col 
+              v-for="(fileUrl, index) in fileUrls"
+              :key = "index"
+              cols = "4">
+              <v-img
+                :src="fileUrl"
+                alt="预览图"
+                aspect-ratio = "1"
+                max-height = "150"
+                class="mb-4"
+                ></v-img>
+            </v-col>
+          </v-row>
           <v-textarea
             v-model="cat_in.description"
             label="对猫咪的描述"
             counter="50"
-            required
-            outlined
-            dense
+            class="mt-3"
           ></v-textarea>
           <v-btn
             color="primary"
@@ -204,6 +220,17 @@ const showStates = ref({});
 const name = ref('');
 const description = ref('');
 const showCatEdit = ref(false);
+const avatarFiles = ref([])
+const fileUrls = ref([])
+
+const handleFiles = (files) => {
+  fileUrls.value = []
+  if (files && files.length) {
+    files.forEach((file) => {
+      fileUrls.value.push(URL.createObjectURL(file))
+    })
+  }
+}
 
 onMounted(async() => {
   fetchProfile();
@@ -289,6 +316,7 @@ const cat_in = ref({
   age: null,
   health_condition: null,
   description: '',
+  image: null,
 });
 
 const avatarFile = ref(null);
@@ -306,29 +334,14 @@ const formIsValid = computed(() => {
     cat_in.value.age !== null &&
     cat_in.value.is_male !== null &&
     cat_in.value.health_condition !== null &&
-    cat_in.value.description !== ''
+    cat_in.value.description !== '' 
+    && cat_in.value.image !== null
   );
 });
 
 const submitForm = async () => {
   try {
-    const data = {
-      cat_in: {
-        name: cat_in.value.name,
-        is_male: cat_in.value.is_male === '公猫',
-        age: parseInt(cat_in.value.age, 10),
-        health_condition: 
-          cat_in.value.health_condition === 'HEALTHY'
-            ? 1
-            : cat_in.value.health_condition === 'SICK'
-            ? 2
-            : cat_in.value.health_condition === 'VACCINATED'
-            ? 3
-            : 4,
-        description: cat_in.value.description,
-      },
-    };
-    if (cat_in.name.length > 128) {
+    if (cat_in.value.name.length > 128) {
       snackbar.error('姓名长度不能超过128个字符');
       return;
     }
@@ -340,8 +353,24 @@ const submitForm = async () => {
       snackbar.error('描述长度不能超过256个字符');
       return;
     }
-    const response = await createCat(data);
-    console.log('提交猫咪信息：', response);
+    if (cat_in.value.image === null) {
+      snackbar.error('请上传图片！');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('name', cat_in.value.name);
+    formData.append('is_male', cat_in.value.is_male === '公猫');
+    formData.append('age', parseInt(cat_in.value.age, 10));
+    formData.append('health_condition', 
+      cat_in.value.health_condition === 'HEALTHY' ? 1
+        : cat_in.value.health_condition === 'SICK' ? 2
+        : cat_in.value.health_condition === 'VACCINATED' ? 3
+        : 4);
+    formData.append('description', cat_in.value.description);
+    formData.append('image', cat_in.value.image);
+    console.error('提交猫咪信息: ', formData)
+    const response = await createCat(formData);
+    console.error('返回信息: ', response);
     // 提交后重置表单
     cat_in.value = {
       name: '',
@@ -349,6 +378,7 @@ const submitForm = async () => {
       is_male: null,
       health_condition: null,
       description: '',
+      image: null,
     };
     fetchCats();
     showAddCatDialog.value = false;
