@@ -8,7 +8,7 @@
     <v-row>
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
-          <v-carousel hide-delimiters="true" style = "max-width: 500px; height: 300px; margin: 0 auto;">
+          <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
               :key = index
