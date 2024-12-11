@@ -7,11 +7,19 @@
     </v-chip-group>
     <v-row>
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id">
-        <v-card class="d-flex flex-column text-center">
-          <v-carousel hide-delimiters="true">
-            <v-carousel-item v-for="image_url in cat.image_urls">
-              src="{{ addPrefix(image_url) }}"
+        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
+          <v-carousel hide-delimiters="true" style = "max-width: 500px; height: 300px; margin: 0 auto;">
+            <v-carousel-item 
+              v-for="(image, index) in cat.image_urls"
+              :key = index
               cover
+              >
+              <v-img
+                max-width="100%"
+                max-height="100%"
+                :src = "`${addPrefix(image)}`"
+                contain
+              ></v-img>
             </v-carousel-item>
           </v-carousel>
           <v-card-title class="headline">{{ cat.name }}</v-card-title>
@@ -40,14 +48,29 @@
             </div>
           </v-expand-transition>
           <v-expand-transition>
-            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-8">
+            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-4">
               <v-file-input
-                v-model="avatarFiles"
-                label="上传图片"
-                accept="image/*"
+              label="上传图片"
+              accept="image/*"
+              multiple
+              @change="handleFiles"
               ></v-file-input>
-              <v-btn color="primary" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
-              <v-btn color="grey" class="ml-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
+              <v-row>
+                <v-col 
+                  v-for="(fileUrl, index) in fileUrls"
+                  :key = "index"
+                  cols = "4">
+                  <v-img
+                    :src="fileUrl"
+                    alt="预览图"
+                    aspect-ratio = "1"
+                    max-height = "150"
+                    class="mb-4"
+                    ></v-img>
+                </v-col>
+              </v-row>
+              <v-btn color="primary" class = "mt-2" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
+              <v-btn color="grey" class="ml-2 mt-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
             </div>
           </v-expand-transition>
 
@@ -86,7 +109,7 @@
                 @click="toggleSection(cat.id, 'showAvatarUpload', true)"
                 v-if="user.login && user.is_superuser"
               >
-              <v-icon left class="mr-1">mdi-image</v-icon> 上传图片
+              <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
             </v-btn>
             <v-btn 
               rounded="lg"
@@ -160,11 +183,10 @@
             label="猫咪健康状况"
           ></v-select>
           <v-file-input
-            v-model="cat_in.image"
             label="上传图片"
             accept="image/*"
             multiple
-            @update:model-value="handleFiles"
+            @change="handleFiles"
           ></v-file-input>
           <v-row>
             <v-col 
@@ -220,13 +242,15 @@ const showStates = ref({});
 const name = ref('');
 const description = ref('');
 const showCatEdit = ref(false);
-const avatarFiles = ref([])
 const fileUrls = ref([])
 
-const handleFiles = (files) => {
-  fileUrls.value = []
-  if (files && files.length) {
-    files.forEach((file) => {
+const handleFiles = (event) => {
+  const files = event.target.files;
+  console.error("上传的图片：" + files) 
+  if (files) {
+    cat_in.value.image = Array.from(files)
+    fileUrls.value = []
+    Array.from(files).forEach((file) => {
       fileUrls.value.push(URL.createObjectURL(file))
     })
   }
@@ -234,14 +258,19 @@ const handleFiles = (files) => {
 
 onMounted(async() => {
   fetchProfile();
-  const response = await getCats();
-  cats.value = response.cats;
-  cats.value.forEach((cat) => {
-    showStates.value[cat.id] = {
-      showCatEdit: false,
-      showAvatarUpload: false,
-    };
-  })
+  try {
+    const response = await getCats();
+    cats.value = response.cats;
+    cats.value.forEach((cat) => {
+      showStates.value[cat.id] = {
+        showCatEdit: false,
+        showAvatarUpload: false,
+      };
+    })
+    console.log('获取猫咪列表成功', response.cats);
+  } catch (error) {
+    console.log('获取猫咪列表失败:', error);
+  }
 });
 
 const toggleSection = (id, section, value) => {
@@ -264,10 +293,27 @@ const toggleSection = (id, section, value) => {
 const updateCatAvatar = async (id) => {
   try {
     const formData = new FormData();
-    formData.append('new_images', avatarFile.value);
+    if (cat_in.value.image && cat_in.value.image.length > 0) {
+      cat_in.value.image.forEach((file) => {
+        formData.append('new_images', file);
+      })
+    } else {
+      snackbar.error('请上传图片！');
+      return;
+    }
+    console.log('formData_Change_avatar' ,  formData)
     const response = await updateCatByAdmin(id, formData);
     console.log('头像上传成功', response);
     showCatEdit.value = false;
+    cat_in.value = {
+      name: '',
+      age: null,
+      is_male: null,
+      health_condition: null,
+      description: '',
+      image: [],
+    };
+    fetchCats();
     toggleSection(id, "showAvatarUpload", false);
     snackbar.success('头像上传成功');
   } catch (error) {
@@ -316,10 +362,9 @@ const cat_in = ref({
   age: null,
   health_condition: null,
   description: '',
-  image: null,
+  image: [],
 });
 
-const avatarFile = ref(null);
 const showAddCatDialog = ref(false);
 
 const rules = {
@@ -335,7 +380,7 @@ const formIsValid = computed(() => {
     cat_in.value.is_male !== null &&
     cat_in.value.health_condition !== null &&
     cat_in.value.description !== '' 
-    && cat_in.value.image !== null
+    && cat_in.value.image != []
   );
 });
 
@@ -353,10 +398,6 @@ const submitForm = async () => {
       snackbar.error('描述长度不能超过256个字符');
       return;
     }
-    if (cat_in.value.image === null) {
-      snackbar.error('请上传图片！');
-      return;
-    }
     const formData = new FormData();
     formData.append('name', cat_in.value.name);
     formData.append('is_male', cat_in.value.is_male === '公猫');
@@ -367,7 +408,15 @@ const submitForm = async () => {
         : cat_in.value.health_condition === 'VACCINATED' ? 3
         : 4);
     formData.append('description', cat_in.value.description);
-    formData.append('image', cat_in.value.image);
+    // formData.append('image', cat_in.value.image);
+    if (cat_in.value.image && cat_in.value.image.length > 0) {
+      cat_in.value.image.forEach((file) => {
+        formData.append('image', file);
+      })
+    } else {
+      snackbar.error('请上传图片！');
+      return;
+    }
     console.error('提交猫咪信息: ', formData)
     const response = await createCat(formData);
     console.error('返回信息: ', response);
@@ -378,14 +427,14 @@ const submitForm = async () => {
       is_male: null,
       health_condition: null,
       description: '',
-      image: null,
+      image: [],
     };
     fetchCats();
     showAddCatDialog.value = false;
     snackbar.success('提交成功！');
   } catch (error) {
     console.error('添加猫咪失败:', error);
-    snackbar.error('提交失败，请检查输入是否正确');
+    snackbar.error('添加猫咪失败，请检查猫咪是否已存在');
   }
 };
 const showDeleteDialog = ref(false);
@@ -403,12 +452,8 @@ const fetchProfile = async () => {
 const fetchCats = async () => {
   try {
     const response = await getCats();
-    const updatedData = response.cats;
-    console.error(updatedData)
-    cats.value = cats.value.map((cat) => {
-        const updatedCat = updatedData.find((u) => u.id === cat.id);
-        return updatedCat ? updatedCat : cat;
-    });
+    cats.value = response.cats;
+    console.log('获取猫咪列表成功', response.cats);
   } catch (error) {
     console.error('获取猫咪列表失败:', error);
   }

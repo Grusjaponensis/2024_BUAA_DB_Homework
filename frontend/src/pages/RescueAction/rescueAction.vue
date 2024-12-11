@@ -68,6 +68,7 @@
       style="position: fixed; bottom: 24px; right: 24px;"
       size="large"
       @click = "showAddActionDialog = true"
+      v-if="user.login && user.is_superuser"
     >
     <v-icon>mdi-plus</v-icon>
     </v-btn>

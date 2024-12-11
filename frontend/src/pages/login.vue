@@ -24,14 +24,14 @@
                     </v-text-field>
                 </v-form>
             </v-card-title>
-            <v-card-actions class="actions">
-                <v-btn color="primary" size="large" block @click="submitLogin">
+            <v-card-item>
+                <v-btn color="primary" size="large" block variant="text" @click="submitLogin">
                     登录
                 </v-btn>
-                <v-btn color="secondary" size="large" block to="/signup">
+                <v-btn color="secondary" size="large" block variant="text" to="/signup">
                     注册
                 </v-btn>
-            </v-card-actions>
+            </v-card-item>
         </v-card>
     </div>
 
