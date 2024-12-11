@@ -37,7 +37,12 @@ async def get_activities(
     Get all activities.
     """
     activities = session.exec(select(Activity).offset(offset).limit(limit))
-    response = [ActivityPublic.model_validate(activity.model_dump()) for activity in activities]
+    response = [
+        ActivityPublic(
+            **activity.model_dump(), 
+            current_participants=crud.get_participants_count(session, activity.id)
+        ) for activity in activities
+    ]
     return response
 
 
@@ -50,7 +55,10 @@ async def get_activity_by_id(session: SessionDep, activity_id: uuid.UUID):
     activity = session.get(Activity, activity_id)
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
-    return ActivityPublic.model_validate(activity.model_dump())
+    return ActivityPublic(
+        **activity.model_dump(), 
+        current_participants=crud.get_participants_count(session, activity_id)
+    )
 
 
 # - MARK: create activity
@@ -72,7 +80,7 @@ async def create_activity(
     session.commit()
     session.refresh(activity)
     
-    return ActivityPublic(**activity.model_dump())
+    return ActivityPublic(**activity.model_dump(), current_participants=0)
 
 
 # - MARK: update activity
@@ -86,7 +94,7 @@ async def update_activity(
     activity = session.get(Activity, activity_id)
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
-    if activity.creator_id != current_user.id: # is this necessary?
+    if activity.creator_id != current_user.id and not current_user.is_superuser: # is this necessary?
         raise HTTPException(status_code=403, detail="Not authorized to perform this action")
     
     activity.sqlmodel_update(activity_in.model_dump(exclude_unset=True))

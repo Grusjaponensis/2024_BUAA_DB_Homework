@@ -1,63 +1,28 @@
 <template>
   <v-container>
-    
-      <v-row align="center">
-        <!-- 插画 -->
-        <v-col cols="12" md="4" class="pa-0" align="center">
-          <v-img
-            src="@/assets/detail.png" 
-            class="illustration"
-            contain
-            max-width="100%"
-            max-height="100%"
-          ></v-img>
-        </v-col>
-
-        <!-- 帖子内容 -->
-        <v-col cols="12" md="8" >
-          <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/forumCenter')" class="mb-3"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
-          
-          
-          <v-card
-            v-if="post"
-            class="post-card"
-            color="#f0f0f0"
-          >
-          <v-card-title class="headline" style="font-size: 24px;">{{ post.title }}</v-card-title>
-          <div class="d-flex align-center ml-1">
-                <v-chip
-                  v-for="tagName in post.tags"
-                  :key="tagName"
-                  :color="getTagColor(tagName)"
-                  class="ma-1"
-                  outlined
-                  small
-                >
-                  {{ tagName }}
-                </v-chip>
-          </div>
-          <v-md-preview :text="post.content"></v-md-preview>
-          <!-- 展示图片 -->
-          <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">
-            <v-img
-              v-for="(image, index) in post.images"
-              :key="index"
-              :src="`${addPrefix(image)}`"
-              class="mb-3"
-              max-width="100%"
-              max-height="300px"
-            ></v-img>
-          </v-card-text>
-          <v-card-subtitle class="text-right">发布时间: {{ post.created_at }}</v-card-subtitle>
-          <v-card-actions class="row justify-end">
-            <v-btn icon @click="toggleFavorite">
-              <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        </v-col>
-      </v-row>
-
+    <v-card v-if="post">
+      <v-card-title class="headline">{{ post.title }}</v-card-title>
+      <v-card-subtitle>发布时间: {{ post.created_at }}</v-card-subtitle>
+      <v-card-subtitle>标签: {{ post.tags.join(', ') }}</v-card-subtitle>
+      <!-- <v-card-text style="margin: auto;">{{ post.content }}</v-card-text> -->
+      <v-md-preview :text="post.content"></v-md-preview>
+      <!-- 展示图片 -->
+      <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">
+        <v-img
+          v-for="(image, index) in post.images"
+          :key="index"
+          :src="`${addPrefix(image)}`"
+          class="mb-3"
+          max-width="100%"
+          max-height="300px"
+        ></v-img>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn icon @click="toggleFavorite">
+          <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
 
     <v-divider class="my-4"></v-divider>
 

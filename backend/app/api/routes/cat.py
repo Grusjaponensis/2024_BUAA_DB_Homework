@@ -146,7 +146,6 @@ async def update_cat_info(
     age: int | None = Form(default=None, ge=0, le=30), 
     health_condition: int | None = Form(default=None, ge=1, le=4),
     description: str | None = Form(default=None, max_length=256),
-    keep_images: List[str] | None = Form(default=None),
     new_images: list[UploadFile] | None = File(default=None)
 ) -> CatPublic:
     """
@@ -155,6 +154,9 @@ async def update_cat_info(
     cat = session.exec(select(Cat).where(Cat.id == cat_id)).first()
     if not cat:
         raise HTTPException(status_code=404, detail="Cat not found")
+    
+    if name and session.exec(select(Cat).where(Cat.name == name)).first():
+        raise HTTPException(status_code=400, detail="Cat already exists")
     
     cat_in_data = CatUpdateInfo(
         name=name,
@@ -167,10 +169,10 @@ async def update_cat_info(
         setattr(cat, key, value)
     
     for old_img in cat.images:
-        if keep_images and old_img.image_url in keep_images:
-            continue
         remove_file(settings.UPLOAD_CAT_IMAGE_FOLDER, old_img.image_url.split('/')[-1])
-        cat.images.remove(old_img)
+    
+    # NOTE: cannot delete items while iterating
+    cat.images.clear()
     
     if new_images:
         for img in new_images:

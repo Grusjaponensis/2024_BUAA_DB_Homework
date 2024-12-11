@@ -45,20 +45,20 @@
                     </v-text-field>
                 </v-form>
             </v-card-text>
-            <v-card-actions class="actions">
-                <v-btn color="primary" size="large" block @click="submitSignup" v-if="user.login && user.is_superuser">
+            <v-card-items>
+                <v-btn color="secondary" size="large" block @click="submitSignup" variant="text" v-if="user.login && user.is_superuser">
                     确认添加
                 </v-btn>
-                <v-btn color="secondary" size="large" block @click="submitSignup" v-else>
+                <v-btn color="secondary" size="large" block @click="submitSignup" variant="text" v-else>
                     注册
                 </v-btn>
-                <v-btn color="primary" size="large" block to="/admin" v-if="user.login && user.is_superuser">
+                <v-btn color="primary" size="large" class="mb-2" block to="/admin" variant="text" v-if="user.login && user.is_superuser">
                     返回
                 </v-btn>
-                <v-btn color="primary" size="large" block to="/login" v-else>
+                <v-btn color="primary" size="large" class="mb-2" block to="/login" variant="text" v-else>
                     返回登录
                 </v-btn>
-            </v-card-actions>
+            </v-card-items>
         </v-card>
     </div>
 </template>
@@ -133,11 +133,5 @@ const submitSignup = async () => {
     font-weight: bold;
     color: #dfd5d5;
     margin-bottom: 8px;
-    }
-
-    .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
     }
 </style>

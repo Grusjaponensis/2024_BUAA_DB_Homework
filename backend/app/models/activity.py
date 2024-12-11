@@ -10,7 +10,7 @@ UTC_8 = datetime.timezone(datetime.timedelta(hours=8))
 class ActivityType(str, Enum):
     rescue = "rescue"
 
-
+# - MARK: ActivityBase
 class ActivityBase(SQLModel):
 	"""
 	Base model for all Activity
@@ -35,7 +35,8 @@ class ActivityBase(SQLModel):
 	signup_ends_at: datetime.datetime | None = Field(default=None)
 	created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
     
-    
+
+# - MARK: ActivityCreate
 class ActivityCreate(BaseModel):
     type: ActivityType
     title: str
@@ -48,6 +49,7 @@ class ActivityCreate(BaseModel):
     max_participants: int # a range of [0 - max_participants]
     
 
+# - MARK: ActivityUpdate
 class ActivityUpdate(BaseModel):
     type: ActivityType | None = Field(default=None)
     title: str | None = Field(default=None, max_length=128)
@@ -60,6 +62,7 @@ class ActivityUpdate(BaseModel):
     max_participants: int | None = Field(default=None, ge=0)
 
 
+# - MARK: ActivityPublic
 class ActivityPublic(BaseModel):
     id: uuid.UUID
     type: ActivityType
@@ -71,5 +74,6 @@ class ActivityPublic(BaseModel):
     signup_starts_at: datetime.datetime | None = None
     signup_ends_at: datetime.datetime | None = None
     max_participants: int
+    current_participants: int
     creator_id: uuid.UUID
     created_at: datetime.datetime

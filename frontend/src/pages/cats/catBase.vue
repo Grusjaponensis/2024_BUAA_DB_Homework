@@ -10,7 +10,7 @@
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center" align="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
-          <v-carousel hide-delimiters="true" style = "max-width: 500px; height: 300px; margin: 0 auto;">
+          <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
               :key = index
@@ -457,6 +457,12 @@ const fetchCats = async () => {
   try {
     const response = await getCats();
     cats.value = response.cats;
+    cats.value.forEach((cat) => {
+      showStates.value[cat.id] = {
+        showCatEdit: false,
+        showAvatarUpload: false,
+      };
+    })
     console.log('获取猫咪列表成功', response.cats);
   } catch (error) {
     console.error('获取猫咪列表失败:', error);
