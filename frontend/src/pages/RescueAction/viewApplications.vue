@@ -3,7 +3,7 @@
     <v-container>
       <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
       <v-row>
-        <v-col cols="12" md="12" justify="center" align="center">
+        <v-col cols="12" md="12" justify="center">
           <img src="@/assets/apply.png" alt="logo" width="20%">
         </v-col>
         <v-col v-for="application in applications" :key="application.id" cols="12" md="4">
@@ -34,44 +34,18 @@ import { getApplications, updateApplicationStatus } from '@/api/volunteer';
 import snackbar from '@/api/snackbar';
 const applications = ref([]);
 
-// 模拟数据
-// const applicationDate = {
-//     data: [
-//         {
-//             id: 1,
-//             name: '张三',
-//             gender: '男',
-//             age: 20,
-//             reason: '我想做义工',
-//             status: '待审核'
-//         },
-//         {
-//             id: 2,
-//             name: 'xiaoming',
-//             gender: '女',
-//             age: 25,
-//             reason: '我想做志愿者',
-//             status: '已通过'
-//         },
-//         {
-//             id: 3,
-//             name: '王五',
-//             gender: '男',
-//             age: 30,
-//             reason: '我想做志愿者',
-//             status: '已退回'
-//         }
-//     ]
-// }
-// applications.value = applicationDate.data;
-// const fetchApplications = async () => {
-//   try {
-//     const response = await getApplications();
-//     applications.value = response.data;
-//   } catch (error) {
-//     console.error('获取申请列表失败:', error);
-//   }
-// };
+onMounted(async() => {
+  await fetchApplications();
+})
+
+const fetchApplications = async () => {
+  try {
+    const response = await getApplications();
+    applications.value = response.data;
+  } catch (error) {
+    console.error('获取申请列表失败:', error);
+  }
+};
 
 const acceptApplication = async (application) => {
   try {
@@ -94,8 +68,6 @@ const rejectApplication = async (application) => {
     snackbar.error('退回申请失败');
   }
 };
-
-// onMounted(fetchApplications);
 </script>
 
 <style scoped>

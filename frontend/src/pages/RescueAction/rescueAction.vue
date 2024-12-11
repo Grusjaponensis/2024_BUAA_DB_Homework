@@ -97,8 +97,8 @@
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="user.is_volunteer || user.is_superuser">
-              <v-btn v-if="canSignUp(activity) && !isSignedUp(activity) && user.is_volunteer" color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
-              <v-btn v-if="isSignedUp(activity) && user.is_volunteer" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
+              <!-- <v-btn v-if="user.is_volunteer" :disabled="!isSignedUp(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn> -->
               <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
@@ -210,6 +210,7 @@ import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
 import { useRouter } from 'vue-router';
+import { getMyApplications } from '@/api/volunteer';
 
 const router = useRouter();
 const showDeleteDialog = ref(false);
@@ -217,11 +218,23 @@ const showAddActionDialog = ref(false);
 
 const activities = ref([]);
 const deleteId = ref(0);
+const applications = ref([]);
 
 onMounted(() => {
   fetchactivities();
   fetchProfile();
+  fetchMyApplications();
 });
+
+const fetchMyApplications = async () => {
+  try {
+    const response = await getMyApplications();
+    applications.value = response;
+    console.log("获取我的报名信息成功:", applications.value);
+  } catch (error) {
+    console.error('获取我的报名信息失败:', error);
+  }
+};
 
 const myApplications = () => {
   if (!user.login) {
@@ -286,10 +299,13 @@ const removeActivity = async (id) => {
 const signUpActivity = async (activity) => {
   // 报名
   try {
-    await signUp(activity.id);
+
+    await signUp(activity.id , user.id);
     // 更新活动列表状态
     const updatedActivity = await getActivities();
     activities.value = updatedActivity;
+    const updatedApplication = await getMyApplications();
+    applications.value = updatedApplication;
     snackbar.success('报名成功');
   } catch (error) {
     console.error('报名失败:', error);
@@ -313,13 +329,14 @@ const withdrawActivity = async (activity) => {
 
 const canSignUp = (activity) => {
   // 是否可以报名
-  console.error("canSignUp " + activity.volunteerNeeded + " " + activity.volunteersSignedUp);
-  return activity.volunteerNeeded > activity.volunteersSignedUp;
+  const condition1 = activity.max_participants > activity.current_participants;
+  const condition2 = !applications.value.some(p => p.activity_id === activity.id);
+  return condition1 && condition2;
 };
 
 const isSignedUp = (activity) => {
-  // 是否已报名
-  return activity.volunteers?.some(volunteer => volunteer.id === user.id);
+  // 是否已经报名
+  return applications.value.some(p => p.activity_id === activity.id);
 };
 
 const rules = {

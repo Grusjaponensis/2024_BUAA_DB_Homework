@@ -3,10 +3,10 @@
   <v-container>
     <!-- 顶部欢迎横栏 -->
     <v-toolbar color='#d4eae0' dark class="top-bar">
-        <v-toolbar-title>
-          这里是猫猫基地，猫猫欢迎你！
-        </v-toolbar-title>
-      </v-toolbar>
+      <v-toolbar-title>
+        这里是猫猫基地，猫猫欢迎你！
+      </v-toolbar-title>
+    </v-toolbar>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
