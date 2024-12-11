@@ -24,16 +24,14 @@
                     </v-text-field>
                 </v-form>
             </v-card-title>
-            <v-card-actions class="actions" justify="center">
+            <v-card-items justify="center">
                 <v-btn color="primary" size="large" block variant="text" @click="submitLogin">
                     登录
                 </v-btn>
-            </v-card-actions>
-            <v-card-actions class="actions" justify="center">
-                <v-btn color="secondary" size="large" block variant="text" to="/signup">
+                <v-btn color="secondary" size="large" class="mb-2" block variant="text" to="/signup">
                     注册
                 </v-btn>
-            </v-card-actions>
+            </v-card-items>
         </v-card>
     </div>
 
@@ -100,11 +98,5 @@ const test = () => {
     font-weight: bold;
     color: #629a90;
     margin-bottom: 8px;
-    }
-
-    .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
     }
 </style>
