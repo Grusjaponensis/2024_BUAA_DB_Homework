@@ -2,7 +2,11 @@ import server from "./server";
 
 export const getCats = async () => {
   const response = await server.get("/cats/");
-  return response.data;
+  if (response != null) {
+    return response.data;
+  } else {
+    throw new Error("Failed to get cats");
+  }
 };
 
 // export const feedCat = async (id: String) => {
@@ -12,7 +16,11 @@ export const getCats = async () => {
 
 export const createCat = async (cat: any) => {
   const response = await server.post("/cats/", cat);
-  return response.data;
+  if (response.data != null) {
+    return response.data;
+  } else if (response.status === 400) {
+    throw new Error("Failed to create cat");
+  }
 };
 
 export const deleteCat = async (id: String) => {
