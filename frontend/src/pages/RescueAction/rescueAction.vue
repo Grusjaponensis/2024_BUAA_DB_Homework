@@ -34,7 +34,7 @@
               <!-- 按钮组 -->
               <div class="d-flex flex-column align-center">
                 <v-btn
-                  v-if="!isVolunteer && !isAdmin"
+                  v-if="!user.is_volunteer && !user.is_superuser"
                   fab
                   dark
                   rounded
@@ -43,10 +43,10 @@
                 >
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <span class="caption" v-if="!isVolunteer && !isAdmin">申请成为志愿者</span>
+                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请成为志愿者</span>
                 
                 <v-btn
-                  v-if="!isVolunteer && !isAdmin"
+                  v-if="!user.is_volunteer && !user.is_superuser"
                   fab
                   dark
                   rounded
@@ -55,10 +55,10 @@
                 >
                   <v-icon>mdi-cat</v-icon>
                 </v-btn>
-                <span class="caption" v-if="!isVolunteer && !isAdmin">申请进度查询</span>
+                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请进度查询</span>
                 
                 <v-btn
-                  v-if="isAdmin"
+                  v-if="user.is_superuser"
                   fab
                   dark
                   rounded
@@ -67,10 +67,10 @@
                 >
                   <v-icon>mdi-heart</v-icon>
                 </v-btn>
-                <span class="caption" v-if="isAdmin">查看申请</span>
+                <span class="caption" v-if="user.is_superuser">查看申请</span>
 
                 <v-btn
-                  v-if="isAdmin"
+                  v-if="user.is_superuser"
                   fab
                   dark
                   rounded
@@ -79,7 +79,7 @@
                 >
                   <v-icon>mdi-tag</v-icon>
                 </v-btn>
-                <span class="caption" v-if="isAdmin">添加活动</span>
+                <span class="caption" v-if="user.is_superuser">添加活动</span>
               </div>
             </v-card-text>
           </v-card>
@@ -96,10 +96,10 @@
             <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
-            <v-card-text v-if="isVolunteer || isAdmin">
-              <v-btn v-if=canSignUp(activity) && !isSignedUp(activity) color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
-              <v-btn v-if=canSignUp(activity) && isSignedUp(activity) color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
-              <v-btn v-if="isAdmin" color="#faadac" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
+            <v-card-text v-if="user.is_volunteer || user.is_superuser">
+              <v-btn v-if="canSignUp(activity) && !isSignedUp(activity) && user.is_volunteer" color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
+              <v-btn v-if="isSignedUp(activity) && user.is_volunteer" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -217,8 +217,11 @@ const showAddActionDialog = ref(false);
 
 const activities = ref([]);
 const deleteId = ref(0);
-const isVolunteer = ref(false);
-const isAdmin = ref(false);
+
+onMounted(() => {
+  fetchactivities();
+  fetchProfile();
+});
 
 const myApplications = () => {
   if (!user.login) {
@@ -252,10 +255,7 @@ const viewApplications = () => {
 const username = ref('');
 const fetchProfile = async () => {
   try {
-    const response = await getProfile();
-    isVolunteer.value = response.data.is_volunteer === true;
-    isAdmin.value = response.data.is_superuser === true;
-    username.value = response.data.nickname;
+    await getProfile();
   } catch (error) {
     console.error('获取用户信息失败:', error);
   }
@@ -313,21 +313,14 @@ const withdrawActivity = async (activity) => {
 
 const canSignUp = (activity) => {
   // 是否可以报名
+  console.error("canSignUp " + activity.volunteerNeeded + " " + activity.volunteersSignedUp);
   return activity.volunteerNeeded > activity.volunteersSignedUp;
 };
 
 const isSignedUp = (activity) => {
   // 是否已报名
-  // const userId = store.getters.userId;
-  // return activity.volunteers?.some(volunteer => volunteer.id === userId);
-  return false;
+  return activity.volunteers?.some(volunteer => volunteer.id === user.id);
 };
-
-onMounted(() => {
-  fetchactivities();
-  fetchProfile();
-});
-
 
 const rules = {
   people: value => {
