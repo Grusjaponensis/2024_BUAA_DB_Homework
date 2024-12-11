@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <v-card v-if="post">
-      <v-card-title class="headline">{{ post.title }}</v-card-title>
-      <v-card-subtitle>发布时间: {{ post.created_at }}</v-card-subtitle>
-      <v-card-subtitle>标签: {{ post.tags.join(', ') }}</v-card-subtitle>
+      <v-card-title class="text-h5">{{ post.title }}</v-card-title>
+      <v-card-subtitle class="ml-1 my-1">发布时间: {{ new Date(post.created_at).toLocaleString() }}</v-card-subtitle>
+      <v-card-subtitle class="ml-1">标签: {{ post.tags.join(', ') }}</v-card-subtitle>
       <!-- <v-card-text style="margin: auto;">{{ post.content }}</v-card-text> -->
       <v-md-preview :text="post.content"></v-md-preview>
       <!-- 展示图片 -->

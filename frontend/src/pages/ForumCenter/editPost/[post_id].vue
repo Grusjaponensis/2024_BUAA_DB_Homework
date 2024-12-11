@@ -12,13 +12,6 @@
               required
             ></v-text-field>
 
-            <!-- <v-textarea
-              v-model="post.content"
-              label="内容"
-              counter="1000"
-              required
-            ></v-textarea> -->
-
             <v-md-editor
               v-model="post.content" 
               height="400px"
