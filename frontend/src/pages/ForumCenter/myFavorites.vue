@@ -56,7 +56,7 @@
             <v-col cols="12" md="8">
               <v-list-item-content>
                 <v-list-item-title class="headline">{{ post.title }}</v-list-item-title>
-                <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle>
+                <!-- <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle> -->
                 <v-list-item-subtitle class="grey--text">
                   post at {{ new Date(post.created_at).toLocaleString() }}
                 </v-list-item-subtitle>
