@@ -13,7 +13,7 @@
           <v-card class="mx-auto my-4" rounded="lg" elevation="4">
             <!-- 头像展示 -->
             <v-card-text class="text-center">
-              <v-avatar size="128" class="elevation-4" @click="showAvatarUpload = true">
+              <v-avatar size="128" class="elevation-4">
                 <v-img :src="addPrefix(profile.avatar_url)" alt="用户头像"></v-img>
               </v-avatar>
               <div class="mt-4">
