@@ -42,8 +42,8 @@ class ActivityRegistration(SQLModel, table=True):
     - created_at: Date and time when the application was created
     - updated_at: Date and time when the application was last updated
     """
-    user_id: uuid.UUID = Field(foreign_key="user.id", primary_key=True, index=True)
-    activity_id: uuid.UUID = Field(foreign_key="activity.id", primary_key=True, index=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", primary_key=True, index=True, ondelete="CASCADE")
+    activity_id: uuid.UUID = Field(foreign_key="activity.id", primary_key=True, index=True, ondelete="CASCADE")
     status: ApplicationStatus = Field(default=ApplicationStatus.PENDING)
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
     updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(UTC_8))
