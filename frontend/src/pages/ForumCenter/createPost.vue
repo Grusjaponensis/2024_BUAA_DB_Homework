@@ -1,62 +1,64 @@
 <template>
   <v-container>
     <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/forumCenter')"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
-    <v-card class="elevation-12 mt-5">
-      <v-card-title class="headline">创建帖子</v-card-title>
-      <v-card-text>
-        <v-form ref="form" lazy-validation>
-          <v-text-field
-            v-model="post.title"
-            label="标题"
-            counter="100"
-            required
-          ></v-text-field>
+    <v-dialog v-model="showCreatePostDialog" max-width="600px">
+      <v-card class="elevation-12 mt-5">
+        <v-card-title class="headline">创建帖子</v-card-title>
+        <v-card-text>
+          <v-form ref="form" lazy-validation>
+            <v-text-field
+              v-model="post.title"
+              label="标题"
+              counter="100"
+              required
+            ></v-text-field>
 
-          <v-md-editor
-            v-model="post.content" 
-            height="400px"
-            left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | code | link table"
-          />
+            <v-md-editor
+              v-model="post.content" 
+              height="400px"
+              left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | code | link table"
+            />
 
-        <v-col>
-          <v-row >
-            <v-col cols="12">
-              <v-btn text @click="showTags = !showTags">添加标签</v-btn>
-            </v-col>
-            <v-col cols="12" v-if="showTags">
-              <v-select
-                v-model="post.tags"
-                :items="allTags.map(tag => tag.name)"
-                multiple
-                chips
-                label="Tags"
-              ></v-select>
-            </v-col>
-          </v-row>
-          <!-- 上传图片按钮 -->
-          <v-file-input
-            label="上传图片"
-            accept="image/*"
-            class="mt-2"
-            multiple
-            @change="handleFileUpload"
-          ></v-file-input>
+          <v-col>
+            <v-row >
+              <v-col cols="12">
+                <v-btn text @click="showTags = !showTags">添加标签</v-btn>
+              </v-col>
+              <v-col cols="12" v-if="showTags">
+                <v-select
+                  v-model="post.tags"
+                  :items="allTags.map(tag => tag.name)"
+                  multiple
+                  chips
+                  label="Tags"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <!-- 上传图片按钮 -->
+            <v-file-input
+              label="上传图片"
+              accept="image/*"
+              class="mt-2"
+              multiple
+              @change="handleFileUpload"
+            ></v-file-input>
 
-          <!-- 发帖按钮靠右 -->
-          <v-row class="mt-5 justify-end">
-            <v-btn
-              color="primary"
-              :disabled="!isFormValid"
-              @click="submitPost"
-            >
-              发帖
-            </v-btn>
-          </v-row>
-        </v-col>
+            <!-- 发帖按钮靠右 -->
+            <v-row class="mt-5 justify-end">
+              <v-btn
+                color="primary"
+                :disabled="!isFormValid"
+                @click="submitPost"
+              >
+                发帖
+              </v-btn>
+            </v-row>
+          </v-col>
 
-        </v-form>
-      </v-card-text>
-    </v-card>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -123,7 +125,3 @@ watchEffect(() => {
   }
 });
 </script>
-
-<style scoped>
-/* 针对createPost页面的特定样式 */
-</style>
