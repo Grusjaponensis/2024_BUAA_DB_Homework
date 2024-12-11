@@ -401,6 +401,7 @@ input {
   border-radius: 10px; /* 圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影 */
   background-color: #e5edf2;
+  margin-top: 20px;
 }
 
 /* 增加输入框和按钮的美观性 */

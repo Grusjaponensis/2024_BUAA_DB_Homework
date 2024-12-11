@@ -3,10 +3,10 @@
       <!-- 顶部欢迎横栏 -->
       <v-toolbar color='#fcedbe' dark class="top-bar">
         <v-toolbar-title v-if="isVolunteer || isAdmin">
-          Hello，{{ username }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
+          Hello，{{ user.nickname }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
         </v-toolbar-title>
         <v-toolbar-title v-if="!isVolunteer && !isAdmin">
-          Hello，{{ username }}，报名成为志愿者，和我们一起帮助猫猫吧！
+          Hello，{{ user.nickname }}，报名成为志愿者，和我们一起帮助猫猫吧！
         </v-toolbar-title>
       </v-toolbar>
 
