@@ -13,7 +13,7 @@ from app.api.deps import (
     SessionDep,
     get_current_superuser
 )
-from app.models.user import Activity
+from app.models.user import Activity, ActivityRegistration, ApplicationStatus
 from app.models.activity import (
     ActivityCreate,
     ActivityPublic,
