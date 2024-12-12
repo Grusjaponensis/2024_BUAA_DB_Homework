@@ -1,11 +1,11 @@
 import server from "./server"; 
+import snackbar from "./snackbar";
 
 // 获取所有志愿者申请
 export const getApplications = async () => {
   try {
     const response = await server.get("/volunteers/");
-    console.log("response " + response.data);
-    return response.data;
+    return response;
   } catch (error) {
     console.error('获取申请列表失败:', error);
     throw error; 
@@ -39,7 +39,7 @@ export const updateActivity = async (activity_id: string , ) => {
 
 export const getMyApplications = async () => {
     try {
-      const response = await server.get("/volunteers/my");
+      const response = await server.get("/volunteers/applications");
       return response.data;
     } catch (error) {
       console.error('获取我的申请列表失败:', error);
@@ -47,10 +47,19 @@ export const getMyApplications = async () => {
     }
   };
 
-  export const submitApplication = async (applicant: any) => {
+  export const submitApplication = async (applicant : any) => {
     try {
-      const response = await server.post("/volunteers/", applicant);
-      return response.data; 
+      const response = await server.post(
+        "/volunteers/applications",
+        applicant,
+        { headers: { 'Content-Type': 'application/json' } });
+      console.log(response)
+      if (response.status === 400) {
+        snackbar.error("您已提交过申请且正在处理中，请勿重复提交！");
+        throw new Error("您已提交过申请且正在处理中，请勿重复提交！");
+      } else {
+        return response.data; 
+      }
     } catch (error) {
       console.error('提交申请失败:', error);
       throw error; 

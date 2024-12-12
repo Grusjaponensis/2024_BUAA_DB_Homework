@@ -29,7 +29,7 @@
                 </div>
               </v-card-text>
             </v-card>
-          <v-card elevation="4"  v-if="user.is_superuser || !user.is_volunteer">
+          <v-card elevation="4"  v-if="user.login">
             <v-card-text class="pa-4">
               <!-- 按钮组 -->
               <div class="d-flex flex-column align-center">
@@ -56,7 +56,19 @@
                   <v-icon>mdi-cat</v-icon>
                 </v-btn>
                 <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请进度查询</span>
-                
+
+                <v-btn
+                  v-if="user.is_volunteer"
+                  fab
+                  dark
+                  rounded
+                  color=#f7cf83
+                  @click="myActivities"
+                >
+                  <v-icon>mdi-heart</v-icon>
+                </v-btn>
+                <span class="caption" v-if="user.is_volunteer">我的活动</span>
+
                 <v-btn
                   v-if="user.is_superuser"
                   fab
@@ -88,7 +100,7 @@
 
         <v-col cols="12" md="9">
         <!-- 主内容区域 -->
-        <v-col v-for="activity in activities" :key="activity.id" >
+        <v-col v-if="loaded" v-for="activity in activities" :key="activity.id" >
           <v-card style="background-color: #fbf1d7; border: 2px solid #f7cf83;" >
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
             <v-card-subtitle>需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
@@ -96,8 +108,8 @@
             <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
             <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
-            <v-card-text v-if="user.is_volunteer || user.is_superuser">
-              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">报名</v-btn>
+            <v-card-text v-if="(user.is_volunteer || user.is_superuser)">
+              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">{{button_text[activity.id]}}</v-btn>
               <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
               <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
@@ -219,22 +231,38 @@ const showAddActionDialog = ref(false);
 const activities = ref([]);
 const deleteId = ref(0);
 const applications = ref([]);
+const button_text = {};
+const loaded = ref(false);
 
-onMounted(() => {
-  fetchactivities();
-  fetchProfile();
-  fetchMyApplications();
+onMounted(async() => {
+  await fetchProfile();
+  await fetchactivities();
+  await fetchMyApplications();
+  loaded.value = true;
 });
 
 const fetchMyApplications = async () => {
   try {
     const response = await getMyApplications();
     applications.value = response;
+    for (const activity of activities.value) {
+      button_text[activity.id] = applications.value.some(p => p.activity_id === activity.id) ? '已报名' : '报名';
+    }
     console.log("获取我的报名信息成功:", applications.value);
   } catch (error) {
     console.error('获取我的报名信息失败:', error);
   }
 };
+
+const myActivities = () => {
+  if (!user.login) {
+    router.push('/login');
+    snackbar.warning('请先登录');
+    return;
+  } else {
+    router.push('/RescueAction/myActivities');
+  }
+}
 
 const myApplications = () => {
   if (!user.login) {
@@ -265,7 +293,7 @@ const viewApplications = () => {
     router.push('/RescueAction/viewApplications');
   }
 };
-const username = ref('');
+
 const fetchProfile = async () => {
   try {
     await getProfile();
@@ -299,13 +327,12 @@ const removeActivity = async (id) => {
 const signUpActivity = async (activity) => {
   // 报名
   try {
-
+    loaded = false;
     await signUp(activity.id , user.id);
     // 更新活动列表状态
-    const updatedActivity = await getActivities();
-    activities.value = updatedActivity;
-    const updatedApplication = await getMyApplications();
-    applications.value = updatedApplication;
+    await fetchactivities();
+    await fetchMyApplications();
+    loaded = true;
     snackbar.success('报名成功');
   } catch (error) {
     console.error('报名失败:', error);
@@ -316,10 +343,12 @@ const signUpActivity = async (activity) => {
 const withdrawActivity = async (activity) => {
   // 退选
   try {
+    loaded = false;
     await withdraw(activity.id);
     // 更新活动列表状态
-    const updatedActivity = await getActivities();
-    activities.value = updatedActivity;
+    await fetchactivities();
+    await fetchMyApplications();
+    loaded = true;
     snackbar.success('退选成功');
   } catch (error) {
     console.error('退选失败:', error);
@@ -399,11 +428,10 @@ const submitactivity = async () => {
         snackbar.error('报名开始时间必须早于报名结束时间');
         return;
       }
-
       const response = await createActivity(data);
       console.log('活动提交成功', response);
       snackbar.success('活动提交成功');
-      fetchactivities();
+      await fetchactivities();
       router.push('/RescueAction/rescueAction'); 
       showAddActionDialog.value = false;
     } catch (error) {

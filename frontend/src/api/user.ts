@@ -132,10 +132,19 @@ export const deleteUserByAdmin = async (userId: number) => {
 export const getProfileByAdmin = async ( userId: number) => {
     try {
         const response = await server.get(`/users/${userId}`);
-        console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('获取个人资料失败', error);
+        throw error;
+    }
+}
+
+export const getActivityByAdmin = async (activityId: number) => {
+    try {
+        const response = await server.get(`/activities/${activityId}`);
+        return response.data;
+    } catch (error) {
+        console.error('获取活动失败', error);
         throw error;
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <v-container>
-      <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
-      <v-card class="mx-auto" max-width="600">
+      <v-btn color="#d1e9f4" class="pa-2" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
+      <v-card class="mx-auto mt-10" max-width="600">
         <v-card-title class="headline">申请成为志愿者</v-card-title>
         <v-card-text>
           <v-form ref="volunteerForm">
@@ -34,8 +34,8 @@
   
           </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="submitApplicationForm">提交申请</v-btn>
+        <v-card-actions class="d-flex justify-center">
+          <v-btn color="primary" class="mb-2" rounded = "lg" size = "large" variant = "elevated" @click="submitApplicationForm">提交申请</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -44,7 +44,10 @@
 <script setup>
 import { ref } from 'vue';
 import { submitApplication } from '@/api/volunteer'; 
+import { useRouter } from 'vue-router';
 import snackbar from '@/api/snackbar';
+
+const router = useRouter();
 
 const rules = {
   age: value => {
@@ -58,7 +61,7 @@ const applicant = ref({
   age: null,
   gender: '',
   reason: '',
-  status: '待审核'
+  status: 'pending'
 });
 
 const submitApplicationForm = async () => {
@@ -85,10 +88,10 @@ const submitApplicationForm = async () => {
     }
     await submitApplication(applicant.value);
     console.log('申请提交成功');
+    router.push('/RescueAction/rescueAction');
     snackbar.success('申请提交成功');
   } catch (error) {
     console.error('申请提交失败:', error);
-    snackbar.error('申请提交失败');
   }
 };
 </script>
