@@ -103,7 +103,13 @@ async def apply_to_be_volunteer(
     if current_user.is_volunteer or current_user.is_superuser:
         raise HTTPException(status_code=400, detail="You are already a volunteer or a superuser")
     
-    exist_application = session.exec(select(VolunteerApplication).where(VolunteerApplication.user_id == current_user.id and VolunteerApplication.status == ApplicationStatus.PENDING)).first()
+    exist_application = session.exec(
+        select(VolunteerApplication).where(
+            (VolunteerApplication.user_id == current_user.id) & 
+            (VolunteerApplication.status == ApplicationStatus.PENDING)
+        )
+    ).first()
+    
     if exist_application:
         raise HTTPException(status_code=400, detail="You have already applied for volunteer")
     
@@ -152,7 +158,7 @@ async def update_activity_registration_by_id(
     volunteer_application_in: VolunteerApplicationUpdate
 ):
     """
-    Update a volunteer registration status by id, perform by superuser
+    Update a volunteer application status by id, perform by superuser
     """
     application = session.get(VolunteerApplication, application_id)
     if not application:
@@ -160,6 +166,14 @@ async def update_activity_registration_by_id(
     
     application.sqlmodel_update(volunteer_application_in.model_dump(exclude_unset=True))
     application.updated_at = datetime.datetime.now(settings.UTC_8)
+    user = session.get(User, application.user_id)
+    
+    if not user or user.is_volunteer:
+        raise HTTPException(status_code=400, detail="User not found or is already a volunteer")
+    
+    if volunteer_application_in.status == ApplicationStatus.APPROVED:
+        user.is_volunteer = True
+        session.add(user)
     
     session.add(application)
     session.commit()
