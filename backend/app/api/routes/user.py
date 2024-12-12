@@ -1,5 +1,5 @@
 from typing import Any
-import uuid, os
+import uuid
 
 from fastapi import (
     APIRouter, Depends, HTTPException, status, UploadFile, File
@@ -25,7 +25,7 @@ from app.util.utils import save_file, remove_file
 router = APIRouter()
 
 
-# - MARK: get user profile -
+# - MARK: user profile -
 @router.get("/profile", response_model=UserPublic, tags=["profile"])
 async def read_user_profile(current_user: CurrentUser) -> Any:
     """
@@ -34,7 +34,7 @@ async def read_user_profile(current_user: CurrentUser) -> Any:
     return current_user
 
 
-# - MARK: get user's name and email
+# - MARK: user public profile
 @router.get("/profile/{user_id}", tags=["profile"])
 async def read_user_profile_by_id(
     session: SessionDep, user_id: uuid.UUID
@@ -45,7 +45,7 @@ async def read_user_profile_by_id(
     user = session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"nickname": user.nickname, "email": user.email}
+    return {"nickname": user.nickname, "email": user.email, "avatar_url": user.avatar_url}
 
 
 # - MARK: update user profile -
