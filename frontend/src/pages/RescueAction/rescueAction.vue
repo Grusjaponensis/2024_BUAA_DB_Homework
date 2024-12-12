@@ -1,7 +1,7 @@
 <template>
 <v-container>
       <!-- 顶部欢迎横栏 -->
-      <v-toolbar color='#fcedbe' dark class="top-bar">
+      <v-toolbar  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-3' :'#fcedbe'" dark class="top-bar">
         <v-toolbar-title v-if="user.is_volunteer || user.is_superuser">
           Hello，{{ user.nickname }}，欢迎来到救助中心，和我们一起帮助猫猫吧！
         </v-toolbar-title>
@@ -38,7 +38,7 @@
                   fab
                   dark
                   rounded
-                  color=#f7cf83
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
                   @click="applyToBeVolunteer"
                 >
                   <v-icon>mdi-pencil</v-icon>
@@ -50,7 +50,7 @@
                   fab
                   dark
                   rounded
-                  color=#f8c9d5
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f8c9d5'"
                   @click="myApplications"
                 >
                   <v-icon>mdi-cat</v-icon>
@@ -62,7 +62,7 @@
                   fab
                   dark
                   rounded
-                  color=#f7cf83
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
                   @click="myActivities"
                 >
                   <v-icon>mdi-heart</v-icon>
@@ -74,7 +74,7 @@
                   fab
                   dark
                   rounded
-                  color=#f8c9d5
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : '#f8c9d5'"
                   to="/RescueAction/myApplications"
                 >
                   <v-icon>mdi-pencil</v-icon>
@@ -86,7 +86,7 @@
                   fab
                   dark
                   rounded
-                  color=#f8c9d5
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : '#f8c9d5'"
                   @click="viewApplications"
                 >
                   <v-icon>mdi-heart</v-icon>
@@ -98,7 +98,7 @@
                   fab
                   dark
                   rounded
-                  color=#f7cf83
+                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
                   @click = "showAddActionDialog = true"
                 >
                   <v-icon>mdi-tag</v-icon>
@@ -113,7 +113,7 @@
         <v-col>
         <!-- 主内容区域 -->
         <v-col cols="12" class="ma-2" v-if="loaded" v-for="activity in activities" :key="activity.id" >
-          <v-card style="background-color: #fbf1d7; border: 2px solid #f7cf83;" >
+          <v-card >
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
             <v-card-subtitle>需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
             <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
@@ -121,9 +121,9 @@
             <v-card-subtitle>报名时段: {{ new Date(activity.signup_starts_at).toLocaleString() }} - {{ new Date(activity.signup_ends_at).toLocaleString() }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="(user.is_volunteer || user.is_superuser)">
-              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">{{button_text[activity.id]}}</v-btn>
-              <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)" color="#fad6b5" @click="withdrawActivity(activity)">退选</v-btn>
-              <v-btn v-if="user.is_superuser" color="red-lighten-1" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
+              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)"  :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' :'#f7cf83'" @click="signUpActivity(activity)">{{button_text[activity.id]}}</v-btn>
+              <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)"  :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' :'#fad6b5'" @click="withdrawActivity(activity)">退选</v-btn>
+              <v-btn v-if="user.is_superuser"  color="deep-orange-lighten-3" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -140,8 +140,8 @@
             确认要删除该活动吗？此操作不可恢复。
           </v-card-text>
           <v-card-actions>
-            <v-btn color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
-            <v-btn color="red" @click = "removeActivity(deleteId)"> 确认</v-btn>
+            <v-btn  color="green" @click = "showDeleteDialog = false"> 取消</v-btn>
+            <v-btn  color="red" @click = "removeActivity(deleteId)"> 确认</v-btn>
           </v-card-actions>
         </v-card>
     </v-dialog>
@@ -220,7 +220,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions class="d-flex justify-center" padding="4">
-        <v-btn color="primary" @click="submitactivity" :disabled="!isFormValid">创建活动</v-btn>
+        <v-btn  :color="primary" @click="submitactivity" :disabled="!isFormValid">创建活动</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

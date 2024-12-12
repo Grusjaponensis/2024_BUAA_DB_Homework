@@ -3,30 +3,30 @@
     <!-- 主内容区域 -->
     <v-container>
       <v-btn color="#d1e9f4" @click="$router.push('/RescueAction/rescueAction')"><v-icon left>mdi-arrow-left</v-icon>返回</v-btn>
-      <v-col>
-        <v-col cols="12" md="12" class="justify-center">
+      <v-row>
+        <v-col cols="6" md="6" class="justify-center">
           <img src="@/assets/myapply.png" alt="logo" width="20%">
         </v-col>
         <v-col v-for="application in applications"
           :key="application.id"
-          class="my-2" cols="12" md="6">
+          class="my-2" cols="12" md="12">
           <v-card class="elevation-3 pa-2 text-center" outlined rounded="lg">
             <v-card-title class="headline">申请情况</v-card-title>
             <!-- <v-card-subtitle>基本信息：{{ users[application.user_id].name }} - {{ users[application.user_id].age }} - {{ application.gender }}</v-card-subtitle> -->
-            <v-card-subtitle class="grey--text text-body-2">
+            <v-card-subtitle class="grey--text text-body-1">
               申请日期: {{ new Date(application.created_at).toLocaleString() }}
             </v-card-subtitle>
-            <v-card-subtitle class="text-body-2">
+            <v-card-subtitle class="text-body-1">
               状态: {{ application.status }}
             </v-card-subtitle>
             <v-card-subtitle class="mt-2 text-body-1">申请原因：{{ application.reason }}</v-card-subtitle>
-            <v-card-items v-if="user.is_superuser" class="mt-4 pa-2">
+            <v-card-items v-if="user.is_superuser && (application.status === 'pending')" class="mt-4 pa-2">
               <v-btn color="green-darken-1" rounded="lg" @click="approveApplication(application)">通过</v-btn>
-              <v-btn color="red-lighten-1" class="ml-1" rounded="lg" @click="rejectApplication(application)">拒绝</v-btn>
+              <v-btn color="red-darken-1" class="ml-1" rounded="lg" @click="rejectApplication(application)">拒绝</v-btn>
             </v-card-items>
           </v-card>
         </v-col>
-      </v-col>
+      </v-row>
     </v-container>
   </div>
   </template>
@@ -37,6 +37,7 @@
   import { ref, onMounted } from 'vue';
   import { user } from '@/api/user';
   import { updateVolunteerApplicationStatus } from '@/api/volunteer';
+import snackbar from '@/api/snackbar';
   
   const applications = ref([]);
   const users = {};
@@ -47,10 +48,23 @@
 
   const approveApplication = async(application) => {
     try {
-      await updateVolunteerApplicationStatus(application.id, 'approved');
+      await updateVolunteerApplicationStatus(application.id, "approved");
       await fetchApplications();
+      snackbar.success('申请已通过');
     } catch (error) {
+      snackbar.error('通过申请失败');
       console.error('通过申请失败:', error);
+    }
+  }
+
+  const rejectApplication = async(application) => {
+    try {
+      await updateVolunteerApplicationStatus(application.id, "rejected");
+      await fetchApplications();
+      snackbar.success('申请已拒绝'); 
+    } catch (error) {
+      snackbar.error('拒绝申请失败');
+      console.error('拒绝申请失败:', error);  
     }
   }
 
