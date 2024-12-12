@@ -9,7 +9,7 @@
     </v-toolbar>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
-        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
+        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="550px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
@@ -112,6 +112,15 @@
                 v-if="user.login && (user.is_superuser || user.is_volunteer)"
               >
               <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
+            </v-btn>
+            <v-btn
+              color="indigo-lighten-2"
+              rounded="lg"
+              variant="elevated"
+              @click="showPositionEdit = true; positionEditCat = cat"
+              v-if="user.login && (user.is_superuser || user.is_volunteer)"
+            >
+            <v-icon left class="mr-1">mdi-map-marker-outline</v-icon> 更新位置
             </v-btn>
             <v-btn 
               rounded="lg"
@@ -234,7 +243,28 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-</div>
+  <v-dialog v-model="showPositionEdit" max-width="500px">
+    <v-toolbar title="更新猫咪位置">
+      <v-btn icon="mdi-close" @click="showPositionEdit = false"></v-btn>
+    </v-toolbar>
+    <v-card>
+      <MapChange
+      :center="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
+      :zoom = 16.5
+      :markerposition="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
+      >
+      </MapChange>
+      <v-btn
+        color="blue-lighten-2"
+        @click="showPositionEdit = false"
+        rounded="lg"
+        class="my-4"
+      >
+        确定
+      </v-btn>
+    </v-card>
+  </v-dialog>
+  </div>
 </template>
 
 <script setup>
@@ -247,17 +277,19 @@ import { user } from '@/api/user';
 import { location } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import MapView from '@/map/MapView.vue';
+import MapChange from '@/map/MapChange.vue';
 
 const cats = ref([]);
 const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
 const showStates = ref({});
-const name = ref('');
 const description = ref('');
 const showCatEdit = ref(false);
 const fileUrls = ref([])
 const health_condition = ref('')
+const showPositionEdit = ref(false);
+const positionEditCat = null;
 
 const handleFiles = (event) => {
   const files = event.target.files;
@@ -291,9 +323,9 @@ onMounted(async() => {
 const toggleSection = (id, section, value) => {
   Object.keys(showStates.value).forEach((key) => {
     showStates.value[key][section] = key == id ? value : false;
-    console.log("key : " + key);
-    console.log("section : " + section);
-    console.log("toggleSection : " +  showStates.value[key][section]);
+    // console.log("key : " + key);
+    // console.log("section : " + section);
+    // console.log("toggleSection : " +  showStates.value[key][section]);
   });
 
   if (section === "showCatEdit" && value) {
