@@ -55,7 +55,7 @@ const fetchApplications = async () => {
       console.error('获取报名列表失败:', response.message);
     }
   } catch (error) {
-    console.error('获取申请列表失败:', error);
+    console.error('获取报名列表失败:', error);
   }
 };
 

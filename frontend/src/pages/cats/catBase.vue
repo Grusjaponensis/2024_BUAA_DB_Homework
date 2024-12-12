@@ -9,7 +9,7 @@
     </v-toolbar>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
-        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="500px">
+        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="550px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
@@ -24,14 +24,13 @@
               ></v-img>
             </v-carousel-item>
           </v-carousel>
-          <div style="background-color:white; padding: 10px;">
+          <div style=" padding: 10px;">
           <v-card-title class="headline">{{ cat.name }}</v-card-title>
           <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
           <v-card-subtitle >性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
           <v-card-subtitle >描述: {{ cat.description }}</v-card-subtitle>
           <v-card-subtitle >健康状况: {{ cat.health_condition  == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
           <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
-          
           <v-expand-transition>
             <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
               <v-select
@@ -113,6 +112,15 @@
               >
               <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
             </v-btn>
+            <v-btn
+              color="indigo-lighten-2"
+              rounded="lg"
+              variant="elevated"
+              @click="showPositionEdit = true; positionEditCat = cat"
+              v-if="user.login && (user.is_superuser || user.is_volunteer)"
+            >
+            <v-icon left class="mr-1">mdi-map-marker-outline</v-icon> 更新位置
+            </v-btn>
             <v-btn 
               rounded="lg"
               @click="showDeleteDialog = true ; removeCatId = cat.id" 
@@ -144,13 +152,65 @@
   <v-btn
       color="#bbd5eb"
       class="elevation-4"
-      style="position: fixed; bottom: 24px; right: 24px;"
+      style="position: fixed; bottom: 80px; right: 24px;"
       size="large"
       @click = "showAddCatDialog = true"
       v-if = "user.login && (user.is_superuser || user.is_volunteer)"
     >
     <v-icon>mdi-plus</v-icon>
     </v-btn>
+
+    <v-btn
+      color="#bbd5eb"
+      class="elevation-4"
+      style="position: fixed; bottom: 24px; right: 24px;"
+      size="large"
+      @click = "showDonateDialog = true"
+      v-if = "user.login"
+    >
+    <v-icon>mdi-handshake</v-icon>
+    </v-btn>
+    <v-dialog 
+    v-model="showDonateDialog" 
+    max-width="70vw"
+    width="650px"
+  >
+    <v-toolbar title="捐赠">
+      <v-btn icon="mdi-close" @click="showDonateDialog = false"></v-btn>
+    </v-toolbar>
+    <v-card>
+      <v-card-text>
+        <v-form ref="form" @submit.prevent="submitDonation">
+          <v-select
+            v-model="donation.amount"
+            :items="[50, 100, 200, 500, 1000]"
+            label="选择捐赠金额 (元)"
+            required
+          ></v-select>
+          <v-checkbox
+            v-model="donation.isAnonymous"
+            label="匿名捐赠"
+          ></v-checkbox>
+          <v-textarea
+            v-model="donation.message"
+            label="留言 (可选)"
+            counter="100"
+            class="mt-3"
+          ></v-textarea>
+          <v-btn
+            color="primary"
+            type="submit"
+            :disabled="!donationFormIsValid"
+            rounded
+            class="mt-4"
+            block
+          >
+            提交捐赠
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 
   <v-dialog 
     v-model="showAddCatDialog" 
@@ -234,7 +294,28 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-</div>
+  <v-dialog v-model="showPositionEdit" max-width="500px">
+    <v-toolbar title="更新猫咪位置">
+      <v-btn icon="mdi-close" @click="showPositionEdit = false"></v-btn>
+    </v-toolbar>
+    <v-card>
+      <MapChange
+      :center="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
+      :zoom = 16.5
+      :markerposition="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
+      >
+      </MapChange>
+      <v-btn
+        color="blue-lighten-2"
+        @click="showPositionEdit = false"
+        rounded="lg"
+        class="my-4"
+      >
+        确定
+      </v-btn>
+    </v-card>
+  </v-dialog>
+  </div>
 </template>
 
 <script setup>
@@ -243,21 +324,24 @@ import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
 import { addPrefix } from '@/api/post';
 import { getCats, createCat,deleteCat,updateCatByAdmin } from '@/api/cat';
+import { createDonation } from '@/api/donate';
 import { user } from '@/api/user';
 import { location } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import MapView from '@/map/MapView.vue';
+import MapChange from '@/map/MapChange.vue';
 
 const cats = ref([]);
 const isAdmin = ref(false);
 const router = useRouter();
 const remainingCans = ref(6);
 const showStates = ref({});
-const name = ref('');
 const description = ref('');
 const showCatEdit = ref(false);
 const fileUrls = ref([])
 const health_condition = ref('')
+const showPositionEdit = ref(false);
+const positionEditCat = null;
 
 const handleFiles = (event) => {
   const files = event.target.files;
@@ -291,9 +375,9 @@ onMounted(async() => {
 const toggleSection = (id, section, value) => {
   Object.keys(showStates.value).forEach((key) => {
     showStates.value[key][section] = key == id ? value : false;
-    console.log("key : " + key);
-    console.log("section : " + section);
-    console.log("toggleSection : " +  showStates.value[key][section]);
+    // console.log("key : " + key);
+    // console.log("section : " + section);
+    // console.log("toggleSection : " +  showStates.value[key][section]);
   });
 
   if (section === "showCatEdit" && value) {
@@ -380,7 +464,12 @@ const cat_in = ref({
 });
 
 const showAddCatDialog = ref(false);
-
+const showDonateDialog = ref(false);
+const donation = ref({
+  amount: null,
+  isAnonymous: false,
+  message: '',
+});
 const rules = {
   age: value => {
     return value > 0 ? true : '年龄必须为正整数';
@@ -397,7 +486,9 @@ const formIsValid = computed(() => {
     && cat_in.value.image != []
   );
 });
-
+const donationFormIsValid = computed(() => {
+  return donation.value.amount !== null;
+});
 const submitForm = async () => {
   try {
     console.error('位置信息 ' + location.longitude + ' ' + location.latitude)
@@ -457,6 +548,42 @@ const submitForm = async () => {
     snackbar.error('添加猫咪失败，请检查猫咪是否已存在');
   }
 };
+
+const submitDonation = async () => {
+  try {
+    if (!donation.value.amount) {
+      snackbar.error('请选择捐赠金额！');
+      return;
+    }
+
+    if (donation.value.message && donation.value.message.length > 100) {
+      snackbar.error('留言长度不能超过100个字符');
+      return;
+    }
+    
+    const data = {
+      amount: donation.value.amount,
+      is_anonymous: donation.value.isAnonymous ? true : false,
+      message: donation.value.message || '',
+    }
+
+    console.error('提交捐赠信息: ', data);
+    const response = await createDonation(data); 
+    console.error('返回信息: ', response);
+
+    // 重置表单
+    donation.value.amount = null;
+    donation.value.isAnonymous = false;
+    donation.value.message = '';
+
+    showDonateDialog.value = false;
+    snackbar.success('捐赠成功！感谢您的支持！');
+  } catch (error) {
+    console.error('提交捐赠失败:', error);
+    snackbar.error('提交失败，请稍后再试');
+  }
+};
+
 const showDeleteDialog = ref(false);
 const removeCatId = ref(null);
 
