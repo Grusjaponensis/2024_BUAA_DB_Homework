@@ -12,7 +12,6 @@ export const getApplications = async () => {
   }
 };
 
-// 更新志愿者申请状态
 export const updateApplicationStatus = async (activity_id: string, applicant_id: string, status: string) => {
   try {
     const response = await server.patch(
@@ -27,12 +26,31 @@ export const updateApplicationStatus = async (activity_id: string, applicant_id:
   }
 };
 
+export const updateVolunteerApplicationStatus = async (application_id: string, status: string) => {
+  try {
+    await server.patch(`applications/${application_id}`);
+  } catch (error) {
+    console.error(`更新志愿者申请状态失败: ${error}`);
+    throw error; 
+  }
+}
+
 export const updateActivity = async (activity_id: string , ) => {
   try {
     const response = await server.patch(`/activities/${activity_id}`);
     return response.data;
   } catch (error) {
     console.error('更新活动失败:', error);
+    throw error; 
+  }
+}
+
+export const getMyRegistrations = async() => {
+  try {
+    const response = await server.get("/volunteers/my");
+    return response.data;
+  } catch (error) {
+    console.error('获取我的报名列表失败:', error);
     throw error; 
   }
 }

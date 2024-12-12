@@ -13,7 +13,7 @@
             <v-card-subtitle>报名者昵称: {{ users[application.user_id].nickname }}</v-card-subtitle>
             <v-card-subtitle>活动名称: {{ activitys[application.activity_id].title }}</v-card-subtitle>
             <v-card-subtitle>报名状态: {{ application.status }}</v-card-subtitle>
-            <v-card-subtitle>报名时间: {{ application.created_at }}</v-card-subtitle>
+            <v-card-subtitle>报名时间: {{ new Date(application.created_at).toLocaleString() }}</v-card-subtitle>
             <v-card-text v-if="application.status === 'pending'"  class="d-flex justify-center">
               <v-btn  color="#fcedbe" @click="acceptApplication(application)" >通过</v-btn>
               <v-btn  color="#d1e9f4" class="ml-2" @click="rejectApplication(application)" >退回</v-btn>

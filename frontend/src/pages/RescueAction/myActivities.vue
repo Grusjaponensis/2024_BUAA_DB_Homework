@@ -16,12 +16,9 @@
               <v-card-title class="headline">{{ application.status }}</v-card-title>
               <v-card-subtitle>活动名称: {{ activitys[application.activity_id].title }}</v-card-subtitle>
               <v-card-subtitle>活动地点: {{ activitys[application.activity_id].location }}</v-card-subtitle>
-              <v-card-subtitle>活动时间: {{ activitys[application.activity_id].starts_at }} - {{ activitys[application.activity_id].ends_at }}</v-card-subtitle>
-              <v-card-subtitle>报名时间: {{ application.created_at }}</v-card-subtitle>
-              <v-card-text v-if="application.status === 'pending'"  class="d-flex justify-center">
-                <v-btn  color="#fcedbe" @click="acceptApplication(application)" >通过</v-btn>
-                <v-btn  color="#d1e9f4" class="ml-2" @click="rejectApplication(application)" >退回</v-btn>
-              </v-card-text>
+              <v-card-subtitle>活动时间: {{ new Date(activitys[application.activity_id].starts_at).toLocaleString() }} 
+                - {{ new Date(activitys[application.activity_id].ends_at).toLocaleString() }}</v-card-subtitle>
+              <v-card-subtitle>报名时间: {{ new Date(application.created_at).toLocaleString() }}</v-card-subtitle>
             </v-card>
           </v-col>
         </v-row>
@@ -31,7 +28,7 @@
   
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getMyApplications, updateApplicationStatus } from '@/api/volunteer';
+import { getMyRegistrations, updateApplicationStatus } from '@/api/volunteer';
 import { getProfileByAdmin, getActivityByAdmin } from '@/api/user';
 import snackbar from '@/api/snackbar';
 const applications = ref([]);
@@ -45,8 +42,7 @@ await fetchMyApplications();
 
 const fetchMyApplications = async () => {
     try {
-        const response = await getMyApplications();
-        console.error(response)
+        const response = await getMyRegistrations();
         if (response) {
             applications.value = response;
             for (const application of applications.value) {

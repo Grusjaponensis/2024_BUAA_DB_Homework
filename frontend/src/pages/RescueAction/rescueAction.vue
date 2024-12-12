@@ -13,7 +13,7 @@
       <v-container>
       <!-- 侧边栏（包含按钮） -->
       <v-row class="mb-4" no-gutters>
-        <v-col cols="12" md="3" class="sidebar">
+        <v-col cols="3" class="sidebar">
           <!-- 分析数据栏 -->
             <v-card elevation="4" class="mb-4">
               <v-card-text class="pa-4">
@@ -75,6 +75,18 @@
                   dark
                   rounded
                   color=#f8c9d5
+                  to="/RescueAction/myApplications"
+                >
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <span class="caption" v-if="user.is_superuser">志愿者申请</span>
+
+                <v-btn
+                  v-if="user.is_superuser"
+                  fab
+                  dark
+                  rounded
+                  color=#f8c9d5
                   @click="viewApplications"
                 >
                   <v-icon>mdi-heart</v-icon>
@@ -98,15 +110,15 @@
           <v-img src="@/assets/rescue.png" />
         </v-col>
 
-        <v-col cols="12" md="9">
+        <v-col>
         <!-- 主内容区域 -->
-        <v-col v-if="loaded" v-for="activity in activities" :key="activity.id" >
+        <v-col cols="12" class="ma-2" v-if="loaded" v-for="activity in activities" :key="activity.id" >
           <v-card style="background-color: #fbf1d7; border: 2px solid #f7cf83;" >
             <v-card-title class="headline">{{ activity.title }}</v-card-title>
             <v-card-subtitle>需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
             <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
-            <v-card-subtitle>行动时间: {{ activity.starts_at }} - {{ activity.ends_at }}</v-card-subtitle>
-            <v-card-subtitle>报名时段: {{ activity.signup_starts_at }} - {{ activity.signup_ends_at }}</v-card-subtitle>
+            <v-card-subtitle>行动时间: {{ new Date(activity.starts_at).toLocaleString() }} - {{ new Date(activity.ends_at).toLocaleString() }}</v-card-subtitle>
+            <v-card-subtitle>报名时段: {{ new Date(activity.signup_starts_at).toLocaleString() }} - {{ new Date(activity.signup_ends_at).toLocaleString() }}</v-card-subtitle>
             <v-card-text>{{ activity.description }}</v-card-text>
             <v-card-text v-if="(user.is_volunteer || user.is_superuser)">
               <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" color="#f7cf83" @click="signUpActivity(activity)">{{button_text[activity.id]}}</v-btn>
@@ -115,7 +127,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        </v-col>
+      </v-col>
       </v-row>
       </v-container>
 
@@ -222,7 +234,7 @@ import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
 import { useRouter } from 'vue-router';
-import { getMyApplications } from '@/api/volunteer';
+import { getMyRegistrations } from '@/api/volunteer';
 
 const router = useRouter();
 const showDeleteDialog = ref(false);
@@ -243,10 +255,11 @@ onMounted(async() => {
 
 const fetchMyApplications = async () => {
   try {
-    const response = await getMyApplications();
+    const response = await getMyRegistrations();
     applications.value = response;
     for (const activity of activities.value) {
       button_text[activity.id] = applications.value.some(p => p.activity_id === activity.id) ? '已报名' : '报名';
+      console.error("activity " + activity);
     }
     console.log("获取我的报名信息成功:", applications.value);
   } catch (error) {
@@ -327,12 +340,10 @@ const removeActivity = async (id) => {
 const signUpActivity = async (activity) => {
   // 报名
   try {
-    loaded = false;
     await signUp(activity.id , user.id);
     // 更新活动列表状态
     await fetchactivities();
     await fetchMyApplications();
-    loaded = true;
     snackbar.success('报名成功');
   } catch (error) {
     console.error('报名失败:', error);
@@ -343,12 +354,10 @@ const signUpActivity = async (activity) => {
 const withdrawActivity = async (activity) => {
   // 退选
   try {
-    loaded = false;
     await withdraw(activity.id);
     // 更新活动列表状态
     await fetchactivities();
     await fetchMyApplications();
-    loaded = true;
     snackbar.success('退选成功');
   } catch (error) {
     console.error('退选失败:', error);
