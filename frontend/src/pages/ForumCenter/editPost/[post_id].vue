@@ -1,8 +1,10 @@
 <template>
-    <v-container>
-      <v-btn color="#bdd4eb" text @click="$router.push('/ForumCenter/myPosts')"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
+    <v-container max-width="90vw">
       <v-card class="elevation-12 mt-5">
-        <v-card-title class="headline">编辑帖子</v-card-title>
+        <v-card-title>
+          <v-btn icon="mdi-chevron-left" @click="$router.go(-1)" variant="text"></v-btn>
+          编辑帖子
+        </v-card-title>
         <v-card-text>
           <v-form ref="form" lazy-validation>
             <v-text-field
@@ -13,50 +15,44 @@
             ></v-text-field>
 
             <v-md-editor
-              v-model="post.content" 
-              height="400px"
+              style="min-height: 400px;"
+              v-model="post.content"
               left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | code | link table"
             />
 
             <v-col>
-              <v-row >
-                <v-col cols="12">
-                  <v-btn text @click="showTags = !showTags">添加标签</v-btn>
+              <!-- 上传文件按钮 -->
+              <v-row>
+                <v-col cols="3" v-if="post.keep_images && post.keep_images.length > 0" v-for="(image, index) in post.keep_images">
+                  <v-card
+                    :key="index"
+                    height="150px"
+                    @click="removeImage(image)"
+                    :image="`${addPrefix(image)}`"
+                  >
+                    <v-icon color="red" size="x-large" class="ma-2">mdi-trash-can</v-icon>
+                  </v-card>
                 </v-col>
-                <v-col cols="12" v-if="showTags">
+              </v-row>
+              <v-row>
+                <v-col cols="6">
+                  <v-file-input
+                    label="上传图片"
+                    accept="image/*"
+                    class="mt-2"
+                    multiple
+                    @change="handleFileUpload"
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="6">
                   <v-select
                     v-model="post.tags"
                     :items="allTags.map(tag => tag.name)"
                     multiple
-                    chips
-                    label="Tags"
+                    label="标签"
+                    class="mt-2"
                   ></v-select>
                 </v-col>
-              </v-row>
-              <!-- 上传文件按钮 -->
-              <v-row class="mt-5">
-                <div v-if="post.keep_images && post.keep_images.length > 0"  style="margin: auto; ">
-                  <v-img
-                  v-for="(image, index) in post.keep_images"
-                  :key="index"
-                  :src="`${addPrefix(image)}`"
-                  class="mb-3"
-                  max-width="100%"
-                  max-height="300px"
-                  ></v-img>
-                  <v-btn
-                  v-for="(image, index) in post.keep_images"
-                  :key="index"
-                  color="error"
-                  text
-                  @click="removeImage(image)"
-                  >
-                  删除图片
-                  </v-btn>
-              </div>
-              </v-row>
-              <v-row class="mt-5">
-                <input type="file" multiple @change="handleFileUpload" />
               </v-row>
 
               <!-- 发帖按钮靠右 -->
@@ -129,7 +125,7 @@
           formData.append('content', post.value.content);
           formData.append('tags', post.value.tags);
           if (post.value.keep_images.length > 0) {
-            post.value.images.forEach((image, index) => {
+            post.value.keep_images.forEach((image, index) => {
               formData.append(`keep_images`, image);
             });
           }
@@ -142,7 +138,7 @@
           const response = await updatePost(post.value.id, formData);
           console.log('帖子更新成功', response);
           snackbar.success('帖子更新成功');
-          router.push('/ForumCenter/myPosts');
+          router.push(`/ForumCenter/postDetails/${post.value.id}`);
         } catch (error) {
           console.error('更新帖子失败:', error);
           snackbar.error('更新帖子失败');

@@ -5,6 +5,11 @@ export const getPosts = async () => {
   return response.data;
 };
 
+export const getPostUnauthorized = async () => {
+  const response = await server.get("/posts/unauthorized");
+  return response.data;
+}
+
 export const deletePost = async (id: string) => {
   try {
     const response = await server._delete(`/posts/${id}`,id);

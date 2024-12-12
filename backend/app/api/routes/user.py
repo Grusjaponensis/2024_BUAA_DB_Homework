@@ -34,6 +34,20 @@ async def read_user_profile(current_user: CurrentUser) -> Any:
     return current_user
 
 
+# - MARK: get user's name and email
+@router.get("/profile/{user_id}", tags=["profile"])
+async def read_user_profile_by_id(
+    session: SessionDep, user_id: uuid.UUID
+):
+    """
+    Get user's name and email by user_id publicly
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"nickname": user.nickname, "email": user.email}
+
+
 # - MARK: update user profile -
 @router.patch("/profile", response_model=UserPublic, tags=["profile"])
 async def update_user_profile(

@@ -27,134 +27,145 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="showDialog = false" ><v-icon>mdi-close</v-icon>关闭</v-btn>
+          <v-btn 
+            @click="showDialog = false"
+            prepend-icon="mdi-close"
+            text="关闭"
+            class="mr-4"
+            >
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-container>
-    <!-- 侧边栏（包含按钮） -->
-    <v-row class="mb-4">
-      <v-col cols="3">
-        <!-- 按钮组 -->
-        <div class="d-flex flex-column">
-          <v-btn
-            block
-            :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' : 'blue-lighten-1'"
-            @click="checkLogin(), showCreatePostDialog = !showCreatePostDialog"
-            class="my-1"
-            variant="outlined"
-          >
-            <v-icon class="mr-1">mdi-pencil</v-icon>
-            创建帖子
-          </v-btn>
-          
-          <v-btn
-            block
-            :color="$vuetify.theme.name === 'dark' ? 'deep-orange-darken-3' : 'orange-lighten-1'"
-            @click="myPosts"
-            class="my-1"
-            variant="outlined"
-          >
-            <v-icon class="mr-1">mdi-cat</v-icon>
-            我的帖子
-          </v-btn>
-          
-          <v-btn
-            block
-            :color="$vuetify.theme.name === 'dark' ? 'red-darken-4' : 'red-lighten-1'"
-            @click="myFavorites"
-            class="my-1"
-            variant="outlined"
-          >
-            <v-icon class="mr-1">mdi-heart</v-icon>
-            我的收藏
-          </v-btn>
-
-          <v-btn
-            v-if="isAdmin"
-            block
-            :color="$vuetify.theme.name === 'dark' ? 'green-darken-2' : 'green-lighten-1'"
-            @click="showDialog = !showDialog"
-            class="my-1"
-            variant="outlined"
-          >
-            <v-icon class="mr-1">mdi-tag</v-icon>
-            标签管理
-          </v-btn>
-        </div>
-        <!-- 分析数据栏 -->
-        <v-card variant="plain" class="mt-5">
-          <v-card-text>
-            <div class="d-flex flex-column align-start">
-              <div class="d-flex align-start mt-2">
-                <span class="body-2 mb-2">帖子总数： </span>
-                <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
-              </div>
-              <div class="d-flex align-start">
-                <span class="body-2 mb-2">今日新增： </span>
-                <span class="font-weight-bold ml-auto">25{{ newToday }}</span>
-              </div>
-              <div class="d-flex align-start">
-                <span class="body-2 mb-2">总浏览量： </span>
-                <span class="font-weight-bold ml-auto">1215{{ totalViews }}</span>
-              </div>
-              <div class="d-flex align-start">
-                <span class="body-2 mb-2">站内热帖： </span>
-                <span class="font-weight-bold ml-auto">《寻找失踪小橘猫》</span>
-              </div>
-              <!-- 更多分析数据 -->
-            </div>
-          </v-card-text>
-        </v-card>
-        <v-img src="@/assets/cat-forum.png" class="mt-5"/>
-      </v-col>
-
-      <!-- 主内容区域（帖子列表） -->
-      <v-col cols="9">
-        <!-- 标签按钮组 -->
-        <div class="d-flex justify-start mb-4 button-group">
-          <v-btn
-            v-for="tag in tags"
-            :key="tag.id"
-            :color="isSelected(tag.name) ? getTagColor(tag.name) : 'accent'" 
-            class="v-tag-btn"
-            @click="filterPostsByTag(tag.name)"
-          >
-            {{ tag.name }}
-          </v-btn>
-        </div>
-      <!-- 主内容区域 -->
-        <v-card
-          v-for="post in filteredPosts"
-          :key="post.id"
-          class="pa-1 mb-4 rounded-lg"
-          elevation="2"
-          :to="`/ForumCenter/postDetails/${post.id}`"
-        >
-          <template #append>
-            <v-chip
-              v-for="tagName in post.tags"
-              :key="tagName"
-              :color="getTagColor(tagName)"
-              class="ma-1"
+      <!-- 侧边栏（包含按钮） -->
+      <v-row class="mb-4">
+        <v-col cols="3">
+          <!-- 按钮组 -->
+          <div class="d-flex flex-column">
+            <v-btn
+              block
+              :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' : 'blue-lighten-1'"
+              @click="checkLogin(), showCreatePostDialog = !showCreatePostDialog"
+              class="my-1"
+              variant="outlined"
             >
-              {{ tagName }}
-            </v-chip>
-          </template>
-          <template #title>{{ post.title }}</template>
-          <v-card-text class="text-caption">
-              发布于 {{ new Date(post.created_at).toLocaleString() }}
-          </v-card-text>
-          <v-chip
-            :text="`${post.likes_number} likes`"
-            prepend-icon="mdi-heart"
-            color="red"
-            class="my-2 ml-3"
-          ></v-chip>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+              <v-icon class="mr-1">mdi-pencil</v-icon>
+              创建帖子
+            </v-btn>
+            
+            <v-btn
+              block
+              :color="$vuetify.theme.name === 'dark' ? 'deep-orange-darken-3' : 'orange-lighten-1'"
+              @click="myPosts"
+              class="my-1"
+              variant="outlined"
+            >
+              <v-icon class="mr-1">mdi-cat</v-icon>
+              我的帖子
+            </v-btn>
+            
+            <v-btn
+              block
+              :color="$vuetify.theme.name === 'dark' ? 'red-darken-4' : 'red-lighten-1'"
+              @click="myFavorites"
+              class="my-1"
+              variant="outlined"
+            >
+              <v-icon class="mr-1">mdi-heart</v-icon>
+              我的喜欢
+            </v-btn>
+
+            <v-btn
+              v-if="isAdmin"
+              block
+              :color="$vuetify.theme.name === 'dark' ? 'green-darken-2' : 'green-lighten-1'"
+              @click="showDialog = !showDialog"
+              class="my-1"
+              variant="outlined"
+            >
+              <v-icon class="mr-1">mdi-tag</v-icon>
+              标签管理
+            </v-btn>
+          </div>
+          <!-- 分析数据栏 -->
+          <v-card variant="outlined" class="mt-5">
+            <v-card-text>
+              <div class="d-flex flex-column align-start">
+                <div class="d-flex align-start mt-2">
+                  <span class="body-2 mb-2">帖子总数： </span>
+                  <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
+                </div>
+                <div class="d-flex align-start">
+                  <span class="body-2 mb-2">今日新增： </span>
+                  <span class="font-weight-bold ml-auto">25{{ newToday }}</span>
+                </div>
+                <div class="d-flex align-start">
+                  <span class="body-2 mb-2">总浏览量： </span>
+                  <span class="font-weight-bold ml-auto">1215{{ totalViews }}</span>
+                </div>
+                <div class="d-flex align-start">
+                  <span class="body-2 mb-2">站内热帖： </span>
+                  <span class="font-weight-bold ml-auto">《寻找失踪小橘猫》</span>
+                </div>
+                <!-- 更多分析数据 -->
+              </div>
+            </v-card-text>
+          </v-card>
+          <v-img src="@/assets/cat-forum.png" class="mt-5"/>
+        </v-col>
+
+        <!-- 主内容区域（帖子列表） -->
+        <v-col cols="9">
+          <!-- 标签按钮组 -->
+          <div class="d-flex justify-start mb-4 button-group">
+            <v-btn
+              v-for="tag in tags"
+              :key="tag.id"
+              :color="isSelected(tag.name) ? getTagColor(tag.name) : 'accent'" 
+              class="mx-1"
+              prepend-icon="mdi-tag-outline"
+              @click="filterPostsByTag(tag.name)"
+            >
+              {{ tag.name }}
+            </v-btn>
+          </div>
+          <!-- 主内容区域 -->
+          <v-card
+            v-for="post in filteredPosts"
+            :key="post.id"
+            class="pa-1 mb-4 rounded-lg"
+            elevation="2"
+            @click="checkLogin()"
+            :to="`/ForumCenter/postDetails/${post.id}`"
+          >
+            <template #append>
+              <v-chip
+                v-for="tagName in post.tags"
+                :key="tagName"
+                :color="getTagColor(tagName)"
+                prepend-icon="mdi-tag"
+                class="ma-1"
+              >
+                {{ tagName }}
+              </v-chip>
+            </template>
+            <template #title>{{ post.title }}</template>
+            <v-card-text class="text-caption">
+                发布于 {{ new Date(post.created_at).toLocaleString() }}
+            </v-card-text>
+            <v-chip
+              :text="`${post.likes_number} likes`"
+              prepend-icon="mdi-heart"
+              color="red"
+              class="my-2 ml-3"
+            ></v-chip>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    
+    <!-- 创建帖子 -->
     <v-dialog v-model="showCreatePostDialog" max-width="80vw">
       <v-toolbar title="创建帖子">
         <v-btn icon="mdi-close" @click="showCreatePostDialog = false"></v-btn>
@@ -178,28 +189,26 @@
 
             <v-col>
               <v-row>
-                <v-col cols="12">
-                  <v-btn text @click="showTags = !showTags">添加标签</v-btn>
-                </v-col>
-                <v-col cols="12" v-if="showTags">
+                <v-col cols="6">
                   <v-select
                     v-model="post.tags"
-                    :items="allTags.map(tag => tag.name)"
+                    :items="tags.map(tag => tag.name)"
                     multiple
-                    chips
-                    label="Tags"
+                    label="标签"
+                    class="mt-2"
                   ></v-select>
                 </v-col>
+                <v-col cols="6">
+                  <v-file-input
+                    label="上传图片"
+                    accept="image/*"
+                    class="mt-2"
+                    multiple
+                    @change="handleFileUpload"
+                  ></v-file-input>
+                </v-col>
               </v-row>
-              <!-- 上传图片按钮 -->
-              <v-file-input
-                label="上传图片"
-                accept="image/*"
-                class="mt-2"
-                multiple
-                @change="handleFileUpload"
-              ></v-file-input>
-              
+
               <v-row class="mt-5 justify-end">
                 <v-btn
                   color="primary"
@@ -218,7 +227,7 @@
 </template>
 
 <script setup>
-import { getPosts, deletePost, likePost, unlikePost } from '@/api/post';
+import { getPosts, deletePost, likePost, unlikePost, getPostUnauthorized } from '@/api/post';
 import { getTags, create, remove } from '@/api/tags';
 import { getProfile, user } from '@/api/user';
 import { ref, onMounted, computed } from 'vue';
@@ -305,7 +314,7 @@ const fetchProfile = async () => {
 // 获取帖子列表
 const fetchPosts = async () => {
   try {
-    const response = await getPosts();
+    const response = await getPostUnauthorized();
     posts.value = response.posts;
   } catch (error) {
     console.error('获取帖子列表失败:', error);
@@ -408,7 +417,7 @@ const submitPost = async () => {
 
       const response = await createPost(formData);
       console.log('帖子提交成功', response.data.id);
-      snackbar.success('帖子提交成功');
+      snackbar.success('发布成功！');
       await fetchPosts();
       showCreatePostDialog.value = false;
     } catch (error) {
@@ -458,26 +467,6 @@ input {
   margin-right: 10px;
 }
 
-/* 美化帖子卡片 */
-.post-card {
-  border-radius: 10px; /* 圆角 */
-  transition: transform 0.3s ease-in-out; /* 平滑变换 */
-  padding: 10px; /* 内边距 */
-  margin-bottom: 20px; /* 外边距 */
-  cursor: pointer; /* 鼠标指针 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
-
-}
-
-.post-card:hover {
-  background-color: #e5edf2;
-}
-
-/* 美化操作按钮 */
-.v-btn {
-  transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
-}
-
 /* 增加输入框和按钮的美观性 */
 .input-group button {
   border: none;
@@ -493,25 +482,6 @@ input {
   background-color: #8ea5cc;
 }
 
-/* 底部按钮美化 */
-.v-footer .v-btn {
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.v-footer .v-btn:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.v-btn {
-  width: 40px; 
-  height: 40px; 
-  margin-right: 6px;
-}
-.v-tag-btn {
-  width: 40px; 
-  height: 40px; 
-  margin-right: 12px;
-}
 .button-group {
   display: flex;
   justify-content: space-between;
