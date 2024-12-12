@@ -1,23 +1,29 @@
 <template>
-    <div id="container"></div>
-  </template>
+  <div id="container1"></div>
+</template>
   
   <script setup>
   import { onMounted, onUnmounted } from "vue";
-  import { location } from '@/api/user'
   import AMapLoader from "@amap/amap-jsapi-loader";
   
   const props = defineProps({
-    center: [116.347209, 39.981645],
-    zoom: 16.3,
-    markerPosition: [116.347209, 39.981645],
-    markerTitle: "我的位置",
+      center: {
+          type: Array, default: () => [116.347209, 39.981645]
+      },
+      zoom: {
+          type: Number , default: 16.3
+      },
+      markerPosition: {
+          type: Array, default: () => [116.347209, 39.981645]
+      } 
   })
   
   let marker = null;
   let map = null;
   
   onMounted(() => {
+    console.log("传入的坐标" , props.markerPosition)
+    console.log("传入的中心点" , props.center)
     window._AMapSecurityConfig = {
       securityJsCode: "fd49876bde2479a9c3935444d613ce0a",
     };
@@ -27,26 +33,22 @@
       plugins: ["AMap.Scale" , "AMap.Marker"], //需要使用的的插件列表，如比例尺'AMap.Scale'，支持添加多个如：['...','...']
     })
       .then((AMap) => {
-        map = new AMap.Map("container", {
+        map = new AMap.Map("container1", {
           // 设置地图容器id
           viewMode: "3D", // 是否为3D地图模式
-          zoom: 16.3, // 初始化地图级别
-          center: [116.347209, 39.981645], // 初始化地图中心点位置
+          zoom: props.zoom, // 初始化地图级别
+          center: props.center, // 初始化地图中心点位置
         });
-        marker = new AMap.Marker({
-          position: props.markerPosition,
-          title: props.markerTitle,
-        })
+        if (props.markerPosition && props.markerPosition.length === 2) {
+            
+            marker = new AMap.Marker({
+                position: [props.markerPosition[0], props.markerPosition[1]],
+                title: 'fuck',
+            })
+            // marker.setPosition([props.markerPosition[0], props.markerPosition[1]])
+            map.add(marker)
+        }
         map.addControl(new AMap.Scale())
-
-        map.on("click", (e) => {
-          const {lng , lat} = e.lnglat;
-          location.latitude = lat;
-          location.longitude = lng;
-          console.log('点击位置的经纬度 ' + lng + ", " + lat)
-          marker.setPosition([lng, lat]);
-        })
-        map.add(marker)
       })
       .catch((e) => {
         console.log("加载地图失败", e);
@@ -59,7 +61,7 @@
   </script>
   
   <style scoped>
-    #container {
+    #container1 {
       padding: 0px;
       margin: 0px;
       width: 100%;

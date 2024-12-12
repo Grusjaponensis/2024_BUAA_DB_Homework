@@ -7,12 +7,13 @@
         <v-col cols="6" md="6" class="justify-center">
           <img src="@/assets/myapply.png" alt="logo" width="20%">
         </v-col>
-        <v-col v-for="application in applications"
+        <v-col v-if="loaded" v-for="application in applications"
           :key="application.id"
           class="my-2" cols="12" md="12">
           <v-card class="elevation-3 pa-2 text-center" outlined rounded="lg">
             <v-card-title class="headline">申请情况</v-card-title>
-            <!-- <v-card-subtitle>基本信息：{{ users[application.user_id].name }} - {{ users[application.user_id].age }} - {{ application.gender }}</v-card-subtitle> -->
+            <v-card-subtitle class="grey--text text-body-1">用户昵称: {{ users[application.user_id].nickname }}</v-card-subtitle>
+            <v-card-subtitle class="grey--text text-body-1">用户邮箱: {{ users[application.user_id].email }}</v-card-subtitle>
             <v-card-subtitle class="grey--text text-body-1">
               申请日期: {{ new Date(application.created_at).toLocaleString() }}
             </v-card-subtitle>
@@ -37,10 +38,11 @@
   import { ref, onMounted } from 'vue';
   import { user } from '@/api/user';
   import { updateVolunteerApplicationStatus } from '@/api/volunteer';
-import snackbar from '@/api/snackbar';
+  import snackbar from '@/api/snackbar';
   
   const applications = ref([]);
   const users = {};
+  const loaded = ref(false);
 
   onMounted(() => {
     fetchApplications();
@@ -71,11 +73,17 @@ import snackbar from '@/api/snackbar';
   const fetchApplications = async () => {
     try {
       const response = await getMyApplications();
-      applications.value = response;
-      for (const application of applications.value) {
-        users[application.user_id] = await getProfileByAdmin(application.user_id);
+      if (response) {
+        applications.value = response;
+        for (const application of applications.value) {
+          users[application.user_id] = await getProfileByAdmin(application.user_id);
+          console.log('获取用户信息成功:', users[application.user_id]);
+        }
+        console.log('获取申请列表成功:', applications.value);
+        loaded.value = true;
+      } else {
+        console.error('获取申请列表失败:')
       }
-      console.log('获取申请列表成功:', applications.value);
     } catch (error) {
       console.error('获取申请列表失败:', error);
     }
