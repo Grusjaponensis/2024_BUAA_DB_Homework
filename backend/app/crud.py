@@ -114,11 +114,12 @@ def get_participants_count(session: Session, activity_id: uuid.UUID) -> int:
     if not session.exec(select(Activity).where(Activity.id == activity_id)).first():
         raise HTTPException(status_code=404, detail="Activity not found")
     
+    # NOTE: cannot user `and` in sqlalchemy clause, use & instead
     count = session.exec(
         select(func.count(ActivityRegistration.user_id)).where(
-                ActivityRegistration.activity_id == activity_id and 
-                ActivityRegistration.status == ApplicationStatus.APPROVED
-            )
-    )
+            (ActivityRegistration.activity_id == activity_id) & 
+            (ActivityRegistration.status == ApplicationStatus.APPROVED)
+        )
+    ).one()
     
-    return count.one()
+    return count
