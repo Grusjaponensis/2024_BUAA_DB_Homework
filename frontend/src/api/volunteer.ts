@@ -28,7 +28,11 @@ export const updateApplicationStatus = async (activity_id: string, applicant_id:
 
 export const updateVolunteerApplicationStatus = async (application_id: string, status: string) => {
   try {
-    await server.patch(`applications/${application_id}`);
+    await server.patch(
+      `volunteers/applications/${application_id}`,
+      { application_id , status} ,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
     console.error(`更新志愿者申请状态失败: ${error}`);
     throw error; 
