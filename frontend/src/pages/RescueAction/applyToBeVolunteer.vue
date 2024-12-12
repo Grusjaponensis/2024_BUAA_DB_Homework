@@ -35,7 +35,8 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
-          <v-btn color="primary" class="mb-2" rounded = "lg" size = "large" variant = "elevated" @click="submitApplicationForm">提交申请</v-btn>
+          <v-btn color="blue-darken-1" class="mb-2" rounded = "lg" size = "large" variant = "elevated" @click="submitApplicationForm">提交申请</v-btn>
+          <v-btn color="green-darken-1" class="mb-2" rounded = "lg" size = "large" variant = "outlined" @click="$router.push('/RescueAction/rescueAction')">取消</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>

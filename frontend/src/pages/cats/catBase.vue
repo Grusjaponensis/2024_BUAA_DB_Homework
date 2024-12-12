@@ -100,7 +100,7 @@
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(cat.id, 'showCatEdit', true)"
-                v-if="user.login && user.is_superuser"
+                v-if="user.login && (user.is_superuser || user.is_volunteer)"
               >
               <v-icon left class="mr-1">mdi-pencil</v-icon> 修改信息
             </v-btn>
@@ -109,7 +109,7 @@
                 rounded="lg"
                 variant="elevated"
                 @click="toggleSection(cat.id, 'showAvatarUpload', true)"
-                v-if="user.login && user.is_superuser"
+                v-if="user.login && (user.is_superuser || user.is_volunteer)"
               >
               <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
             </v-btn>
@@ -147,7 +147,7 @@
       style="position: fixed; bottom: 24px; right: 24px;"
       size="large"
       @click = "showAddCatDialog = true"
-      v-if = "user.login && user.is_superuser"
+      v-if = "user.login && (user.is_superuser || user.is_volunteer)"
     >
     <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -211,6 +211,15 @@
             counter="50"
             class="mt-3"
           ></v-textarea>
+          <div class="mt-4 text-h6 font-weight-regular">
+          选择猫咪位置
+          </div>
+          <MapView 
+          style="height: 500px;"
+          ></MapView>
+          <v-text-field>
+            当前位置:{{ location.latitude }} , {{ location.longitude }} 
+          </v-text-field>
           <v-btn
             color="disabled? 'grey' : '#bbd5eb'"
             type="submit"
@@ -235,7 +244,9 @@ import { getProfile } from '@/api/user';
 import { addPrefix } from '@/api/post';
 import { getCats, createCat,deleteCat,updateCatByAdmin } from '@/api/cat';
 import { user } from '@/api/user';
+import { location } from '@/api/user';
 import snackbar from '@/api/snackbar';
+import MapView from '@/map/MapView.vue';
 
 const cats = ref([]);
 const isAdmin = ref(false);
@@ -365,7 +376,7 @@ const cat_in = ref({
   age: null,
   health_condition: null,
   description: '',
-  image: [],
+  image: []
 });
 
 const showAddCatDialog = ref(false);
@@ -389,6 +400,7 @@ const formIsValid = computed(() => {
 
 const submitForm = async () => {
   try {
+    console.error('位置信息 ' + location.longitude + ' ' + location.latitude)
     if (cat_in.value.name.length > 128) {
       snackbar.error('姓名长度不能超过128个字符');
       return;
@@ -401,6 +413,10 @@ const submitForm = async () => {
       snackbar.error('描述长度不能超过256个字符');
       return;
     }
+    if (location.longitude === 0 || location.latitude === 0) {
+      snackbar.error('请在地图上选择猫咪位置！');
+      return;
+    }
     const formData = new FormData();
     formData.append('name', cat_in.value.name);
     formData.append('is_male', cat_in.value.is_male === '公猫');
@@ -411,7 +427,8 @@ const submitForm = async () => {
         : cat_in.value.health_condition === 'VACCINATED' ? 3
         : 4);
     formData.append('description', cat_in.value.description);
-    // formData.append('image', cat_in.value.image);
+    formData.append('longitude', location.longitude);
+    formData.append('latitude', location.latitude);
     if (cat_in.value.image && cat_in.value.image.length > 0) {
       cat_in.value.image.forEach((file) => {
         formData.append('image', file);
@@ -430,7 +447,7 @@ const submitForm = async () => {
       is_male: null,
       health_condition: null,
       description: '',
-      image: [],
+      image: []
     };
     fetchCats();
     showAddCatDialog.value = false;
