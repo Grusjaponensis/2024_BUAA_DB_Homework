@@ -15,7 +15,7 @@
       <v-row class="mb-4" no-gutters>
         <v-col cols="3" class="sidebar">
           <!-- 分析数据栏 -->
-            <v-card elevation="4" class="mb-4">
+            <v-card variant="outlined" class="mt-5">
               <v-card-text class="pa-4">
                 <div class="d-flex flex-column align-start">
                   <div class="d-flex align-start">
@@ -29,105 +29,120 @@
                 </div>
               </v-card-text>
             </v-card>
-          <v-card elevation="4"  v-if="user.login">
-            <v-card-text class="pa-4">
               <!-- 按钮组 -->
-              <div class="d-flex flex-column align-center">
+              <div  class="d-flex flex-column mt-5" v-if="user.login">
                 <v-btn
                   v-if="!user.is_volunteer && !user.is_superuser"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'orange-darken-1'"
                   @click="applyToBeVolunteer"
                 >
-                  <v-icon>mdi-pencil</v-icon>
+                  <v-icon class="mr-1">mdi-pencil</v-icon>
+                  申请成为志愿者
                 </v-btn>
-                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请成为志愿者</span>
                 
                 <v-btn
                   v-if="!user.is_volunteer && !user.is_superuser"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f8c9d5'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'orange-darken-3'"
                   @click="myApplications"
                 >
-                  <v-icon>mdi-cat</v-icon>
+                  <v-icon class="mr-1">mdi-cat</v-icon>
+                  申请进度查询
                 </v-btn>
-                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请进度查询</span>
 
                 <v-btn
                   v-if="user.is_volunteer"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'pink-lighten-2'"
                   @click="myActivities"
                 >
-                  <v-icon>mdi-heart</v-icon>
+                  <v-icon class="mr-1">mdi-heart</v-icon>
+                  我的活动
                 </v-btn>
-                <span class="caption" v-if="user.is_volunteer">我的活动</span>
 
                 <v-btn
                   v-if="user.is_superuser"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : '#f8c9d5'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : 'red-lighten-2'"
                   to="/RescueAction/myApplications"
                 >
-                  <v-icon>mdi-pencil</v-icon>
+                  <v-icon class="mr-1">mdi-pencil</v-icon>
+                  志愿者申请
                 </v-btn>
-                <span class="caption" v-if="user.is_superuser">志愿者申请</span>
 
                 <v-btn
                   v-if="user.is_superuser"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : '#f8c9d5'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' : 'yellow-darken-3'"
                   @click="viewApplications"
                 >
-                  <v-icon>mdi-heart</v-icon>
+                  <v-icon class="mr-1">mdi-heart</v-icon>
+                  查看报名
                 </v-btn>
-                <span class="caption" v-if="user.is_superuser">查看报名</span>
 
                 <v-btn
                   v-if="user.is_superuser"
-                  fab
-                  dark
-                  rounded
-                   :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
+                  class="my-1"
+                  variant="outlined"
+                  block
+                  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'yellow-darken-2'"
                   @click = "showAddActionDialog = true"
                 >
-                  <v-icon>mdi-tag</v-icon>
+                  <v-icon class="mr-1">mdi-tag</v-icon>
+                  添加活动
                 </v-btn>
-                <span class="caption" v-if="user.is_superuser">添加活动</span>
+                <!-- <span class="caption" v-if="user.is_superuser">添加活动</span> -->
               </div>
-            </v-card-text>
-          </v-card>
           <v-img src="@/assets/rescue.png" />
         </v-col>
 
-        <v-col>
-        <!-- 主内容区域 -->
-        <v-col cols="12" class="ma-2" v-if="loaded" v-for="activity in activities" :key="activity.id" >
-          <v-card >
-            <v-card-title class="headline">{{ activity.title }}</v-card-title>
-            <v-card-subtitle>需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
-            <v-card-subtitle>活动地点: {{ activity.location }}</v-card-subtitle>
-            <v-card-subtitle>行动时间: {{ new Date(activity.starts_at).toLocaleString() }} - {{ new Date(activity.ends_at).toLocaleString() }}</v-card-subtitle>
-            <v-card-subtitle>报名时段: {{ new Date(activity.signup_starts_at).toLocaleString() }} - {{ new Date(activity.signup_ends_at).toLocaleString() }}</v-card-subtitle>
-            <v-card-text>{{ activity.description }}</v-card-text>
-            <v-card-text v-if="(user.is_volunteer || user.is_superuser)">
-              <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)"  :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' :'#f7cf83'" @click="signUpActivity(activity)">{{button_text[activity.id]}}</v-btn>
-              <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)"  :color="$vuetify.theme.name === 'dark' ? 'blue-darken-2' :'#fad6b5'" @click="withdrawActivity(activity)">退选</v-btn>
-              <v-btn v-if="user.is_superuser"  color="deep-orange-lighten-3" @click="showDeleteDialog = true; deleteId = activity.id" >删除</v-btn>
-            </v-card-text>
-          </v-card>
+        <v-col cols="9" class="main-content" v-if="loaded">
+          <v-row>
+            <v-col cols="6" v-for="activity in activities" :key="activity.id">
+              <!-- 主内容区域 -->
+              <v-card class="pa-1 mb-4 rounded-lg">
+                <template #append>
+                  <v-chip
+                    :color= "$vuetify.theme.name === 'dark' ? 'grey-lighten-1' :'grey-darken-2'"
+                    prepend-icon="mdi-clock-outline"
+                    class="ma-1"
+                  >
+                    请关注活动时间
+                  </v-chip>
+                </template>
+                <template #title>{{ activity.title }}</template>
+                <v-card-subtitle class="mb-2">需要志愿者: {{ activity.current_participants }}/{{ activity.max_participants }}</v-card-subtitle>
+                <v-card-subtitle class="mb-2">活动地点: {{ activity.location }}</v-card-subtitle>
+                <v-card-subtitle class="mb-2">行动时间: {{ new Date(activity.starts_at).toLocaleString() }} - {{ new Date(activity.ends_at).toLocaleString() }}</v-card-subtitle>
+                <v-card-subtitle class="mb-2">报名时段: {{ new Date(activity.signup_starts_at).toLocaleString() }} - {{ new Date(activity.signup_ends_at).toLocaleString() }}</v-card-subtitle>
+                <v-card-text>{{ activity.description }}</v-card-text>
+                <v-card-text v-if="(user.is_volunteer || user.is_superuser)">
+                  <v-btn v-if="user.is_volunteer" :disabled="!canSignUp(activity)" :color="$vuetify.theme.name === 'dark' ? 'orange-accent-1' : '#f7cf83'" @click="signUpActivity(activity)">
+                    {{ button_text[activity.id] }}
+                  </v-btn>
+                  <v-btn v-if="user.is_volunteer" :disabled="!canWithdraw(activity)" :color="$vuetify.theme.name === 'dark' ? 'orange-accent-1' : '#fad6b5'" @click="withdrawActivity(activity)">
+                    退选
+                  </v-btn>
+                  <v-btn v-if="user.is_superuser" :color="$vuetify.theme.name === 'dark' ? 'orange-accent-1' : 'deep-orange-lighten-3'" @click="showDeleteDialog = true; deleteId = activity.id">
+                    删除
+                  </v-btn>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
-      </v-col>
+
       </v-row>
       </v-container>
 
@@ -452,41 +467,14 @@ const submitactivity = async () => {
 </script>
 
 <style scoped>  
-/* 美化帖子卡片 */
-.card {
-  border-radius: 10px; /* 圆角 */
-  transition: transform 0.3s ease-in-out; /* 平滑变换 */
-  background-color: #f0f0f0; /* 背景色 */
-  padding: 10px; /* 内边距 */
-  margin-bottom: 20px; /* 外边距 */
-  cursor: pointer; /* 鼠标指针 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
-
-}
-
-.card:hover {
-  transform: translateY(-5px); /* 鼠标悬停时上移 */
-}
-
-/* 美化操作按钮 */
-.v-btn {
-  transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
-}
-
-.v-btn:hover {
-  background-color: #e0e0e0; /* 鼠标悬停时的背景色 */
-}
 
 .sidebar {
   max-width: 200px; 
   margin-right: 30px;
 }
 .v-btn {
-  border-radius: 25%; 
-  width: 40px; 
-  height: 40px; 
   margin-right: 6px;
-}
+} 
 
 .top-bar {
   border-radius: 8px; /* 设置圆角 */

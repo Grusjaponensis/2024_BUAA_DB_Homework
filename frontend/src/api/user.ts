@@ -24,6 +24,16 @@ export const user = reactive<User>({
     password: ''
 })
 
+interface Location {
+    latitude: number;
+    longitude: number;
+}
+
+export const location = reactive<Location>({
+    latitude: 0,
+    longitude: 0
+})
+
 export const login = async (username: string, password: string) => {
     try {
         document.cookie = "access_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC";

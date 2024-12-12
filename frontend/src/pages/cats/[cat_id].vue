@@ -2,9 +2,9 @@
   <div class="cat-details">
     <v-container>
     
-    <v-row align="center">
+    <v-row text-align="center">
       <!-- 插画 -->
-      <v-col cols="12" md="4" class="pa-0" align="center">
+      <v-col cols="12" md="4" class="pa-0">
         <v-img
           src="@/assets/cat-detail.png"
           class="illustration"
@@ -17,15 +17,22 @@
       <!-- 内容 -->
       <v-col cols="12" md="8" >
         <v-btn color="#bdd4eb" text @click="$router.push('/cats/catBase')" class="mb-3"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
-        
-        
-        <v-card v-if="cat" class="mx-auto">
-          <v-card-title class="headline">{{ cat.name }}</v-card-title>
-          <v-card-subtitle>年龄: {{ cat.age }}</v-card-subtitle>
-          <v-card-subtitle>性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
-          <v-card-subtitle>健康状况: {{ cat.health_condition == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
-          <v-card-subtitle>最近一次出没地点: {{ cat.latest_longitude }}, {{ cat.latest_latitude }}</v-card-subtitle>
-          <v-card-text>
+        <v-card v-if="cat" class="mx-auto text-center">
+          <v-card-title class="text-h5">{{ cat.name }}</v-card-title>
+          <v-card-subtitle class="text-body-1">年龄: {{ cat.age }}</v-card-subtitle>
+          <v-card-subtitle class="text-body-1">性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
+          <v-card-subtitle class="text-body-1">健康状况: {{ cat.health_condition == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
+          <v-card-subtitle class="text-h6 font-weight-bold">最近一次出没地点:</v-card-subtitle>
+          <v-container class="pa-6">
+            <MapContainer 
+            :center="[cat.latest_longitude, cat.latest_latitude]"
+            :zoom="16.5"
+            :markerPosition="[cat.latest_longitude, cat.latest_latitude]"
+            :markerTitle="cat.name"
+            style = "width: 100%; height: 500px;"
+            ></MapContainer>
+          </v-container>
+          <v-card-text class="text-body-1">
             描述： {{ cat.description }}
           </v-card-text>
           <!-- 图片 -->
@@ -54,12 +61,11 @@
   import { getCat } from '@/api/cat';
   import { useRoute } from 'vue-router';
   import { addPrefix } from '@/api/post';
+  import MapContainer from '@/map/MapContainer.vue';
   
   const route = useRoute();
   const cat = ref(null);
-  
-  const { cat_id } = route.params;
-  
+    
   const fetchCat = async () => {
     try {
       const response = await getCat(route.params.cat_id);

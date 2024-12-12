@@ -8,6 +8,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@kangc/v-md-editor": "^2.3.18",
     "@mdi/font": "7.4.47",
     "axios": "^1.7.7",
