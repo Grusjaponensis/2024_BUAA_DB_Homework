@@ -103,7 +103,7 @@ async def apply_to_be_volunteer(
     if current_user.is_volunteer or current_user.is_superuser:
         raise HTTPException(status_code=400, detail="You are already a volunteer or a superuser")
     
-    exist_application = session.exec(select(VolunteerApplication).where(VolunteerApplication.user_id == current_user.id)).first()
+    exist_application = session.exec(select(VolunteerApplication).where(VolunteerApplication.user_id == current_user.id and VolunteerApplication.status == ApplicationStatus.PENDING)).first()
     if exist_application:
         raise HTTPException(status_code=400, detail="You have already applied for volunteer")
     
