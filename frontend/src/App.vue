@@ -26,6 +26,7 @@
       <template v-slot:append>
         <v-btn icon="mdi-magnify"></v-btn>
         <v-btn :icon="theme === 'light' ? 'mdi-weather-night' : 'mdi-white-balance-sunny'" @click="toggleTheme"></v-btn>
+        <v-btn icon="mdi-home-outline" @click="router.push('/')"></v-btn>
       </template>
     </v-app-bar>
 

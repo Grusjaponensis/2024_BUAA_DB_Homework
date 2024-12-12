@@ -8,7 +8,7 @@ from sqlmodel import SQLModel
 from alembic import context
 
 # Should also import all models here, even they are not used in env.py
-from app.models.user import User
+from app.models.user import User, ActivityRegistration, Activity
 from app.models.post import Post
 from app.models.cat import Cat, CatLocation
 

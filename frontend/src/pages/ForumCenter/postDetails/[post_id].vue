@@ -1,48 +1,58 @@
 <template>
-  <v-container>
-    <v-btn color="#bdd4eb" text @click="$router.go(-1)" class="mb-3">
-      <v-icon left>mdi-arrow-left</v-icon> 
-      返回 
-    </v-btn>
-    <v-row>
+  <v-container fluid>
+    <v-row class="mx-8">
       <!-- 插画 -->
-      <v-col cols="3" class="pa-0">
+      <v-col cols="3" class="pt-2 sticky-col">
+        <v-btn 
+          color="#bdd4eb"
+          prepend-icon="mdi-arrow-left"
+          text="返回"
+          @click="$router.go(-1)"
+          class="my-2"
+        ></v-btn>
+
         <v-img
           src="@/assets/detail.png" 
           class="illustration"
         ></v-img>
       </v-col>
-
       <!-- 帖子内容 -->
       <v-col cols="9">
         <v-card
           v-if="post"
+          min-height="400px"
         >
-        <v-card-title class="headline" style="font-size: 24px;">{{ post.title }}</v-card-title>
-        <div class="d-flex align-center ml-1">
-              <v-chip
-                v-for="tagName in post.tags"
-                :key="tagName"
-                :color="getTagColor(tagName)"
-                class="ma-1"
-                outlined
-                small
-              >
-                {{ tagName }}
-              </v-chip>
+        <v-card-title class="text-h4">{{ post.title }}</v-card-title>
+        <v-card-subtitle class="ml-1 pb-2" style="font-style: italic; font-size: medium;">
+          {{ user_profile.nickname + " " + user_profile.email }}
+        </v-card-subtitle>
+        <div class="d-flex align-center ml-3 mb-2">
+          <v-chip
+            v-for="tagName in post.tags"
+            :key="tagName"
+            :color="getTagColor(tagName)"
+            prepend-icon="mdi-tag"
+            class="ma-1"
+          >
+            {{ tagName }}
+          </v-chip>
         </div>
+        <v-divider class="mx-4" thickness="3"></v-divider>
         <v-md-preview :text="post.content"></v-md-preview>
         <!-- 展示图片 -->
-        <v-card-text v-if="post.images && post.images.length > 0" style="margin: auto;">
-          <v-img
-            v-for="(image, index) in post.images"
-            :key="index"
-            :src="`${addPrefix(image)}`"
-            class="mb-3"
-            max-width="100%"
-            max-height="300px"
-          ></v-img>
-        </v-card-text>
+        <div class="my-4 mx-10">
+          <v-carousel 
+            v-if="post.images && post.images.length > 0"
+            show-arrows="hover"
+            cycle
+          >
+            <v-carousel-item
+              v-for="(image, index) in post.images"
+              :key="index"
+              :src="`${addPrefix(image)}`"
+            ></v-carousel-item>
+          </v-carousel>
+        </div>
         <v-card-subtitle class="text-right mr-2">发布时间: {{ new Date(post.created_at).toLocaleString() }}</v-card-subtitle>
         <v-card-actions class="justify-end">
           <v-btn
@@ -52,7 +62,13 @@
             color="pink"
             @click="toggleFavorite"
           ></v-btn>
-          <v-btn icon="mdi-pencil" ></v-btn>
+          <v-btn 
+            v-if="user.user_id === post.user_id || user.is_superuser" 
+            prepend-icon="mdi-pencil" 
+            text="编辑帖子"
+            :to="`/ForumCenter/editPost/${post.id}`"
+          >
+          </v-btn>
         </v-card-actions>
       </v-card>
       </v-col>
@@ -64,12 +80,11 @@
 import { ref, onMounted } from 'vue';
 import { getPost, likePost, unlikePost, addPrefix } from '@/api/post';
 import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
-const router = useRouter()
+import { user, getPublicProfile } from '@/api/user';
 const route = useRoute()
 
 const post = ref(null);
-const { post_id } = route.params;
+const user_profile = ref({nickname: '111', email: '111'});
 
 const fetchPost = async () => {
   try {
@@ -90,6 +105,16 @@ const toggleFavorite = async () => {
   post.value.like_status = !post.value.like_status;
 };
 
+const getUserProfile = async () => {
+  try {
+    const response = await getPublicProfile(post.value.user_id);
+    user_profile.value = response;
+    console.log('11', response);
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+}
+
 const tagColors = {
   分享: 'green',
   求助: 'red',
@@ -100,21 +125,35 @@ const tagColors = {
 function getTagColor(tagName) {
   return tagColors[tagName] || tagColors['讨论']; 
 }
-onMounted(() => {
-  fetchPost();
+
+onMounted(async () => {
+  await fetchPost();
+  await getUserProfile();
 });
 </script>
 
 <style scoped>
-/* 针对postDetails页面的特定样式 */
 .v-img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: cover; /* 保持图片的比例 */
+  object-fit: cover;
 }
 
 .illustration {
-  border-top-left-radius: 8px; /* 插画圆角 */
-  border-bottom-left-radius: 8px; /* 插画圆角 */
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.sticky-col {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  z-index: 1;
+}
+
+.sticky-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 </style>

@@ -2,7 +2,14 @@
   <!-- 主内容区域 -->
   <v-container>
     <v-row class="mb-4" no-gutters>
-      <v-col cols="12" md="3" class="sidebar">
+      <v-col cols="3" class="sidebar">
+        <v-btn 
+          color="#bdd4eb"
+          prepend-icon="mdi-arrow-left"
+          text="返回"
+          to="/ForumCenter/forumCenter"
+          class="mb-3"
+        ></v-btn>
         <v-card elevation="4" class="mb-4">
           <v-card-text class="pa-4">
             <div class="d-flex flex-column align-start">
@@ -18,22 +25,20 @@
         <v-img src="@/assets/like.png" />
       </v-col>
 
-      <v-col cols="12" md="9">
+      <v-col cols="9">
         <div class="d-flex justify-start mb-4 button-group">
-          <v-btn :to="'/ForumCenter/forumCenter'" class="v-tag-btn">
-            <v-icon>mdi-arrow-left</v-icon>
-            返回
-          </v-btn>
           <v-btn
             v-for="tag in tags"
             :key="tag.id"
-            :color="isSelected(tag.name) ? getTagColor(tag.name) : '#f0f0f0'"
-            class="v-tag-btn"
+            :color="isSelected(tag.name) ? getTagColor(tag.name) : 'accent'"
+            class="mx-1"
+            prepend-icon="mdi-tag-outline"
             @click="filterPostsByTag(tag.name)"
           >
             {{ tag.name }}
           </v-btn>
         </div>
+        
         <v-card
           v-for="post in filteredPosts"
           :key="post.id"
@@ -41,43 +46,29 @@
           elevation="2"
           :to="`/ForumCenter/postDetails/${post.id}`"
         >
-          <v-row>
-            <v-col cols="12" md="8">
-              <v-list-item-content>
-                <v-list-item-title class="text-h6 mb-2">{{ post.title }}</v-list-item-title>
-                <v-list-item-subtitle class="grey--text mb-2">
-                  发布于 {{ new Date(post.created_at).toLocaleString() }}
-                </v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  {{ post.likes_number }} likes
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-col>
-            <v-col cols="12" md="4" class="d-flex align-center justify-end">
-              <div class="d-flex align-center">
-                <v-chip
-                  v-for="tagName in post.tags"
-                  :key="tagName"
-                  :color="getTagColor(tagName)"
-                  class="ma-1"
-                >
-                  {{ tagName }}
-                </v-chip>
-              </div>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="8"></v-col>
-            <v-col cols="12" md="4" class="d-flex align-center justify-end">
-              <v-list-item-action>
-                <v-btn icon @click="toggleFavorite(post)">
-                  <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-col>
-          </v-row>
+          <template #append>
+            <v-chip
+              v-for="tagName in post.tags"
+              :key="tagName"
+              :color="getTagColor(tagName)"
+              prepend-icon="mdi-tag"
+              class="ma-1"
+            >
+              {{ tagName }}
+            </v-chip>
+          </template>
+          <template #title>{{ post.title }}</template>
+          <v-card-text class="text-caption">
+              发布于 {{ new Date(post.created_at).toLocaleString() }}
+          </v-card-text>
+          <v-chip
+            :text="`${post.likes_number} likes`"
+            prepend-icon="mdi-heart"
+            color="red"
+            class="my-2 ml-3"
+          ></v-chip>
         </v-card>
-        <v-toolbar color='#f0f0f0' dark class="top-bar" v-if="posts.length === 0">
+        <v-toolbar v-if="posts.length === 0" color='primary' dark class="top-bar rounded-lg" style="opacity: 0.8;">
           <v-toolbar-title>
             你还没有收藏任何帖子，快去和大家积极互动吧！
           </v-toolbar-title>
@@ -98,6 +89,7 @@
     try {
       const response = await getPosts();
       posts.value = response.posts.filter(post => post.like_status);
+      console.log(response.posts);
     } catch (error) {
       console.error('获取帖子列表失败:', error);
     }
@@ -135,7 +127,6 @@
     try {
       const response = await getTags();
       tags.value = response;
-      console.log(tags.value);
     } catch (error) {
       console.error('获取标签列表失败:', error);
     }
@@ -165,27 +156,11 @@
   
 <style scoped>
 /* 美化操作按钮 */
-  .v-btn {
-    transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
-  }
-
-  .v-tag-btn {
-    width: 40px; 
-    height: 40px; 
-    margin-right: 12px;
-  }
   .button-group {
     display: flex;
     justify-content: space-between;
   }
-
-  .v-btn {
-    width: 40px; 
-    height: 40px; 
-    margin-right: 6px;
-  }
   .sidebar {
-    margin-top: 25px;
     max-width: 240px; 
     margin-right: 30px;
   }

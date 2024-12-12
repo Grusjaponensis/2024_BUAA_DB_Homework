@@ -4,6 +4,7 @@ import {reactive} from "vue";
 
 interface User{
     login: boolean;
+    user_id: string;
     email: string;
     nickname: string;
     is_superuser: boolean;
@@ -14,6 +15,7 @@ interface User{
 
 export const user = reactive<User>({
     login: false,
+    user_id: '',
     email: '',
     nickname: '',
     is_superuser: false,
@@ -82,6 +84,7 @@ export const getProfile = async () => {
     const response = await server.get("/users/profile");
     if (response != null && response.status === 200) {
         user.login = true;
+        user.user_id = response.data.id;
         user.email = response.data.email;
         user.nickname = response.data.nickname;
         user.is_superuser = response.data.is_superuser;
@@ -97,7 +100,19 @@ export const getProfile = async () => {
     }
     return response;
 }
-  
+
+export const getPublicProfile = async (user_id: string) => { 
+  console.log(`/users/profile/${user_id}`)
+  try {
+    const response = await server.get(`/users/profile/${user_id}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('获取用户资料失败', error);
+    throw error;
+  }
+}
+
 // 更新用户个人资料
 export const updateProfile = async (profileData: any) => {
     try {

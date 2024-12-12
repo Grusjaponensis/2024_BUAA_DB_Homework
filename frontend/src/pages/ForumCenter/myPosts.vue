@@ -2,102 +2,77 @@
   <!-- 主内容区域 -->
   <v-container>
     <v-row class="mb-4" no-gutters>
-      <v-col cols="12" md="3" class="sidebar">
+      <v-col cols="3" class="sidebar">
+        <v-btn 
+          color="#bdd4eb"
+          prepend-icon="mdi-arrow-left"
+          text="返回"
+          to="/ForumCenter/forumCenter"
+          class="mb-3"
+        ></v-btn>
         <!-- 分析数据栏 -->
-          <v-card elevation="4" class="mb-4">
-            <v-card-text class="pa-4">
-              <div class="d-flex flex-column align-start">
-                <span class="body-2 mb-2">Hi！ 继续积极互动吧！</span>
-                <div class="d-flex align-start">
-                  <span class="body-2 mb-2">发帖总数： </span>
-                  <span class="font-weight-bold ml-auto">{{ posts.length }}</span>
-                </div>
-
-                <div class="d-flex align-start">
-                  <span class="body-2 mb-2">总获赞数： </span>
-                  <span class="font-weight-bold ml-auto">{{ posts.reduce((acc, post) => acc + post.likes_number, 0) }}</span>
-                </div>
+        <v-card elevation="4" class="mb-4">
+          <v-card-text class="pa-4">
+            <div class="d-flex flex-column align-start">
+              <span class="body-2 mb-2">Hi！ 继续积极互动吧！</span>
+              <div class="d-flex align-start">
+                <span class="body-2 mb-2">发帖总数： </span>
+                <span class="font-weight-bold ml-auto">{{ posts.length }}</span>
               </div>
-            </v-card-text>
-          </v-card>
+
+              <div class="d-flex align-start">
+                <span class="body-2 mb-2">总获赞数： </span>
+                <span class="font-weight-bold ml-auto">{{ posts.reduce((acc, post) => acc + post.likes_number, 0) }}</span>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
         <v-img src="@/assets/mypost.png"/>
       </v-col>
 
-      <v-col cols="12" md="9">
+      <v-col cols="9">
         <div class="d-flex justify-start mb-4 button-group">
-          <v-btn :to="'/ForumCenter/forumCenter'" class="v-tag-btn">
-            <v-icon>mdi-arrow-left</v-icon>
-            返回
-          </v-btn>
           <v-btn
             v-for="tag in tags"
             :key="tag.id"
-            :color="isSelected(tag.name) ? getTagColor(tag.name) : '#f0f0f0'"
-            class="v-tag-btn"
+            :color="isSelected(tag.name) ? getTagColor(tag.name) : 'accent'"
+            class="mx-1"
+            prepend-icon="mdi-tag-outline"
             @click="filterPostsByTag(tag.name)"
           >
             {{ tag.name }}
           </v-btn>
         </div>
-        <v-list>
-          <v-list-item
-              v-for="post in filteredPosts"
-              :key="post.id"
-              class="post-card my-4"
+
+        <v-card
+          v-for="post in filteredPosts"
+          :key="post.id"
+          class="pa-1 mb-4 rounded-lg"
+          elevation="2"
+          :to="`/ForumCenter/postDetails/${post.id}`"
+        >
+          <template #append>
+            <v-chip
+              v-for="tagName in post.tags"
+              :key="tagName"
+              :color="getTagColor(tagName)"
+              prepend-icon="mdi-tag"
+              class="ma-1"
             >
-            <v-card
-              class="pa-4 post-card"
-              color="#fff"
-              elevation="4"
-              hover
-            >   
-              <v-row>
-                <v-col cols="12" md="8">
-                  <v-list-item-content>
-                    <v-list-item-title class="text-h6 mb-2">{{ post.title }}</v-list-item-title>
-                    <!-- <v-list-item-subtitle style="margin-top: 10px;margin-bottom: 10px;">{{ post.content }}</v-list-item-subtitle> -->
-                    <v-list-item-subtitle class="grey--text mb-1">
-                      发布于 {{ new Date(post.created_at).toLocaleString() }}
-                    </v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                      {{ post.likes_number }} likes
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-col>
-                <v-col cols="12" md="4" class="d-flex align-center justify-end">
-                  <div class="d-flex align-center">
-                    <v-chip
-                      v-for="tagName in post.tags"
-                      :key="tagName"
-                      :color="getTagColor(tagName)"
-                      class="ma-1"
-                      outlined
-                      small
-                    >
-                      {{ tagName }}
-                    </v-chip>
-                  </div>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="8"></v-col>
-                <v-col cols="12" md="4" class="d-flex align-center justify-end">
-                  <v-list-item-action>
-                    <v-btn icon @click="toggleFavorite(post)">
-                      <v-icon>{{ post.like_status ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                    </v-btn>
-                    <v-btn icon @click="removePost(post)">
-                        <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                    <v-btn icon @click="editPost(post.id)">
-                        <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-list-item>
-        </v-list>
+              {{ tagName }}
+            </v-chip>
+          </template>
+          <template #title>{{ post.title }}</template>
+          <v-card-text class="text-caption">
+              发布于 {{ new Date(post.created_at).toLocaleString() }}
+          </v-card-text>
+          <v-chip
+            :text="`${post.likes_number} likes`"
+            prepend-icon="mdi-heart"
+            color="red"
+            class="my-2 ml-3"
+          ></v-chip>
+        </v-card>
         <v-toolbar color='#f0f0f0' dark class="top-bar" v-if="posts.length === 0">
           <v-toolbar-title>
             你还没有发布任何帖子，快来发布你的第一篇帖子吧！
@@ -200,33 +175,18 @@
 </script>
   
 <style scoped>
-  /* 美化操作按钮 */
-  .v-btn {
-    transition: background-color 0.3s ease-in-out; /* 背景色渐变 */
-  }
-  .v-tag-btn {
-    width: 40px; 
-    height: 40px; 
-    margin-right: 12px;
-  }
   .button-group {
     display: flex;
     justify-content: space-between;
   }
 
-  .v-btn {
-    width: 40px; 
-    height: 40px; 
-    margin-right: 6px;
-  }
   .sidebar {
-    margin-top: 25px;
     max-width: 240px; 
     margin-right: 30px;
   }
   .top-bar {
-    border-radius: 8px; /* 设置圆角 */
-    margin-bottom:10px; /* 设置底部间距 */
-    padding: 1px 1px; /* 设置内边距 */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 1px 1px;
   }
 </style>

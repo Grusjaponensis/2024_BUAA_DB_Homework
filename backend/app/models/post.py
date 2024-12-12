@@ -100,6 +100,7 @@ class PostPublic(BaseModel):
     - images: A list of image URLs associated with the post (optional).
     """
     id: uuid.UUID
+    user_id: uuid.UUID
     title: str
     content: str
     created_at: datetime.datetime
