@@ -1,5 +1,5 @@
 <template>
-<v-container>
+  <v-container>
       <!-- 顶部欢迎横栏 -->
       <v-toolbar  :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-3' :'#fcedbe'" dark class="top-bar">
         <v-toolbar-title v-if="user.is_volunteer || user.is_superuser">
@@ -34,19 +34,19 @@
               <!-- 按钮组 -->
               <div class="d-flex flex-column align-center">
                 <v-btn
-                  v-if="!user.is_volunteer && !user.is_superuser"
+                  v-if="!user.is_volunteer && !user.is_superuser && user.login"
                   fab
                   dark
                   rounded
                    :color="$vuetify.theme.name === 'dark' ? 'orange-lighten-4' :'#f7cf83'"
-                  @click="applyToBeVolunteer"
+                  @click="showVolunteerDialog = true"
                 >
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请成为志愿者</span>
+                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser && user.login">申请成为志愿者</span>
                 
                 <v-btn
-                  v-if="!user.is_volunteer && !user.is_superuser"
+                  v-if="!user.is_volunteer && !user.is_superuser && user.login"
                   fab
                   dark
                   rounded
@@ -55,7 +55,7 @@
                 >
                   <v-icon>mdi-cat</v-icon>
                 </v-btn>
-                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser">申请进度查询</span>
+                <span class="caption" v-if="!user.is_volunteer && !user.is_superuser && user.login">申请进度查询</span>
 
                 <v-btn
                   v-if="user.is_volunteer"
@@ -146,6 +146,23 @@
         </v-card>
     </v-dialog>
   </v-container>
+  <v-dialog v-model="showVolunteerDialog" width = "750px">
+    <v-toolbar title = "申请成为志愿者">
+      <v-btn icon="mdi-close" @click="showVolunteerDialog = false"></v-btn>
+    </v-toolbar>
+    <v-card>
+        <v-card-text>
+          <v-textarea
+            v-model="applicant.reason"
+            label="申请理由"
+            required
+          ></v-textarea>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-center">
+          <v-btn color="blue-darken-1" class="mb-2" rounded = "lg" size = "large" variant = "elevated" @click="submitApplicationForm">提交申请</v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog>
   <v-dialog v-model="showAddActionDialog" 
     max-width="80vw"
     width="750px">
@@ -234,17 +251,41 @@ import { getProfile } from '@/api/user';
 import snackbar from '@/api/snackbar';
 import { user } from '@/api/user';
 import { useRouter } from 'vue-router';
-import { getMyRegistrations } from '@/api/volunteer';
+import { getMyRegistrations, submitApplication } from '@/api/volunteer';
 
 const router = useRouter();
 const showDeleteDialog = ref(false);
 const showAddActionDialog = ref(false);
+const showVolunteerDialog = ref(false);
+const applicant = ref({
+  reason: '',
+  status: 'pending'
+});
 
 const activities = ref([]);
 const deleteId = ref(0);
 const applications = ref([]);
 const button_text = {};
 const loaded = ref(false);
+
+const submitApplicationForm = async () => {
+  try {
+    if (applicant.value.reason === '' ) {
+      snackbar.error('请填写申请理由');
+      return;
+    }
+    if (applicant.value.reason.length > 341) {
+      snackbar.error('申请理由过长');
+      return;
+    }
+    await submitApplication(applicant.value);
+    console.log('申请提交成功');
+    snackbar.success('申请提交成功');
+    showVolunteerDialog.value = false;
+  } catch (error) {
+    console.error('申请提交失败:', error);
+  }
+};
 
 onMounted(async() => {
   await fetchProfile();
