@@ -46,3 +46,15 @@ export const updateCatByAdmin = async (id: String, cat: any) => {
     console.log(error);
   }
 }
+
+export const updateCatLocation = async (id: String, longitude: number, latitude: number) => {
+  try {
+    await server.patch(
+      `/cats/${id}/location`, 
+      { longitude, latitude },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.log(error)
+  }
+}

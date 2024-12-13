@@ -32,6 +32,9 @@
             style = "width: 100%; height: 500px;"
             ></MapContainer>
           </v-container>
+          <v-text-field>
+            经纬度信息: {{ cat.latest_longitude }}, {{ cat.latest_latitude }}
+          </v-text-field>
           <v-card-text class="text-body-1">
             描述： {{ cat.description }}
           </v-card-text>
