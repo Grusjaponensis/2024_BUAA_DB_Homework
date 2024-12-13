@@ -172,24 +172,24 @@
   <v-btn
       color="#bbd5eb"
       class="elevation-4"
+      prepend-icon="mdi-plus"
+      text="添加"
       style="position: fixed; bottom: 80px; right: 24px;"
-      size="large"
       @click = "showAddCatDialog = true"
+      size="large"
       v-if = "user.login && (user.is_superuser || user.is_volunteer)"
-    >
-    <v-icon>mdi-plus</v-icon>
-    </v-btn>
+    ></v-btn>
 
     <v-btn
       color="#bbd5eb"
       class="elevation-4"
       style="position: fixed; bottom: 24px; right: 24px;"
-      size="large"
+      prepend-icon="mdi-handshake"
+      text="捐赠"
       @click = "showDonateDialog = true"
+      size="large"
       v-if = "user.login"
-    >
-    <v-icon>mdi-handshake</v-icon>
-    </v-btn>
+    ></v-btn>
     <v-dialog 
     v-model="showDonateDialog" 
     max-width="70vw"
@@ -203,30 +203,38 @@
         <v-form ref="form" @submit.prevent="submitDonation">
           <v-select
             v-model="donation.amount"
-            :items="[50, 100, 200, 500, 1000]"
+            :items="[1, 5, 10, 50, 100, '其他']"
             label="选择捐赠金额 (元)"
             required
           ></v-select>
-          <v-checkbox
-            v-model="donation.isAnonymous"
-            label="匿名捐赠"
-          ></v-checkbox>
+          <v-text-field
+            v-if="donation.amount === '其他'"
+            label="其他金额 (元)"
+            type="number"
+            v-model="donation.otherAmount"
+            :rules="[donationRules.amount]"
+          ></v-text-field>
           <v-textarea
             v-model="donation.message"
             label="留言 (可选)"
             counter="100"
-            class="mt-3"
           ></v-textarea>
-          <v-btn
-            color="primary"
-            type="submit"
-            :disabled="!donationFormIsValid"
-            rounded
-            class="mt-4"
-            block
-          >
-            提交捐赠
-          </v-btn>
+          <v-checkbox
+            v-model="donation.isAnonymous"
+            label="匿名捐赠"
+          ></v-checkbox>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="primary"
+              type="submit"
+              :disabled="!donationFormIsValid"
+              variant="text"
+              class="rounded-lg"
+            >
+              提交捐赠
+            </v-btn>
+        </v-card-actions>
         </v-form>
       </v-card-text>
     </v-card>
@@ -489,6 +497,7 @@ const showAddCatDialog = ref(false);
 const showDonateDialog = ref(false);
 const donation = ref({
   amount: null,
+  otherAmount: null,
   isAnonymous: false,
   message: '',
 });
@@ -497,6 +506,12 @@ const rules = {
     return value > 0 ? true : '年龄必须为正整数';
   }
 };
+
+const donationRules = {
+  amount: value => {
+    return value > 0 ? true : '捐赠金额必须为正数';
+  }
+}
 
 const formIsValid = computed(() => {
   return (
@@ -584,7 +599,7 @@ const submitDonation = async () => {
     }
     
     const data = {
-      amount: donation.value.amount,
+      amount: donation.value.amount === '其他' ?  donation.value.otherAmount : donation.value.amount,
       is_anonymous: donation.value.isAnonymous ? true : false,
       message: donation.value.message || '',
     }

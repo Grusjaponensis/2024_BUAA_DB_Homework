@@ -1,7 +1,7 @@
 import uuid, datetime
 from enum import Enum
 
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import Field, SQLModel, Relationship, DECIMAL
 from pydantic import BaseModel
 
 from app.models.user import User
@@ -89,8 +89,8 @@ class CatLocation(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     cat_id: uuid.UUID = Field(foreign_key="cat.id", index=True, ondelete="CASCADE")
     user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
-    longitude: float = Field(ge=-180, le=180)
-    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(DECIMAL(9, 6), ge=-180, le=180)
+    latitude: float = Field(DECIMAL(9, 6), ge=-90, le=90)
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(tz=UTC_8))
     
     # relationships
