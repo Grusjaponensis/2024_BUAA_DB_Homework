@@ -9,6 +9,7 @@
           text="返回"
           to="/ForumCenter/forumCenter"
           class="mb-3"
+          style="position: fixed; bottom: 24px; left: 24px;"
         ></v-btn>
         <!-- 分析数据栏 -->
         <v-card elevation="4" class="mb-4">
