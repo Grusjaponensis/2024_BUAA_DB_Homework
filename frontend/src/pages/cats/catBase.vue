@@ -29,7 +29,7 @@
   </div>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
-        <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="550px">
+        <v-card class="d-flex flex-column text-center pa-4" rounded="lg" elevation="4" max-width="550px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
@@ -330,14 +330,17 @@
       <MapChange
       :center="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
       :zoom = 16.5
-      :markerposition="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
+      :markerPosition="[positionEditCat.latest_longitude, positionEditCat.latest_latitude]"
       >
       </MapChange>
+      <v-text-field>
+        当前位置： {{ location.longitude }} , {{ location.latitude }}
+      </v-text-field>
       <v-btn
         color="blue-lighten-2"
-        @click="showPositionEdit = false"
+        @click="updateCatPosition(positionEditCat, location.longitude , location.latitude)"
         rounded="lg"
-        class="my-4"
+        class="ma-4"
       >
         确定
       </v-btn>
@@ -351,7 +354,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getProfile } from '@/api/user';
 import { addPrefix } from '@/api/post';
-import { getCats, createCat,deleteCat,updateCatByAdmin } from '@/api/cat';
+import { getCats, createCat,deleteCat,updateCatByAdmin, updateCatLocation } from '@/api/cat';
 import { createDonation } from '@/api/donate';
 import { user } from '@/api/user';
 import { location } from '@/api/user';
@@ -401,6 +404,18 @@ onMounted(async() => {
     console.log('获取猫咪列表失败:', error);
   }
 });
+
+const updateCatPosition = async (cat, longitude, latitude) => {
+  try {
+    const response = await updateCatLocation(cat.id, longitude, latitude);
+    console.log('更新猫咪位置成功', response);
+    showPositionEdit.value = false;
+    snackbar.success('更新猫咪位置成功');
+  } catch (error) {
+    console.error('更新猫咪位置失败:', error);
+    snackbar.error('更新猫咪位置失败');
+  }
+}
 
 const toggleSection = (id, section, value) => {
   Object.keys(showStates.value).forEach((key) => {

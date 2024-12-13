@@ -4,17 +4,18 @@
   
   <script setup>
   import { onMounted, onUnmounted } from "vue";
+  import { location } from '@/api/user'
   import AMapLoader from "@amap/amap-jsapi-loader";
   
   const props = defineProps({
       center: {
-          type: Array, default: () => [116.347209, 39.981645]
+          type: Array
       },
       zoom: {
-          type: Number , default: 16.3
+          type: Number
       },
       markerPosition: {
-          type: Array, default: () => [116.347209, 39.981645]
+          type: Array
       } 
   })
   
@@ -40,14 +41,22 @@
           center: props.center, // 初始化地图中心点位置
         });
         if (props.markerPosition && props.markerPosition.length === 2) {
-            
             marker = new AMap.Marker({
                 position: [props.markerPosition[0], props.markerPosition[1]],
-                title: 'fuck',
             })
-            // marker.setPosition([props.markerPosition[0], props.markerPosition[1]])
             map.add(marker)
         }
+        location.longitude = props.markerPosition[0]
+        location.latitude = props.markerPosition[1]
+        console.log("当前坐标" , location)
+        map.on("click", (e) => {
+            const {lng , lat} = e.lnglat; 
+            console.log("点击的经纬度坐标" , lng, lat)
+            location.longitude = lng
+            location.latitude = lat
+            marker.setPosition([lng, lat])
+            console.log("当前坐标" , location)
+        })
         map.addControl(new AMap.Scale())
       })
       .catch((e) => {
