@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/export", tags=['superuser'], dependencies=[Depends(get_current_superuser)])
+@router.get("/export")
 async def export_donations(
     session: SessionDep,
     start_date: str = Query(None, description="Start date in format YYYY-MM-DD"),

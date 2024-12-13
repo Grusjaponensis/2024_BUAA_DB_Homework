@@ -65,6 +65,7 @@
         <div class="button-group">
           <v-btn @click="loadDonationChart" color="#d9ecfc" class="action-btn">查询</v-btn>
           <v-btn @click="exportToPDF" color="secondary" class="action-btn">导出为 PDF</v-btn>
+          <v-btn @click="exportToExcel" color="green-lighten-1" class="action-btn">导出为 Excel</v-btn>
         </div>
       </div>
       <!-- 图表展示 -->
@@ -86,11 +87,38 @@
             ></v-carousel-item>
           </v-carousel>
           <div style=" padding: 10px;">
-            <v-card-title class="headline">{{ cat.name }}</v-card-title>
-            <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
-            <v-card-subtitle >性别: {{ cat.is_male ? '公猫' : '母猫' }}</v-card-subtitle>
-            <v-card-subtitle >描述: {{ cat.description }}</v-card-subtitle>
-            <v-card-subtitle >健康状况: {{ cat.health_condition  == 1 ? "健康" : cat.health_condition == 2 ? "生病中" : cat.health_condition == 3 ? "VACCINATED" : "去喵星"}}</v-card-subtitle>
+            <v-card-text>
+              <v-col class="d-flex flex-column align-center">
+                <v-row cols="12" no-gutters class="mb-2 justify-center">
+                  <div class="field">
+                    <v-icon class="mr-2" color="deep-purple-darken-1">mdi-calendar-check</v-icon>
+                    <span class="text-body-1">年龄: {{ cat.age }}</span>
+                  </div>
+                </v-row>
+                <v-row cols="12" no-gutters class="mb-2 justify-center">
+                  <div class="field">
+                    <v-icon class="mr-2" color="red-darken-1">mdi-gender-male-female</v-icon>
+                    <span class="text-body-1">性别: {{ cat.is_male ? '男' : '女' }}</span>
+                  </div>
+                </v-row>
+                <v-row cols="12" no-gutters class="mb-2 justify-center">
+                  <div class="field">
+                    <v-icon class="mr-2"  color="pink-darken-1">mdi-heart-pulse</v-icon>
+                    <span class="text-body-1">健康状况: 
+                      {{ cat.health_condition == 1 ? "健康" 
+                      : cat.health_condition == 2 ? "生病" 
+                      : cat.health_condition == 3 ? "残疾" 
+                      : "去喵星"}}</span>
+                  </div>
+                </v-row>
+                <v-row no-gutters class="justify-center">
+                  <div class="field">
+                    <v-icon class="mr-2"  color="purple-darken-1">mdi-pencil</v-icon>
+                    <span class="text-body-1">描述: {{ cat.description }}</span>
+                  </div>
+                </v-row>
+              </v-col>
+            </v-card-text>
             <v-expand-transition>
               <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
                 <v-select
@@ -841,7 +869,7 @@ const createDonationChart = (ctx, data) => {
 
 const loadDonationChart = async () => {
   if (new Date(startMonth.value) > new Date(endMonth.value)) {
-    alert('起始月份不能晚于结束月份！');
+    snackbar.error('起始月份不能晚于结束月份！');
     return;
   }
 
@@ -854,6 +882,7 @@ const loadDonationChart = async () => {
   }
   chartInstance = createDonationChart(ctx, data);
 };
+
 const exportToPDF = async () => {
   const canvas = document.getElementById('donationChart');
   const canvasImage = await html2canvas(canvas);
@@ -863,6 +892,20 @@ const exportToPDF = async () => {
   pdf.addImage(imgData, 'PNG', 10, 10, 280, 150);
   pdf.save(`donation-statistics-${startMonth.value}-to-${endMonth.value}.pdf`);
 };
+
+import { exportDonations } from '@/api/donate';
+import { saveAs } from 'file-saver';
+
+const exportToExcel = async () => {
+  const start_date = new Date(startMonth.value).toISOString().split('T')[0];
+  const end_date = new Date(endMonth.value).toISOString().split('T')[0];
+  const excelResponse = await exportDonations({start_date: start_date, end_date: end_date});
+  console.log('FUCKKKKKKKKKKKKKKKKKK', excelResponse.headers);
+  const fileName = excelResponse.headers['content-disposition'].split('filename=')[1];
+  const blob = new Blob([excelResponse.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  saveAs(blob, fileName);
+  snackbar.success('导出成功！');
+}
 
 </script>
 

@@ -11,3 +11,10 @@ export const fetchDonationTotal = async (data: any) => {
 export const fetchDonations = async () => { 
     return await server.get('/donations/');
 };
+
+export const exportDonations = async (data: any) => {
+  return await server.get('/donations/export', {
+    params: data,
+    responseType: 'blob'
+  });
+}
