@@ -78,8 +78,12 @@ async def get_donations(
     """
     Get all donations.
     """
-    donations = session.exec(select(Donation).offset(offset).limit(limit)).all()
-    
+    donations = session.exec(
+        select(Donation)
+            .offset(offset).limit(limit)
+            .order_by(Donation.donated_at.desc())
+    ).all()
+
     response = [DonationPublic.model_validate(donation.model_dump()) for donation in donations]
     return response
     

@@ -18,6 +18,7 @@
               style="min-height: 400px;"
               v-model="post.content"
               left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | code | link table"
+              right-toolbar="preview sync-scroll"
             />
 
             <v-col>
