@@ -10,7 +10,7 @@
     
     <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
     <!-- 左侧说明框 -->
-    <div style="flex: 1; min-width: 200px; max-width: 300px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <div style="flex: 1; min-width: 200px; max-width: 300px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
       <h3 style="margin-bottom: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;过去一年，我们收到了很多爱心人士的捐赠，感谢大家对猫猫的帮助！</h3>
       <h4>最近三笔捐款</h4>
       <ul style="list-style: none; padding: 0;">
@@ -23,9 +23,31 @@
       </ul>
     </div>
     <!-- 图表 -->
-    <div style="flex: 2; min-width: 400px; max-width: 800px;">
+    <!-- <div style="flex: 2; min-width: 400px; max-width: 800px;">
       <canvas id="donationChart" style="width: 100%; height: 400px;"></canvas>
+    </div> -->
+    <!-- 时间选择器 -->
+    <div class="donation-chart-container">
+    <!-- 时间范围选择 -->
+    <div class="date-selector">
+      <div class="input-group">
+        <label for="startMonth">起始月份：</label>
+        <input type="month" id="startMonth" v-model="startMonth" class="month-input" />
+      </div>
+      <div class="input-group">
+        <label for="endMonth">结束月份：</label>
+        <input type="month" id="endMonth" v-model="endMonth" class="month-input" />
+      </div>
+      <div class="button-group">
+        <v-btn @click="loadDonationChart" color="#d9ecfc" class="action-btn">查询</v-btn>
+        <v-btn @click="exportToPDF" color="secondary" class="action-btn">导出为 PDF</v-btn>
+      </div>
     </div>
+    <!-- 图表展示 -->
+    <div class="chart-wrapper">
+      <canvas id="donationChart"></canvas>
+    </div>
+  </div>
   </div>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
@@ -710,46 +732,52 @@ const loadRecentDonations = async () => {
 
 
 
-const fetchMonthlyDonations = async () => {
-  const today = new Date();
+const fetchMonthlyDonations = async (startMonth, endMonth) => {
+  const start = new Date(startMonth);
+  const end = new Date(endMonth);
   const monthlyData = [];
-  for (let i = 11; i >= 0; i--) {
-    const start = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const end = new Date(today.getFullYear(), today.getMonth() - i + 1, 0);
 
-    const startDate = start.toISOString().split('T')[0];
-    const endDate = end.toISOString().split('T')[0];
+  while (start <= end) {
+    const startOfMonth = new Date(start.getFullYear(), start.getMonth(), 1);
+    const endOfMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0);
 
-    const date = {
-      start_date: startDate,
-      end_date: endDate,
-    }
+    const startDate = startOfMonth.toISOString().split('T')[0];
+    const endDate = endOfMonth.toISOString().split('T')[0];
+
     try {
-      const total = await fetchDonationTotal(date).then(res => res.data.total_amount); 
+      const total = await fetchDonationTotal({ start_date: startDate, end_date: endDate }).then(res => res.data.total_amount);
       console.log(`获取${startDate}至${endDate}的捐赠成功:`, total);
       monthlyData.push({
-        month: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`,
+        month: `${startOfMonth.getFullYear()}-${String(startOfMonth.getMonth() + 1).padStart(2, '0')}`,
         total,
       });
     } catch (error) {
       console.error(`获取${startDate}至${endDate}的捐赠失败:`, error);
       monthlyData.push({
-        month: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`,
+        month: `${startOfMonth.getFullYear()}-${String(startOfMonth.getMonth() + 1).padStart(2, '0')}`,
         total: 0,
       });
     }
+
+    start.setMonth(start.getMonth() + 1);
   }
 
   return monthlyData;
 };
 
 import { Chart } from 'chart.js/auto';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+const startMonth = ref(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().substring(0, 7));
+const endMonth = ref(new Date().toISOString().substring(0, 7));
+let chartInstance = null;
 
 const createDonationChart = (ctx, data) => {
   const labels = data.map(item => item.month);
   const totals = data.map(item => item.total);
 
-  new Chart(ctx, {
+  return new Chart(ctx, {
     type: 'bar', // 或 'line'
     data: {
       labels,
@@ -780,11 +808,29 @@ const createDonationChart = (ctx, data) => {
 };
 
 const loadDonationChart = async () => {
-  const ctx = document.getElementById('donationChart').getContext('2d');
-  const data = await fetchMonthlyDonations();
-  createDonationChart(ctx, data);
-};
+  if (new Date(startMonth.value) > new Date(endMonth.value)) {
+    alert('起始月份不能晚于结束月份！');
+    return;
+  }
 
+  const ctx = document.getElementById('donationChart').getContext('2d');
+  const data = await fetchMonthlyDonations(startMonth.value, endMonth.value);
+
+  if (chartInstance) {
+    chartInstance.destroy(); // 销毁旧图表
+    chartInstance = null;
+  }
+  chartInstance = createDonationChart(ctx, data);
+};
+const exportToPDF = async () => {
+  const canvas = document.getElementById('donationChart');
+  const canvasImage = await html2canvas(canvas);
+
+  const imgData = canvasImage.toDataURL('image/png');
+  const pdf = new jsPDF('landscape');
+  pdf.addImage(imgData, 'PNG', 10, 10, 280, 150);
+  pdf.save(`donation-statistics-${startMonth.value}-to-${endMonth.value}.pdf`);
+};
 
 </script>
 
@@ -795,8 +841,54 @@ const loadDonationChart = async () => {
   padding: 1px 1px; /* 设置内边距 */
 }
 .cat-base {
-  background-color: #f0f0f0;
   height: 100%;
+}
+.donation-chart-container {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
+/* 时间选择区域样式 */
+.date-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-input {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  max-width: 200px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+/* 图表区域样式 */
+.chart-wrapper {
+  margin-top: 20px;
+  background-color: #effaf5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
