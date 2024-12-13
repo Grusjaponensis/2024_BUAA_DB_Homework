@@ -332,7 +332,7 @@
         color="blue-lighten-2"
         @click="updateCatPosition(positionEditCat, location.longitude , location.latitude)"
         rounded="lg"
-        class="my-4"
+        class="ma-4"
       >
         确定
       </v-btn>
