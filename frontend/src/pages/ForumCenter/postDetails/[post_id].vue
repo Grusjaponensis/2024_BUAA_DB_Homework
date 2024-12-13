@@ -9,6 +9,7 @@
           text="返回"
           @click="$router.go(-1)"
           class="my-2"
+          style="position: fixed; bottom: 24px; left: 24px;"
         ></v-btn>
 
         <v-img

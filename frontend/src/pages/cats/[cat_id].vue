@@ -4,6 +4,15 @@
     
     <v-row text-align="center">
       <!-- 插画 -->
+      <v-btn 
+        color="#bdd4eb" 
+        @click="$router.push('/cats/catBase')" 
+        prepend-icon="mdi-arrow-left"
+        text="返回"
+        class="mb-3"
+        style="position: fixed; bottom: 24px; left: 36px;;"
+      >
+      </v-btn>
       <v-col cols="12" md="4" class="pa-0">
         <v-img
           src="@/assets/cat-detail.png"
@@ -16,7 +25,6 @@
 
       <!-- 内容 -->
       <v-col cols="12" md="8" v-if="loaded">
-        <v-btn color="#bdd4eb" text @click="$router.push('/cats/catBase')" class="mb-3"><v-icon left>mdi-arrow-left</v-icon> 返回 </v-btn>
         <v-card class="pa-3 rounded-lg elevation-4">
         <v-row>
           <v-card-text v-if="cat.image_urls && cat.image_urls.length > 0">

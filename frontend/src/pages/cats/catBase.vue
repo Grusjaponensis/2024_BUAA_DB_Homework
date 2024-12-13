@@ -1,54 +1,78 @@
 <template>
-  <div class="cat-base">
-  <v-container>
+  <v-container fluid max-width="90vw">
     <!-- 顶部欢迎横栏 -->
-    <v-toolbar color='#d4eae0' dark class="top-bar">
+    <v-toolbar
+      color='#d4eae0' 
+      class="top-bar"
+    >
       <v-toolbar-title>
         这里是猫猫基地，猫猫欢迎你！
       </v-toolbar-title>
     </v-toolbar>
     
     <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-    <!-- 左侧说明框 -->
-    <div style="flex: 1; min-width: 200px; max-width: 300px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-      <h3 style="margin-bottom: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;过去一年，我们收到了很多爱心人士的捐赠，感谢大家对猫猫的帮助！</h3>
-      <h4>最近三笔捐款</h4>
-      <ul style="list-style: none; padding: 0;">
-        <li v-for="(donation, index) in recentDonations" :key="index" style="margin-bottom: 10px;">
-          <div><strong>捐赠者:</strong>{{donation.is_anonymous? '匿名捐赠' : usernames[donation.user_id] }}</div>
-          <div><strong>金额:</strong> ¥{{ donation.amount }}</div>
-          <div><strong>时间:</strong> {{ donation.donated_at }}</div>
-          <div v-if="donation.message"><strong>留言:</strong> {{ donation.message }}</div>
-        </li>
-      </ul>
-    </div>
-    <!-- 图表 -->
-    <!-- <div style="flex: 2; min-width: 400px; max-width: 800px;">
-      <canvas id="donationChart" style="width: 100%; height: 400px;"></canvas>
-    </div> -->
-    <!-- 时间选择器 -->
-    <div class="donation-chart-container">
-    <!-- 时间范围选择 -->
-    <div class="date-selector">
-      <div class="input-group">
-        <label for="startMonth">起始月份：</label>
-        <input type="month" id="startMonth" v-model="startMonth" class="month-input" />
+      <v-card variant="text" class="mr-8">
+        <v-card-title class="mt-2">
+          <v-icon left>mdi-gift-outline</v-icon>
+          最近捐赠一览
+        </v-card-title>
+        <v-carousel
+          hide-delimiters="true"
+          show-arrows="hover"
+          cycle
+          style="width: 300px; height: 300px; margin: 0 auto;"
+        >
+          <v-spacer></v-spacer>
+          <v-carousel-item
+            v-for="(donation, index) in recentDonations"
+            :key="index"
+          >
+            <v-card
+              variant="text"
+              :subtitle="`来自${donation.is_anonymous ? '匿名用户' : usernames[donation.user_id]}的捐赠`"
+              class="d-flex flex-column justify-center align-center pa-4"
+              style="height: 100%;"
+            >
+              <v-card-text style="font-size: large;">
+                <v-icon size="x-small">mdi-currency-jpy</v-icon>
+                {{ donation.amount }}
+              </v-card-text>
+              <v-card-text style="font-size: small;">
+                <v-icon class="mr-1">mdi-calendar-range</v-icon>
+                {{ `${new Date(donation.donated_at).toLocaleString()}` }}
+              </v-card-text>
+              <v-card-text style="font-size: small; font-style: italic; color: gray;">
+                {{ `${donation.message ? donation.message : '没有留下任何信息哦'}` }}
+              </v-card-text>
+            </v-card>
+          </v-carousel-item>
+        </v-carousel>
+      </v-card>
+
+      <!-- 图表 -->
+      <!-- 时间选择器 -->
+      <div class="donation-chart-container">
+      <!-- 时间范围选择 -->
+      <div class="date-selector">
+        <div class="input-group">
+          <label for="startMonth">起始月份：</label>
+          <input type="month" id="startMonth" v-model="startMonth" class="month-input" />
+        </div>
+        <div class="input-group">
+          <label for="endMonth">结束月份：</label>
+          <input type="month" id="endMonth" v-model="endMonth" class="month-input" />
+        </div>
+        <div class="button-group">
+          <v-btn @click="loadDonationChart" color="#d9ecfc" class="action-btn">查询</v-btn>
+          <v-btn @click="exportToPDF" color="secondary" class="action-btn">导出为 PDF</v-btn>
+        </div>
       </div>
-      <div class="input-group">
-        <label for="endMonth">结束月份：</label>
-        <input type="month" id="endMonth" v-model="endMonth" class="month-input" />
-      </div>
-      <div class="button-group">
-        <v-btn @click="loadDonationChart" color="#d9ecfc" class="action-btn">查询</v-btn>
-        <v-btn @click="exportToPDF" color="secondary" class="action-btn">导出为 PDF</v-btn>
+      <!-- 图表展示 -->
+      <div class="chart-wrapper">
+        <canvas id="donationChart"></canvas>
       </div>
     </div>
-    <!-- 图表展示 -->
-    <div class="chart-wrapper">
-      <canvas id="donationChart"></canvas>
     </div>
-  </div>
-  </div>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center pa-4" rounded="lg" elevation="4" max-width="550px">
@@ -56,123 +80,117 @@
             <v-carousel-item 
               v-for="(image, index) in cat.image_urls"
               :key = index
+              :src="`${addPrefix(image)}`"
               cover
-              >
-              <v-img
-                max-width="100%"
-                max-height="100%"
-                :src = "`${addPrefix(image)}`"
-                contain
-              ></v-img>
-            </v-carousel-item>
+              rounded="lg"
+            ></v-carousel-item>
           </v-carousel>
           <div style=" padding: 10px;">
-          <v-card-title class="headline">{{ cat.name }}</v-card-title>
-          <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
-          <v-card-subtitle >性别: {{ cat.is_male ? '男' : '女' }}</v-card-subtitle>
-          <v-card-subtitle >描述: {{ cat.description }}</v-card-subtitle>
-          <v-card-subtitle >健康状况: {{ cat.health_condition  == 1 ? "HEALTHY" : cat.health_condition == 2 ? "SICK" : cat.health_condition == 3 ? "VACCINATED" : "DEAD"}}</v-card-subtitle>
-          <!-- <v-card-subtitle>收到投喂: {{ cat.cans }}</v-card-subtitle> -->
-          <v-expand-transition>
-            <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
-              <v-select
-                v-model="health_condition"
-                :items="['HEALTHY', 'SICK', 'VACCINATED', 'DEAD']"
-                label="猫咪健康状况"
-              ></v-select>
-              <v-text-field
-                v-model="description"
-                label="描述"
-                type="text"
-                :rules="[v => !!v || '描述不能为空']"
-              ></v-text-field>
-              <v-btn color="#bbd5eb" @click="updateCatProfile(cat)" >确认更新</v-btn>
-              <v-btn color="#f0f0f0" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
-            </div>
-          </v-expand-transition>
-          <v-expand-transition>
-            <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-4 mb-4">
-              <v-file-input
-              label="上传图片"
-              accept="image/*"
-              multiple
-              @change="handleFiles"
-              ></v-file-input>
-              <v-row>
-                <v-col 
-                  v-for="(fileUrl, index) in fileUrls"
-                  :key = "index"
-                  cols = "4">
-                  <v-img
-                    :src="fileUrl"
-                    alt="预览图"
-                    aspect-ratio = "1"
-                    max-height = "150"
-                    class="mb-4"
-                    ></v-img>
-                </v-col>
-              </v-row>
-              <v-btn color="#bbd5eb" class = "mt-2" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
-              <v-btn color="#f0f0f0" class="ml-2 mt-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
-            </div>
-          </v-expand-transition>
+            <v-card-title class="headline">{{ cat.name }}</v-card-title>
+            <v-card-subtitle >年龄: {{ cat.age }}</v-card-subtitle>
+            <v-card-subtitle >性别: {{ cat.is_male ? '公猫' : '母猫' }}</v-card-subtitle>
+            <v-card-subtitle >描述: {{ cat.description }}</v-card-subtitle>
+            <v-card-subtitle >健康状况: {{ cat.health_condition  == 1 ? "健康" : cat.health_condition == 2 ? "生病中" : cat.health_condition == 3 ? "VACCINATED" : "去喵星"}}</v-card-subtitle>
+            <v-expand-transition>
+              <div v-show="showStates[cat.id]?.showCatEdit" class="mt-4 mb-4">
+                <v-select
+                  v-model="health_condition"
+                  :items="['健康', '生病中', '已注射疫苗', '去喵星']"
+                  label="猫咪健康状况"
+                ></v-select>
+                <v-text-field
+                  v-model="description"
+                  label="描述"
+                  type="text"
+                  :rules="[v => !!v || '描述不能为空']"
+                ></v-text-field>
+                <v-btn color="#bbd5eb" @click="updateCatProfile(cat)" >确认更新</v-btn>
+                <v-btn color="#f0f0f0" class="ml-2" @click="toggleSection(cat.id, 'showCatEdit', false)">取消</v-btn>
+              </div>
+            </v-expand-transition>
+            <v-expand-transition>
+              <div v-show="showStates[cat.id]?.showAvatarUpload" class="mt-4 mb-4">
+                <v-file-input
+                label="上传图片"
+                accept="image/*"
+                multiple
+                @change="handleFiles"
+                ></v-file-input>
+                <v-row>
+                  <v-col 
+                    v-for="(fileUrl, index) in fileUrls"
+                    :key = "index"
+                    cols = "4">
+                    <v-img
+                      :src="fileUrl"
+                      alt="预览图"
+                      aspect-ratio = "1"
+                      max-height = "150"
+                      class="mb-4"
+                      ></v-img>
+                  </v-col>
+                </v-row>
+                <v-btn color="#bbd5eb" class = "mt-2" @click="updateCatAvatar(cat.id)">确认上传</v-btn>
+                <v-btn color="#f0f0f0" class="ml-2 mt-2" @click="toggleSection(cat.id, 'showAvatarUpload', false)">取消</v-btn>
+              </div>
+            </v-expand-transition>
 
-          <v-card-actions class="d-flex justify-center">
-            <v-btn
-              rounded="lg"
-              variant="elevated"
-              color = "#c2d7f3"
-              @click="feedCat(cat)"
-              v-if="user.login && !user.is_superuser"
-            >
-              <v-icon left class = "mr-1">mdi-paw</v-icon>投喂
-            </v-btn>
-            <v-btn
-              rounded="lg"
-              variant="elevated"
-              color = "#fff8dc"
-              @click= goToCatDetails(cat.id)
-              v-if="user.login"
-              >
-            <v-icon left class = "mr-1">mdi-cat</v-icon> 详情
-            </v-btn>
-            <v-btn
-                color="#e8d6ec"
+            <v-card-actions class="d-flex justify-center">
+              <v-btn
                 rounded="lg"
                 variant="elevated"
-                @click="toggleSection(cat.id, 'showCatEdit', true)"
-                v-if="user.login && (user.is_superuser || user.is_volunteer)"
+                color = "#c2d7f3"
+                @click="feedCat(cat)"
+                v-if="user.login && !user.is_superuser"
               >
-              <v-icon left class="mr-1">mdi-pencil</v-icon> 修改信息
-            </v-btn>
-            <v-btn
-                color="#d9ecfc"
+                <v-icon left class = "mr-1">mdi-paw</v-icon>投喂
+              </v-btn>
+              <v-btn
                 rounded="lg"
                 variant="elevated"
-                @click="toggleSection(cat.id, 'showAvatarUpload', true)"
+                color = "#fff8dc"
+                @click= goToCatDetails(cat.id)
+                v-if="user.login"
+                >
+              <v-icon left class = "mr-1">mdi-cat</v-icon> 详情
+              </v-btn>
+              <v-btn
+                  color="#e8d6ec"
+                  rounded="lg"
+                  variant="elevated"
+                  @click="toggleSection(cat.id, 'showCatEdit', true)"
+                  v-if="user.login && (user.is_superuser || user.is_volunteer)"
+                >
+                <v-icon left class="mr-1">mdi-pencil</v-icon> 修改信息
+              </v-btn>
+              <v-btn
+                  color="#d9ecfc"
+                  rounded="lg"
+                  variant="elevated"
+                  @click="toggleSection(cat.id, 'showAvatarUpload', true)"
+                  v-if="user.login && (user.is_superuser || user.is_volunteer)"
+                >
+                <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
+              </v-btn>
+              <v-btn
+                color="indigo-lighten-2"
+                rounded="lg"
+                variant="elevated"
+                @click="showPositionEdit = true; positionEditCat = cat"
                 v-if="user.login && (user.is_superuser || user.is_volunteer)"
               >
-              <v-icon left class="mr-1">mdi-image</v-icon> 更换图片
-            </v-btn>
-            <v-btn
-              color="indigo-lighten-2"
-              rounded="lg"
-              variant="elevated"
-              @click="showPositionEdit = true; positionEditCat = cat"
-              v-if="user.login && (user.is_superuser || user.is_volunteer)"
-            >
-            <v-icon left class="mr-1">mdi-map-marker-outline</v-icon> 更新位置
-            </v-btn>
-            <v-btn 
-              rounded="lg"
-              @click="showDeleteDialog = true ; removeCatId = cat.id" 
-              v-if="isAdmin" 
-              variant="elevated"
-              color="#f8d6dd">
-              <v-icon left class = "mr-1">mdi-delete</v-icon>删除猫咪
-            </v-btn>
-          </v-card-actions>
-        </div>
+              <v-icon left class="mr-1">mdi-map-marker-outline</v-icon> 更新位置
+              </v-btn>
+              <v-btn 
+                rounded="lg"
+                @click="showDeleteDialog = true ; removeCatId = cat.id" 
+                v-if="isAdmin" 
+                variant="elevated"
+                color="#f8d6dd">
+                <v-icon left class = "mr-1">mdi-delete</v-icon>删除猫咪
+              </v-btn>
+            </v-card-actions>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -192,27 +210,27 @@
     </v-dialog>
   </v-container>
   <v-btn
-      color="#bbd5eb"
-      class="elevation-4"
-      prepend-icon="mdi-plus"
-      text="添加"
-      style="position: fixed; bottom: 80px; right: 24px;"
-      @click = "showAddCatDialog = true"
-      size="large"
-      v-if = "user.login && (user.is_superuser || user.is_volunteer)"
-    ></v-btn>
+    color="#bbd5eb"
+    class="elevation-4"
+    prepend-icon="mdi-plus"
+    text="添加"
+    style="position: fixed; bottom: 80px; right: 24px;"
+    @click = "showAddCatDialog = true"
+    size="large"
+    v-if = "user.login && (user.is_superuser || user.is_volunteer)"
+  ></v-btn>
 
-    <v-btn
-      color="#bbd5eb"
-      class="elevation-4"
-      style="position: fixed; bottom: 24px; right: 24px;"
-      prepend-icon="mdi-handshake"
-      text="捐赠"
-      @click = "showDonateDialog = true"
-      size="large"
-      v-if = "user.login"
-    ></v-btn>
-    <v-dialog 
+  <v-btn
+    color="#bbd5eb"
+    class="elevation-4"
+    style="position: fixed; bottom: 24px; right: 24px;"
+    prepend-icon="mdi-handshake"
+    text="捐赠"
+    @click = "showDonateDialog = true"
+    size="large"
+    v-if = "user.login"
+  ></v-btn>
+  <v-dialog 
     v-model="showDonateDialog" 
     max-width="70vw"
     width="650px"
@@ -292,7 +310,7 @@
           ></v-text-field>
           <v-select
             v-model="cat_in.health_condition"
-            :items="['HEALTHY', 'SICK', 'VACCINATED', 'DEAD']"
+            :items="['健康', '生病中', '已注射疫苗', '去喵星']"
             label="猫咪健康状况"
           ></v-select>
           <v-file-input
@@ -319,7 +337,7 @@
             v-model="cat_in.description"
             label="对猫咪的描述"
             counter="50"
-            class="mt-3"
+            class="mt-6"
           ></v-textarea>
           <div class="mt-4 text-h6 font-weight-regular">
           选择猫咪位置
@@ -368,7 +386,6 @@
       </v-btn>
     </v-card>
   </v-dialog>
-  </div>
 </template>
 
 <script setup>
@@ -452,10 +469,10 @@ const toggleSection = (id, section, value) => {
       const cat = cats.value.find((u) => u.id === id)
       // console.error(cat)
       description.value = cat.description;
-      health_condition.value = cat.health_condition === 1 ? 'HEALTHY'
-        : cat.health_condition === 2 ? 'SICK'
-        : cat.health_condition === 3 ? 'VACCINATED'
-        : 'DEAD';
+      health_condition.value = cat.health_condition === 1 ? '健康'
+        : cat.health_condition === 2 ? '生病中'
+        : cat.health_condition === 3 ? '已注射疫苗'
+        : '去喵星';
   }
 };
 
@@ -504,9 +521,9 @@ const updateCatProfile = async (cat) => {
       const catData = new FormData();
       catData.append('description', description.value);
       catData.append('health_condition', 
-      health_condition === 'HEALTHY' ? 1
-        : health_condition === 'SICK' ? 2
-        : health_condition === 'VACCINATED' ? 3
+      health_condition === '健康' ? 1
+        : health_condition === '生病中' ? 2
+        : health_condition === '已注射疫苗' ? 3
         : 4);
       console.error('catData', catData);
       const response = await updateCatByAdmin(cat.id , catData);
@@ -587,9 +604,9 @@ const submitForm = async () => {
     formData.append('is_male', cat_in.value.is_male === '公猫');
     formData.append('age', parseInt(cat_in.value.age, 10));
     formData.append('health_condition', 
-      cat_in.value.health_condition === 'HEALTHY' ? 1
-        : cat_in.value.health_condition === 'SICK' ? 2
-        : cat_in.value.health_condition === 'VACCINATED' ? 3
+      cat_in.value.health_condition === '健康' ? 1
+        : cat_in.value.health_condition === '生病中' ? 2
+        : cat_in.value.health_condition === '已注射疫苗' ? 3
         : 4);
     formData.append('description', cat_in.value.description);
     formData.append('longitude', location.longitude);
