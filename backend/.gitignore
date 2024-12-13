@@ -141,3 +141,4 @@ dmypy.json
 
 .DS_Store
 mysql_config.py
+*.xlsx

@@ -14,6 +14,9 @@ passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "*"
 email-validator = "*"
 alembic = "*"
+numpy = "*"
+pandas = "*"
+openpyxl = "*"
 
 [dev-packages]
 
