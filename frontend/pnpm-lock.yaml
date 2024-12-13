@@ -20,6 +20,9 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7
+      chart.js:
+        specifier: ^4.4.7
+        version: 4.4.7
       core-js:
         specifier: ^3.37.1
         version: 3.39.0
@@ -337,6 +340,9 @@ packages:
     peerDependencies:
       '@vue/compiler-sfc': ^3.0.0
       vue: ^3.0.0
+
+  '@kurkle/color@0.3.4':
+    resolution: {integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==}
 
   '@mdi/font@7.4.47':
     resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
@@ -759,6 +765,10 @@ packages:
 
   character-entities@2.0.2:
     resolution: {integrity: sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==}
+
+  chart.js@4.4.7:
+    resolution: {integrity: sha512-pwkcKfdzTMAU/+jNosKhNL2bHtJc/sSmYgVbuGTEDhzkrhmyihmP7vUc/5ZK9WopidMDHNe3Wm7jOd/WhuHWuw==}
+    engines: {pnpm: '>=8'}
 
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
@@ -2930,6 +2940,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@kurkle/color@0.3.4': {}
+
   '@mdi/font@7.4.47': {}
 
   '@mrmlnc/readdir-enhanced@2.2.1':
@@ -3388,6 +3400,10 @@ snapshots:
       supports-color: 7.2.0
 
   character-entities@2.0.2: {}
+
+  chart.js@4.4.7:
+    dependencies:
+      '@kurkle/color': 0.3.4
 
   chokidar@3.6.0:
     dependencies:

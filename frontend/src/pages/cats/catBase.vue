@@ -7,6 +7,26 @@
         这里是猫猫基地，猫猫欢迎你！
       </v-toolbar-title>
     </v-toolbar>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+    <!-- 左侧说明框 -->
+    <div style="flex: 1; min-width: 200px; max-width: 300px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+      <h3 style="margin-bottom: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;过去一年，我们收到了很多爱心人士的捐赠，感谢大家对猫猫的帮助！</h3>
+      <h4>最近三笔捐款</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li v-for="(donation, index) in recentDonations" :key="index" style="margin-bottom: 10px;">
+          <div><strong>捐赠者:</strong>{{donation.is_anonymous? '匿名捐赠' : usernames[donation.user_id] }}</div>
+          <div><strong>金额:</strong> ¥{{ donation.amount }}</div>
+          <div><strong>时间:</strong> {{ donation.donated_at }}</div>
+          <div v-if="donation.message"><strong>留言:</strong> {{ donation.message }}</div>
+        </li>
+      </ul>
+    </div>
+    <!-- 图表 -->
+    <div style="flex: 2; min-width: 400px; max-width: 800px;">
+      <canvas id="donationChart" style="width: 100%; height: 400px;"></canvas>
+    </div>
+  </div>
     <v-row class="mt-5">
       <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center" rounded="lg" elevation="4" max-width="550px">
@@ -357,6 +377,8 @@ const handleFiles = (event) => {
 
 onMounted(async() => {
   fetchProfile();
+  loadDonationChart();
+  loadRecentDonations();
   try {
     const response = await getCats();
     cats.value = response.cats;
@@ -578,6 +600,8 @@ const submitDonation = async () => {
 
     showDonateDialog.value = false;
     snackbar.success('捐赠成功！感谢您的支持！');
+    loadRecentDonations();
+    loadDonationChart();
   } catch (error) {
     console.error('提交捐赠失败:', error);
     snackbar.error('提交失败，请稍后再试');
@@ -640,6 +664,112 @@ const feedCat = (cat) => {
     snackbar.warning('已到达每日投喂上限');
   }
 };
+
+import { getPublicProfile } from '@/api/user';
+import { fetchDonationTotal,fetchDonations } from '@/api/donate';
+// 最近三笔捐款
+const recentDonations = ref([]);
+const usernames = ref({});
+// 获取最近三笔捐款
+const loadRecentDonations = async () => {
+  try {
+    const donations = await fetchDonations(); 
+    recentDonations.value = donations.data.slice(0, 3); 
+    console.log('获取最近捐款成功:', recentDonations.value);
+    for (const donation of recentDonations.value) {
+    console.log('加载用户名', donation);
+      const id = donation.user_id;
+      try {
+        const response = await getPublicProfile(id);
+        console.log(`获取用户 ${id} 名称成功:`, response.nickname);
+        usernames.value[id] = response.nickname;
+      } catch (error) {
+        console.error(`获取用户 ${id} 名称失败:`, error);
+        usernames.value[id] = '匿名用户';
+      }
+    }
+  } catch (error) {
+    console.error('获取最近捐款失败:', error);
+  }
+};
+
+
+
+const fetchMonthlyDonations = async () => {
+  const today = new Date();
+  const monthlyData = [];
+  for (let i = 11; i >= 0; i--) {
+    const start = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const end = new Date(today.getFullYear(), today.getMonth() - i + 1, 0);
+
+    const startDate = start.toISOString().split('T')[0];
+    const endDate = end.toISOString().split('T')[0];
+
+    const date = {
+      start_date: startDate,
+      end_date: endDate,
+    }
+    try {
+      const total = await fetchDonationTotal(date).then(res => res.data.total_amount); 
+      console.log(`获取${startDate}至${endDate}的捐赠成功:`, total);
+      monthlyData.push({
+        month: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`,
+        total,
+      });
+    } catch (error) {
+      console.error(`获取${startDate}至${endDate}的捐赠失败:`, error);
+      monthlyData.push({
+        month: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`,
+        total: 0,
+      });
+    }
+  }
+
+  return monthlyData;
+};
+
+import { Chart } from 'chart.js/auto';
+
+const createDonationChart = (ctx, data) => {
+  const labels = data.map(item => item.month);
+  const totals = data.map(item => item.total);
+
+  new Chart(ctx, {
+    type: 'bar', // 或 'line'
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '每月捐赠总额 (元)',
+          data: totals,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+};
+
+const loadDonationChart = async () => {
+  const ctx = document.getElementById('donationChart').getContext('2d');
+  const data = await fetchMonthlyDonations();
+  createDonationChart(ctx, data);
+};
+
 
 </script>
 
