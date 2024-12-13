@@ -900,7 +900,6 @@ const exportToExcel = async () => {
   const start_date = new Date(startMonth.value).toISOString().split('T')[0];
   const end_date = new Date(endMonth.value).toISOString().split('T')[0];
   const excelResponse = await exportDonations({start_date: start_date, end_date: end_date});
-  console.log('FUCKKKKKKKKKKKKKKKKKK', excelResponse.headers);
   const fileName = excelResponse.headers['content-disposition'].split('filename=')[1];
   const blob = new Blob([excelResponse.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   saveAs(blob, fileName);
