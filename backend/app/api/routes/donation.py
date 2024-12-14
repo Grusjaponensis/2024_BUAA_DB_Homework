@@ -61,6 +61,9 @@ async def export_donations(
         {"date": donation[0], "amount": donation[1] or 0, "count": donation[2] or 0}
         for donation in donations
     ]
+    
+    if len(donations) == 0:
+        aggregated_data = [{"date": start, "amount": 0, "count": 0}]
 
     df = pd.DataFrame(aggregated_data)
     df.set_index("date", inplace=True)
