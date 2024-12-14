@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid max-width="90vw">
+  <v-container fluid max-width="100vw">
     <!-- 顶部欢迎横栏 -->
     <v-toolbar
       color='#d4eae0' 
@@ -75,7 +75,7 @@
     </div>
     </div>
     <v-row class="mt-5">
-      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
+      <v-col cols="12" md="6" lg="4" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center pa-4" rounded="lg" elevation="4" max-width="550px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
