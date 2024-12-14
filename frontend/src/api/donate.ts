@@ -13,8 +13,20 @@ export const fetchDonations = async () => {
 };
 
 export const exportDonations = async (data: any) => {
-  return await server.get('/donations/export', {
-    params: data,
-    responseType: 'blob'
-  });
+  try {
+    console.log('exportDonations', data)
+    const res = await server.get('/donations/export', data, 'blob');
+    // console.log('res.data', res.data)
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    // console.log('url', url)
+    const link = document.createElement('a')
+    link.href = url
+    const filename = res.headers['content-disposition'].split('filename=')[1];
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch (error) {
+    console.log(error)
+  }
 }

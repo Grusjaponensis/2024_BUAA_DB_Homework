@@ -5,7 +5,7 @@ const server = axios.create({
 	withCredentials: true,
 });
 
-const get = async (url: string, params?: any) => {
+const get = async (url: string, params?: any, responseType?: 'blob') => {
     let headers = {};
 	if (document.cookie.includes('access_token=')) {
 		headers = {
@@ -13,7 +13,7 @@ const get = async (url: string, params?: any) => {
 		}
 	}
 	try {
-		const res = await server.get(url, { params, headers: { ...headers } })
+		const res = await server.get(url, { params, headers: { ...headers }, responseType })
 		return res
 	} catch (error) {
 		console.error(error);

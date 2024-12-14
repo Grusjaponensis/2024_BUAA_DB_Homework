@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid max-width="100vw">
+  <v-container fluid>
     <!-- 顶部欢迎横栏 -->
     <v-toolbar
       color='#d4eae0' 
@@ -75,7 +75,7 @@
     </div>
     </div>
     <v-row class="mt-5">
-      <v-col cols="12" md="6" lg="4" v-for="cat in cats" :key="cat.id" justify="center">
+      <v-col cols="12" md="6" v-for="cat in cats" :key="cat.id" justify="center">
         <v-card class="d-flex flex-column text-center pa-4" rounded="lg" elevation="4" max-width="550px">
           <v-carousel hide-delimiters="true" show-arrows="hover" style = "max-width: 500px; height: 300px; margin: 0 auto;">
             <v-carousel-item 
@@ -894,15 +894,11 @@ const exportToPDF = async () => {
 };
 
 import { exportDonations } from '@/api/donate';
-import { saveAs } from 'file-saver';
 
 const exportToExcel = async () => {
   const start_date = new Date(startMonth.value).toISOString().split('T')[0];
   const end_date = new Date(endMonth.value).toISOString().split('T')[0];
-  const excelResponse = await exportDonations({start_date: start_date, end_date: end_date});
-  const fileName = excelResponse.headers['content-disposition'].split('filename=')[1];
-  const blob = new Blob([excelResponse.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  saveAs(blob, fileName);
+  await exportDonations({start_date: start_date, end_date: end_date});
   snackbar.success('导出成功！');
 }
 
