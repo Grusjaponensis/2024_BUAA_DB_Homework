@@ -14,21 +14,6 @@
       <!-- 侧边栏（包含按钮） -->
       <v-row class="mb-4" no-gutters>
         <v-col cols="3" class="sidebar">
-          <!-- 分析数据栏 -->
-            <v-card variant="outlined" class="mt-5">
-              <v-card-text class="pa-4">
-                <div class="d-flex flex-column align-start">
-                  <div class="d-flex align-start">
-                    <span class="body-2 mb-2">志愿者总数： </span>
-                    <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
-                  </div>
-                  <div class="d-flex align-start">
-                    <span class="body-2 mb-2">组织救助行动： </span>
-                    <span class="font-weight-bold ml-auto">352{{ totalPosts }}次</span>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
               <!-- 按钮组 -->
               <div  class="d-flex flex-column mt-5" v-if="user.login">
                 <v-btn
