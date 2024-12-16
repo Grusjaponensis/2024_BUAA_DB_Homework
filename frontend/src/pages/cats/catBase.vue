@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <!-- 顶部欢迎横栏 -->
     <v-toolbar
       color='#d4eae0' 
@@ -10,9 +10,9 @@
       </v-toolbar-title>
     </v-toolbar>
     
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-      <v-card variant="text" class="mr-8">
-        <v-card-title class="mt-2">
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center;">
+      <v-card variant="text" class="mr-2">
+        <v-card-title class="mt-2 d-flex justify-center align-center">
           <v-icon left>mdi-gift-outline</v-icon>
           最近捐赠一览
         </v-card-title>
@@ -914,7 +914,7 @@ const exportToExcel = async () => {
   height: 100%;
 }
 .donation-chart-container {
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
