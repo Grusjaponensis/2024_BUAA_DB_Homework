@@ -51,6 +51,8 @@
               v-for="(image, index) in post.images"
               :key="index"
               :src="`${addPrefix(image)}`"
+              rounded="lg"
+              cover
             ></v-carousel-item>
           </v-carousel>
         </div>

@@ -32,15 +32,10 @@
               <v-carousel-item 
                 v-for="(image, index) in cat.image_urls"
                 :key = index
+                :src = "`${addPrefix(image)}`"
+                rounded="lg"
                 cover
-                >
-                <v-img
-                  max-width="100%"
-                  max-height="100%"
-                  :src = "`${addPrefix(image)}`"
-                  contain
-                ></v-img>
-              </v-carousel-item>
+              ></v-carousel-item>
             </v-carousel>
           </v-card-text>
           <v-col>

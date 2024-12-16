@@ -5,7 +5,7 @@ export const createDonation = async (data: any) => {
 };
 
 export const fetchDonationTotal = async (data: any) => {
-    return await server.get('/donations/total/', data);
+    return await server.get('/donations/total', data);
 };
 
 export const fetchDonations = async () => { 
