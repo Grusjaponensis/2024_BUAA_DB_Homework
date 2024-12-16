@@ -91,6 +91,12 @@
               <v-col class="d-flex flex-column align-center">
                 <v-row cols="12" no-gutters class="mb-2 justify-center">
                   <div class="field">
+                    <v-icon class="mr-2" color="indigo-darken-1">mdi-cat</v-icon>
+                    <span class="text-body-1">名字: {{ cat.name }}</span>
+                  </div>
+                </v-row>
+                <v-row cols="12" no-gutters class="mb-2 justify-center">
+                  <div class="field">
                     <v-icon class="mr-2" color="deep-purple-darken-1">mdi-calendar-check</v-icon>
                     <span class="text-body-1">年龄: {{ cat.age }}</span>
                   </div>
