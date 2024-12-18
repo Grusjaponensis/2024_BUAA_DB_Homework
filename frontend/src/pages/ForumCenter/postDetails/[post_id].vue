@@ -7,7 +7,7 @@
           color="#bdd4eb"
           prepend-icon="mdi-arrow-left"
           text="返回"
-          @click="$router.go(-1)"
+          to="/ForumCenter/forumCenter"
           class="my-2"
           style="position: fixed; bottom: 24px; left: 24px;"
         ></v-btn>
