@@ -89,28 +89,6 @@
             </v-btn>
           </div>
           <!-- 分析数据栏 -->
-          <!-- <v-card variant="outlined" class="mt-5">
-            <v-card-text>
-              <div class="d-flex flex-column align-start">
-                <div class="d-flex align-start mt-2">
-                  <span class="body-2 mb-2">帖子总数： </span>
-                  <span class="font-weight-bold ml-auto">352{{ totalPosts }}</span>
-                </div>
-                <div class="d-flex align-start">
-                  <span class="body-2 mb-2">今日新增： </span>
-                  <span class="font-weight-bold ml-auto">25{{ newToday }}</span>
-                </div>
-                <div class="d-flex align-start">
-                  <span class="body-2 mb-2">总浏览量： </span>
-                  <span class="font-weight-bold ml-auto">1215{{ totalViews }}</span>
-                </div>
-                <div class="d-flex align-start">
-                  <span class="body-2 mb-2">站内热帖： </span>
-                  <span class="font-weight-bold ml-auto">《寻找失踪小橘猫》</span>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card> -->
           <v-img src="@/assets/cat-forum.png" class="mt-5"/>
         </v-col>
 

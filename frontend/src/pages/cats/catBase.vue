@@ -173,15 +173,6 @@
               <v-btn
                 rounded="lg"
                 variant="elevated"
-                color = "#c2d7f3"
-                @click="feedCat(cat)"
-                v-if="user.login && !user.is_superuser"
-              >
-                <v-icon left class = "mr-1">mdi-paw</v-icon>投喂
-              </v-btn>
-              <v-btn
-                rounded="lg"
-                variant="elevated"
                 color = "#fff8dc"
                 @click= goToCatDetails(cat.id)
                 v-if="user.login"
