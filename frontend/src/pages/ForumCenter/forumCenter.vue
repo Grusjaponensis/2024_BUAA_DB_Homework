@@ -89,7 +89,7 @@
             </v-btn>
           </div>
           <!-- 分析数据栏 -->
-          <v-card variant="outlined" class="mt-5">
+          <!-- <v-card variant="outlined" class="mt-5">
             <v-card-text>
               <div class="d-flex flex-column align-start">
                 <div class="d-flex align-start mt-2">
@@ -108,10 +108,9 @@
                   <span class="body-2 mb-2">站内热帖： </span>
                   <span class="font-weight-bold ml-auto">《寻找失踪小橘猫》</span>
                 </div>
-                <!-- 更多分析数据 -->
               </div>
             </v-card-text>
-          </v-card>
+          </v-card> -->
           <v-img src="@/assets/cat-forum.png" class="mt-5"/>
         </v-col>
 
