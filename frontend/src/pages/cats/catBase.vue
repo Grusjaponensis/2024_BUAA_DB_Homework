@@ -112,8 +112,8 @@
                     <v-icon class="mr-2"  color="pink-darken-1">mdi-heart-pulse</v-icon>
                     <span class="text-body-1">健康状况: 
                       {{ cat.health_condition == 1 ? "健康" 
-                      : cat.health_condition == 2 ? "生病" 
-                      : cat.health_condition == 3 ? "残疾" 
+                      : cat.health_condition == 2 ? "生病中" 
+                      : cat.health_condition == 3 ? "已注射疫苗" 
                       : "去喵星"}}</span>
                   </div>
                 </v-row>
@@ -546,9 +546,9 @@ const updateCatProfile = async (cat) => {
       const catData = new FormData();
       catData.append('description', description.value);
       catData.append('health_condition', 
-      health_condition === '健康' ? 1
-        : health_condition === '生病中' ? 2
-        : health_condition === '已注射疫苗' ? 3
+      health_condition.value == '健康' ? 1
+        : health_condition.value == '生病中' ? 2
+        : health_condition.value == '已注射疫苗' ? 3
         : 4);
       console.error('catData', catData);
       const response = await updateCatByAdmin(cat.id , catData);
@@ -903,9 +903,9 @@ const exportToExcel = async () => {
 
 <style scoped>
 .top-bar {
-  border-radius: 8px; /* 设置圆角 */
-  margin-bottom:10px; /* 设置底部间距 */
-  padding: 1px 1px; /* 设置内边距 */
+  border-radius: 8px;
+  margin-bottom:10px;
+  padding: 1px 1px;
 }
 .cat-base {
   height: 100%;
@@ -916,7 +916,6 @@ const exportToExcel = async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 时间选择区域样式 */
 .date-selector {
   display: flex;
   flex-wrap: wrap;
@@ -950,7 +949,6 @@ const exportToExcel = async () => {
   border-radius: 4px;
 }
 
-/* 图表区域样式 */
 .chart-wrapper {
   margin-top: 20px;
   background-color: #effaf5;
