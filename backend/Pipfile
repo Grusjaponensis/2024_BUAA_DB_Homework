@@ -17,6 +17,7 @@ alembic = "*"
 pandas = "*"
 openpyxl = "*"
 numpy = "*"
+gunicorn = "*"
 
 [dev-packages]
 

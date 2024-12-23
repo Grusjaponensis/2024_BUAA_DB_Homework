@@ -35,7 +35,7 @@ class Post(SQLModel, table=True):
     user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
     cat_id: uuid.UUID | None = Field(default=None, foreign_key="cat.id", nullable=True)
     title: str
-    content: str
+    content: str = Field(max_length=8192)
     created_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(tz=UTC_8))
     
     # relationships
